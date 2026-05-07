@@ -29,8 +29,11 @@ export default class DashboardPlugin extends Plugin {
         this.app.workspace.onLayoutReady(() => { 
             if (this.settings.openOnStartup) {
                 const emptyLeaves = this.app.workspace.getLeavesOfType("empty");
-                if (emptyLeaves.length > 0) emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
-                else this.activateView();
+                if (emptyLeaves.length > 0) {
+                    emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
+                } else {
+                    this.activateView();
+                }
             }
         });
     }
@@ -86,9 +89,12 @@ class DashboardView extends ItemView {
         const headerRow = container.createDiv({ cls: 'dashboard-header-row' });
         const header = headerRow.createDiv({ cls: 'baseline-header' });
         
-        // 极简英文字母 + 控制中心大字
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
-        header.createEl('h1', { text: '控制中心', cls: 'baseline-title bazi-title' });
+
+        const now = new Date();
+        const lunarNow = Lunar.fromDate(now);
+        const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
+        header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
 
         const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
@@ -104,11 +110,6 @@ class DashboardView extends ItemView {
         
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
         chartHeader.createEl('span', { text: '足迹回顾', cls: 'chart-title' });
-        const toggleBtn = chartHeader.createEl('button', { text: '切换视图', cls: 'view-toggle-btn' });
-        toggleBtn.onclick = () => {
-             const navEl = this.boardArea.querySelector('.month-nav');
-             if(navEl) navEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        };
 
         this.boardArea = dataSection.createDiv({ cls: 'heatmap-calendar-wrapper' });
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
@@ -152,9 +153,10 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
+        
+        nav.createEl('span', { text: '‹', cls: 'month-nav-btn back-arrow' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
+        nav.createEl('span', { text: '›', cls: 'month-nav-btn next-arrow' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
 
         const animWrapper = this.boardArea.createDiv({ cls: 'calendar-anim-wrapper' });
         if (direction === 'left') animWrapper.addClass('slide-in-left');
@@ -175,7 +177,6 @@ class DashboardView extends ItemView {
             
             const d = new Date(year, month, day);
             const lunar = Lunar.fromDate(d);
-            // 彻底屏蔽节日，只取初一十五这些字符串
             const lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
             
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
@@ -183,7 +184,7 @@ class DashboardView extends ItemView {
 
             if (count > 0) {
                 cell.addClass('has-data');
-                cell.addClass(`level-${Math.min(count, 3)}`);
+                cell.addClass(`level-${Math.min(count, 4)}`);
             }
 
             cell.onclick = () => {
@@ -197,7 +198,7 @@ class DashboardView extends ItemView {
     triggerListAnimation(dateStr: string, files: TFile[], lunar: Lunar) {
         this.listScrollArea.empty();
         
-        const baziDay = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${lunar.getDayInGanZhi()}日`;
+        const baziDay = `${lunar.getYearInGanZhi()}年 · ${lunar.getMonthInGanZhi()}月 · ${lunar.getDayInGanZhi()}日`;
 
         if (files.length === 0) { 
             this.listHeader.innerHTML = `
@@ -267,11 +268,17 @@ class QuickNoteModal extends Modal {
         this.actionConfig = config;
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
-        this.folderPath = config.folder.replace(/\{\{YYYY\}\}/g, moment().format('YYYY')).replace(/\{\{MM\}\}/g, moment().format('MM'));
+        
+        this.folderPath = config.folder
+            .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
+            .replace(/\{\{MM\}\}/g, moment().format('MM'));
     }
     
     onOpen() {
-        const { contentEl, modalEl } = this;
+        const { contentEl, modalEl, containerEl } = this;
+        
+        // 🌟 核心：给 Obsidian 最外层的 Modal 容器加上这个 Class，以触发 CSS 里的全局背景模糊 🌟
+        containerEl.addClass('ios-glass-modal-container');
         modalEl.addClass('ios-glass-modal');
         
         contentEl.createEl('h3', { text: this.actionConfig.name });
@@ -279,7 +286,7 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        const folderSetting = new Setting(contentEl).setName('保存路径 (输入或选择)').addText(text => { 
+        const folderSetting = new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
             
