@@ -1,8 +1,5 @@
 import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App, TFile } from 'obsidian';
 import moment from 'moment';
-// 🌟 ⭐ 新增：导入历法库 ⭐ 🌟
-// 请确保你运行了 `npm install lunar-javascript`
-import { Solar, Lunar } from 'lunar-javascript';
 
 const VIEW_TYPE_DASHBOARD = "mobile-dashboard-view";
 
@@ -12,8 +9,8 @@ interface DashboardSettings { openOnStartup: boolean; actions: ActionConfig[]; }
 const DEFAULT_SETTINGS: DashboardSettings = {
     openOnStartup: false,
     actions: [
-        { name: '新建日记', folder: '日记/{{YYYY}}/{{MM}}', template: "---\ntype: diary\ndate: {{DATE}}\n---\n\n# {{TITLE}}\n\n" },
-        { name: '沉淀知识', folder: '知识库/{{YYYY}}', template: "---\ntype: knowledge\ndate: {{DATE}}\n---\n\n# {{TITLE}}\n\n" },
+        { name: '新建日记', folder: '日记/{{YYYY}}/{{MM}}', template: "---\ntype: diary\ndate: {{DATE}}\n---\n\n" },
+        { name: '沉淀知识', folder: '知识库/{{YYYY}}', template: "---\ntype: knowledge\ndate: {{DATE}}\n---\n\n" },
         { name: '灵感碎片', folder: '灵感捕捉', template: "---\ntype: idea\ndate: {{DATE}}\n---\n\n" }
     ]
 }
@@ -38,7 +35,7 @@ export default class DashboardPlugin extends Plugin {
     async saveSettings() { 
         await this.saveData(this.settings); 
         this.app.workspace.getLeavesOfType(VIEW_TYPE_DASHBOARD).forEach(leaf => {
-            if (leaf.view instanceof DashboardView) leaf.view.renderActionsInMenu(); // 如果菜单刷新，重新渲染
+            if (leaf.view instanceof DashboardView) leaf.view.renderActionsInMenu(); 
         });
     }
 
@@ -61,12 +58,9 @@ class DashboardView extends ItemView {
     viewType: 'calendar' | 'heatmap' = 'calendar';
     fileDataMap: Record<string, TFile[]> = {}; 
     
-    // 动画列表容器
     listWrapper: HTMLElement;
     listScrollArea: HTMLElement;
     listHeader: HTMLElement;
-
-    // 下拉菜单容器
     plusMenu: HTMLElement;
 
     constructor(leaf: WorkspaceLeaf, plugin: DashboardPlugin) {
@@ -87,30 +81,24 @@ class DashboardView extends ItemView {
 
         this.buildFileDataMap();
 
-        // ⭐ 1. 🌟 顶栏排版 (统一悬浮 "+" 按钮) 🌟 ⭐
+        // 1. 顶栏 (原生排版 + 无框加号)
         const headerRow = container.createDiv({ cls: 'dashboard-header-row' });
-        
         const header = headerRow.createDiv({ cls: 'baseline-header' });
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
         header.createEl('h1', { text: '控制中心', cls: 'baseline-title' });
 
         const plusBtn = headerRow.createEl('button', { text: '+', cls: 'floating-plus-btn' });
-        // 下拉菜单
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
         this.renderActionsInMenu();
 
-        // 绑定下拉菜单逻辑
         plusBtn.onclick = (e) => {
-            e.stopPropagation(); // 阻止事件冒泡到 document
-            this.plusMenu.toggleClass('is-open', true);
+            e.stopPropagation();
+            this.plusMenu.toggleClass('is-open', !this.plusMenu.hasClass('is-open'));
         };
         
-        // 点击页面其他地方收起菜单
         document.addEventListener('click', () => {
-            this.plusMenu.removeClass('is-open');
+            if(this.plusMenu) this.plusMenu.removeClass('is-open');
         });
-
-        // 🌟 核心优化：彻底移除以前的动作卡片区域 🌟
 
         // 2. 数据看板区
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
@@ -124,6 +112,7 @@ class DashboardView extends ItemView {
             this.renderBoard();
         };
 
+        // 导航区放在头部下方
         this.boardArea = dataSection.createDiv({ cls: 'heatmap-calendar-wrapper' });
 
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
@@ -133,7 +122,6 @@ class DashboardView extends ItemView {
         this.renderBoard();
     }
 
-    // ⭐ 新增：在下拉菜单里渲染动作 ⭐
     renderActionsInMenu() {
         this.plusMenu.empty();
         this.plugin.settings.actions.forEach(action => {
@@ -146,7 +134,6 @@ class DashboardView extends ItemView {
         });
     }
 
-    // 彻底告别以前的卡片渲染
     buildFileDataMap() {
         this.fileDataMap = {};
         const files = this.app.vault.getMarkdownFiles();
@@ -169,17 +156,29 @@ class DashboardView extends ItemView {
         else this.renderHeatmap();
     }
 
+    // ⭐ 稳定版历法生成器：纯内置，绝对不崩溃 ⭐
+    getLunarDayStr(year: number, month: number, day: number): string {
+        try {
+            const dateObj = new Date(year, month, day);
+            // 调用原生 V8/浏览器底层国际化 API 获取农历
+            const formatter = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { day: 'numeric' });
+            return formatter.format(dateObj); // 完美返回 "初一", "廿五" 等
+        } catch (e) {
+            return ''; // 极小概率环境不支持时，优雅降级为空，绝不导致崩溃
+        }
+    }
+
     renderCalendar() {
-        this.closeListAnimation(); // 收起文件列表
+        this.closeListAnimation();
 
         const year = this.currentMonth.year();
         const month = this.currentMonth.month();
         const firstDay = moment([year, month, 1]).day();
 
-        // 🌟 苹果原生风格导航 (无边框，按下有动画) 🌟
-        const nav = this.boardArea.createDiv({ cls: 'calendar-nav' });
+        // 居中的苹果原生月份导航 (无边框强力清除)
+        const nav = this.boardArea.createDiv({ cls: 'month-nav' });
         nav.createEl('button', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderBoard(); };
-        nav.createSpan({ text: this.currentMonth.format('YYYY.MM'), cls: 'month-label' });
+        nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
         nav.createEl('button', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderBoard(); };
 
         const weekdaysGrid = this.boardArea.createDiv({ cls: 'calendar-weekdays' });
@@ -194,23 +193,10 @@ class DashboardView extends ItemView {
             const count = files.length;
 
             const cell = grid.createDiv({ cls: 'calendar-cell' });
-            // cell.title = `${dateKey}: ${count} 篇内容`; // Notion 风格不加 title
-
-            // 🌟 ⭐ 新增：计算历法并填充双行数字底下 ⭐ 🌟
-            // 将 moment 的 Gregorian 日期转换为 Solar，Solar 转换为 Lunar
-            // moment 的月是 0-11
-            const solarDay = Solar.fromYmd(year, month + 1, day);
-            const lunarDay = Lunar.fromSolar(solarDay);
             
-            // 获取天干地支日 (地支日更常用作日期标识，地支12循环)
-            // 你说“天干地支纪年法”底下，我这里用更细化的“地支日”
-            // lunarDay.getInXian() 或者初一显示月份
-            const lunarText = lunarDay.getDay() === 1 ? lunarDay.getMonthInChinese() + '月' : lunarDay.getDayInChinese();
-            const cyclicalDay = lunarDay.getDayGanZhi(); // 天干地支日：甲子日
-
-            // 双行排版：公历大字，中国小字（地支日）
+            // 写入数字和历法
+            const lunarText = this.getLunarDayStr(year, month, day);
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
-            // 这里用 DayInChinese (初一) 或者 GanZhi (甲子)，GanZhi更贴合你的要求
             cell.createDiv({ text: lunarText, cls: 'cal-lunar-text' });
 
             if (count > 0) {
@@ -245,21 +231,23 @@ class DashboardView extends ItemView {
                 this.triggerListAnimation(dateKey, files);
             };
         }
-        const labels = this.boardArea.createDiv({ cls: 'calendar-nav' });
-        labels.createSpan({ text: '12周前', cls: 'calendar-header-cell' });
-        labels.createSpan({ text: '今天', cls: 'calendar-header-cell' });
     }
 
     triggerListAnimation(dateStr: string, files: TFile[]) {
         this.listScrollArea.empty();
-        if (files.length === 0) { this.listHeader.innerText = `${dateStr} 没有记录`; this.listWrapper.addClass('is-open'); return; }
-        this.listHeader.innerText = `${dateStr} 的记录 (${files.length})`;
+        if (files.length === 0) { this.listHeader.innerText = `${dateStr} 没有留下记录`; this.listWrapper.addClass('is-open'); return; }
+        
+        this.listHeader.innerText = `${dateStr} 的足迹 (${files.length})`;
         
         files.forEach(file => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
             item.createDiv({ text: '📄', cls: 'record-icon' });
             item.createDiv({ text: file.basename, cls: 'record-title' });
-            item.onclick = async () => { await this.app.workspace.getLeaf(true).openFile(file); };
+            
+            item.onclick = async () => {
+                const leaf = this.app.workspace.getLeaf(true);
+                await leaf.openFile(file);
+            };
         });
         this.listWrapper.addClass('is-open');
     }
