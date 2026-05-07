@@ -1,11 +1,18 @@
 /* =========================================
-   🌟 全局：极致冷淡极简风 (Monochrome Minimalist) 🌟
+   🌟 全局：极致哑光高级感 & 棕红配色 🌟
 ========================================= */
 .dashboard-container {
-    --bazi-text-main: #222222;    /* 核心纯黑/深灰 */
-    --bazi-text-muted: #999999;   /* 极简浅灰 */
-    --bazi-text-faint: #CCCCCC;   /* 无数据时的极淡灰 */
-    --bazi-bg-selected: #888888;  /* 选中时的哑光深灰背景 */
+    /* 🌟 核心：成熟稳重的高级棕红配色 (Oxblood/Carmine) 🌟 */
+    --bazi-accent-red: #8A2E2E;   /* 强调色：深棕红 (用于+、右箭头、选中框) */
+    --bazi-text-main: #333333;    /* 哑光深灰 (主文字) */
+    --bazi-text-muted: #888888;   /* 哑光浅灰 (副文字、周几、农历) */
+    
+    /* 日历热力图：渐进式棕红配色 */
+    --cal-level-0: #F7EBEA;     /* 基础底色/无数据：极淡的暖灰粉 */
+    --cal-level-1: #D4A3A3;     /* 低频数据：浅棕红 */
+    --cal-level-2: #BC7676;     /* 中频数据：中度棕红 */
+    --cal-level-3: #A34949;     /* 高频数据：深棕红 */
+    --cal-level-4: #8A2E2E;     /* 极高频数据：极致棕红 */
     
     padding: 6vh 5vw; max-width: 860px; margin: 0 auto;
     display: flex; flex-direction: column; gap: 32px;
@@ -15,188 +22,249 @@
 }
 
 /* --- 顶栏排版 --- */
-.dashboard-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; padding: 0 4px; position: relative; }
-.baseline-header { display: flex; flex-direction: column; gap: 2px; }
-.baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.dashboard-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; position: relative; }
+.baseline-header { display: flex; flex-direction: column; gap: 4px; }
+.baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* 极简大标题 */
+/* 优雅的天干地支标题 */
 .baseline-title.bazi-title { 
-    margin: 0; font-size: 36px; font-weight: 800; 
-    color: var(--bazi-text-main); letter-spacing: -0.02em; 
-    line-height: 1.1; white-space: nowrap;
+    margin: 4px 0 0 0; font-size: 24px; font-weight: 500; 
+    color: var(--bazi-text-main); letter-spacing: 0.08em; 
+    line-height: 1.2; white-space: nowrap; opacity: 0.9;
 }
 
-/* 极简纯黑 "+" 按钮 */
+/* 棕红色悬浮 "+" 按钮 */
 .floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 32px !important; font-weight: 300 !important;
-    color: var(--bazi-text-main) !important; transition: all 0.2s ease; padding: 0 !important;
-    margin-top: 4px;
+    cursor: pointer; font-size: 34px !important; font-weight: 300 !important;
+    color: var(--bazi-accent-red) !important; transition: all 0.3s ease; padding: 0 !important;
 }
-.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.6; }
+.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
 .floating-plus-btn:active { transform: scale(0.9); }
 
-/* --- 下拉菜单 --- */
+/* 下拉菜单 */
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.85); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
-    border-radius: 16px; width: 140px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08); z-index: 1000;
-    overflow: hidden; transform: translateY(8px); opacity: 0; pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.75); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
+    border-radius: 18px; width: 150px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15); z-index: 1000;
+    overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding: 8px; border: 1px solid rgba(200, 200, 200, 0.4);
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);}
-.plus-dropdown.is-open { transform: translateY(12px); opacity: 1; pointer-events: auto; }
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.15);}
+.plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
 
 .dropdown-item {
     padding: 12px 14px; font-size: 15px; font-weight: 600; color: var(--bazi-text-main);
-    cursor: pointer; border-radius: 10px; transition: background 0.2s; text-align: center; margin-bottom: 2px;
+    cursor: pointer; border-radius: 12px; transition: background 0.2s; text-align: left; margin-bottom: 2px;
 }
-.dropdown-item:hover { background: rgba(0, 0, 0, 0.05); }
+.dropdown-item:hover { background: rgba(120, 120, 120, 0.15); }
 
-/* --- 数据看板 (纯净白底) --- */
+/* --- 数据区域 (纯白毛玻璃容器) --- */
 .dashboard-data-section {
-    background: rgba(255, 255, 255, 0.6) !important; 
-    backdrop-filter: blur(40px) !important; -webkit-backdrop-filter: blur(40px) !important;
-    border-radius: 24px; padding: 32px 20px; 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04); 
+    background: rgba(255, 255, 255, 0.7) !important; 
+    backdrop-filter: saturate(180%) blur(50px) !important; -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
+    border-radius: 28px; padding: 32px 20px 24px 20px; 
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.8) !important;
     display: flex; flex-direction: column; align-items: center; overflow: hidden;
 }
-.theme-dark .dashboard-data-section { background: rgba(0, 0, 0, 0.3) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.05) !important;}
+.theme-dark .dashboard-data-section { background: rgba(30, 30, 30, 0.5) !important; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1) !important;}
 
-.chart-header-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding: 0 12px;}
-.chart-title { font-size: 18px; font-weight: 800; color: var(--bazi-text-main); margin: 0; }
+.chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
+.chart-title { font-size: 20px; font-weight: 800; color: var(--bazi-text-main); margin: 0; letter-spacing: -0.02em; }
 
-.view-toggle-btn {
-    background: transparent !important; border: 1px solid rgba(0,0,0,0.1) !important; border-radius: 20px !important;
-    font-size: 13px !important; font-weight: 600 !important; color: var(--bazi-text-main) !important;
-    cursor: pointer; transition: all 0.2s ease; padding: 6px 12px !important;
-}
-.view-toggle-btn:hover { background: rgba(0,0,0,0.05) !important; }
-
-/* 🌟 日历导航排版 (极简) 🌟 */
-.heatmap-calendar-wrapper { width: 100%; max-width: 360px; margin: 0 auto; position: relative; }
-.month-nav { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 28px; }
+/* --- 日历排版 --- */
+.heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; position: relative; }
+.month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
 
 .month-nav-btn {
     display: inline-flex; align-items: center; justify-content: center;
-    color: var(--bazi-text-main); font-size: 20px; font-weight: 400;
-    cursor: pointer; padding: 4px 12px; user-select: none; transition: all 0.2s ease;
+    font-size: 28px; font-weight: 300;
+    cursor: pointer; padding: 4px 16px; user-select: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.month-nav-btn:hover { opacity: 0.5; }
-.month-label { font-size: 17px; font-weight: 800; min-width: 120px; text-align: center; color: var(--bazi-text-main); letter-spacing: 0.02em; }
 
-/* 动画保留 */
-.calendar-anim-wrapper { animation-duration: 0.4s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); animation-fill-mode: forwards; }
-@keyframes slideInFromLeft { 0% { transform: translateX(-10px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-@keyframes slideInFromRight { 0% { transform: translateX(10px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+/* 棕红/灰 色箭头 */
+.month-nav-btn.back-arrow { color: var(--bazi-text-muted) !important; }
+.month-nav-btn.next-arrow { color: var(--bazi-accent-red) !important; }
+.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
+.month-nav-btn:active { transform: scale(0.8); }
+.month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--bazi-text-main); letter-spacing: 0.02em; }
+
+/* 日历滑动动画 */
+.calendar-anim-wrapper { animation-duration: 0.5s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); animation-fill-mode: forwards; }
+@keyframes slideInFromLeft { 0% { transform: translateX(-12px) scale(0.98); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
+@keyframes slideInFromRight { 0% { transform: translateX(12px) scale(0.98); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
 .slide-in-left { animation-name: slideInFromLeft; }
 .slide-in-right { animation-name: slideInFromRight; }
 
-.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 20px; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px 4px; }
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 16px; opacity: 0.9; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
 
-/* 🌟 核心：无背景的圆形文字排版，像艺术展一样 🌟 */
+/* 🌟 日历网格：带小圆角的正方形，基础为暖灰粉色 🌟 */
 .calendar-cell {
-    width: 44px; height: 44px; margin: 0 auto; border-radius: 50%;
+    width: 46px; height: 46px; margin: 0 auto; 
+    border-radius: 8px; 
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; position: relative; border: none; background: transparent;
-    transition: all 0.2s ease;
+    cursor: pointer; position: relative; border: 2px solid transparent;
+}
+.calendar-cell::before {
+    content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border-radius: 8px; background: var(--cal-level-0); 
+    z-index: 0; transition: all 0.3s ease;
 }
 
+.calendar-cell > * { z-index: 1; position: relative; }
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
-/* 字体配色严格区分：无数据 = 极淡灰；有数据 = 黑字 */
-.cal-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; margin-bottom: 2px; color: var(--bazi-text-faint) !important; transition: color 0.2s; }
-.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-faint) !important; transition: color 0.2s; }
+.cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--bazi-text-main) !important; transition: color 0.2s; }
+.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-muted) !important; opacity: 0.9; transition: color 0.2s; }
 
-/* 有笔记的天数：字变深色，加微弱的灰底表示层级 */
-.calendar-cell.has-data .cal-date-num { color: var(--bazi-text-main) !important; font-weight: 700; }
-.calendar-cell.has-data .cal-lunar-text { color: var(--bazi-text-muted) !important; font-weight: 600; }
+.calendar-cell.has-data .cal-date-num { font-weight: 800; }
+.calendar-cell:not(.empty):hover::before { transform: scale(1.1); filter: brightness(0.95); }
 
-.calendar-cell.level-1 { background-color: rgba(0, 0, 0, 0.02); }
-.calendar-cell.level-2 { background-color: rgba(0, 0, 0, 0.04); }
-.calendar-cell.level-3 { background-color: rgba(0, 0, 0, 0.06); }
-.theme-dark .calendar-cell.level-1 { background-color: rgba(255, 255, 255, 0.02); }
-.theme-dark .calendar-cell.level-2 { background-color: rgba(255, 255, 255, 0.04); }
-.theme-dark .calendar-cell.level-3 { background-color: rgba(255, 255, 255, 0.06); }
+/* 🌟 选中状态框：棕红强调色 🌟 */
+.calendar-cell.active-selection::before { border: 2px solid var(--bazi-accent-red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-/* 🌟 选中状态：深灰实心圆 + 纯白文字 (克隆你的图片) 🌟 */
-.calendar-cell.active-selection { background-color: var(--bazi-bg-selected) !important; transform: scale(1.05); }
-.calendar-cell.active-selection .cal-date-num, .calendar-cell.active-selection .cal-lunar-text { color: #FFFFFF !important; }
+/* 🌟 核心：棕红色阶应用 🌟 */
+.calendar-cell.level-1::before { background-color: var(--cal-level-1) !important; }
+.calendar-cell.level-2::before { background-color: var(--cal-level-2) !important; }
+.calendar-cell.level-3::before { background-color: var(--cal-level-3) !important; }
+.calendar-cell.level-4::before { background-color: var(--cal-level-4) !important; }
+
+/* 达到级别 3 和 4 的深棕红色时，字体反白以保持高级清晰感 */
+.calendar-cell.level-3 .cal-date-num, .calendar-cell.level-3 .cal-lunar-text,
+.calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
 
 /* --- 极简平铺足迹列表 --- */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; }
-.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 36px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 24px;}
-.theme-dark .record-list-wrapper.is-open { border-top-color: rgba(255,255,255,0.05); }
+.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
+.record-list-header { margin-bottom: 16px; padding-left: 8px; }
+.record-list-date { font-size: 20px; font-weight: 800; color: var(--bazi-text-main); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 10px;}
+.record-list-count { font-size: 14px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.8; }
+.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.9; margin-top: 6px; }
 
-.record-list-header { margin-bottom: 20px; padding-left: 8px; text-align: center; }
-.record-list-date { font-size: 18px; font-weight: 800; color: var(--bazi-text-main); display: flex; align-items: center; justify-content: center; gap: 8px;}
-.record-list-count { font-size: 13px; font-weight: 500; color: var(--bazi-text-muted); }
-.record-list-lunar { font-size: 12px; font-weight: 500; color: var(--bazi-text-muted); margin-top: 6px; }
-
-.record-list-scroll { max-height: 280px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
+.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
 
 .record-item {
     background: transparent !important; border-radius: 12px; padding: 16px 12px;
     display: flex; align-items: center; gap: 14px; cursor: pointer;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important; transition: all 0.2s ease;
+    box-shadow: none !important; border: none !important;
+    border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important;
+    transition: all 0.2s ease;
 }
 .record-item:last-child { border-bottom: none !important; }
-.theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.04) !important; }
-.record-item:hover { background: rgba(0, 0, 0, 0.03) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
-.record-item:active { background: rgba(0, 0, 0, 0.06) !important; transform: scale(0.98); }
+.theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
+.record-item:hover { background: rgba(120, 120, 120, 0.08) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
+.record-item:active { background: rgba(120, 120, 120, 0.15) !important; transform: scale(0.98); }
 
-.record-icon { font-size: 20px; filter: grayscale(100%); opacity: 0.6; } /* 图标去色，维持冷淡风 */
+.record-icon { font-size: 20px; color: var(--bazi-text-muted); }
 .record-title { font-size: 15px; font-weight: 600; color: var(--bazi-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
 
 /* =========================================
-   🌟 iOS 极简白弹窗 🌟
+   🌟 悬浮防形变下拉菜单 🌟
 ========================================= */
-.modal.ios-glass-modal {
-    align-self: flex-start !important; margin-top: 10vh !important; 
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(50px) !important; -webkit-backdrop-filter: blur(50px) !important;
-    border-radius: 24px !important; border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.1) !important; padding: 28px 24px 24px 24px !important; 
-    display: flex !important; flex-direction: column !important; max-height: 80vh !important; 
+.folder-suggest-wrapper {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10000;
+    visibility: hidden; opacity: 0; transform: translateY(-8px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.9) !important; border-color: rgba(255, 255, 255, 0.05) !important; }
+.folder-suggest-wrapper.is-open { visibility: visible; opacity: 1; transform: translateY(0); }
+
+.folder-suggest-menu {
+    width: 100%; max-height: 180px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(150, 150, 150, 0.2); border-radius: 12px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,255,255,0.15); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+.folder-suggest-menu::-webkit-scrollbar { display: none; }
+.suggest-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--bazi-text-main); cursor: pointer; border-radius: 8px; transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.suggest-item:hover, .suggest-item:active { background: rgba(120, 120, 120, 0.15); color: var(--bazi-accent-red); }
+
+
+/* =========================================
+   🌟 核心进化：弹窗背景高级高斯模糊 🌟
+========================================= */
+/* 利用容器选择器，让背后的页面进行模糊暗化 */
+.ios-glass-modal-container .modal-bg {
+    backdrop-filter: blur(12px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+    background-color: rgba(0, 0, 0, 0.35) !important;
+    transition: all 0.4s ease;
+}
+
+
+/* =========================================
+   🌟 核心进化：弹窗丝滑弹性动效 & 完美比例 🌟
+========================================= */
+/* 自定义弹窗滑入动效 */
+@keyframes silkyModalPopup {
+    0% { opacity: 0; transform: scale(0.92) translateY(30px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal.ios-glass-modal {
+    align-self: flex-start !important; margin-top: 15vh !important; 
+    
+    /* 调用丝滑弹出动画 */
+    animation: silkyModalPopup 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
+    border-radius: 20px !important; border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.2) !important; 
+    
+    /* 🌟 重新优化比例：压缩内边距 🌟 */
+    padding: 24px 20px 20px 20px !important; 
+    display: flex !important; flex-direction: column !important;
+    max-height: 80vh !important; 
+}
+.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
 .ios-glass-modal .modal-content { overflow: visible !important; scrollbar-width: none; flex: 1 1 auto; }
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
 
-.ios-glass-modal h3 { font-weight: 800; font-size: 20px; text-align: center; margin-top: 0; margin-bottom: 20px; color: var(--bazi-text-main); }
-.ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 6px; }
+/* 🌟 重新优化比例：精致的小号标题与留白 🌟 */
+.ios-glass-modal h3 { 
+    font-weight: 700; font-size: 18px; text-align: center; 
+    margin-top: 0; margin-bottom: 20px; 
+    color: var(--bazi-text-main); letter-spacing: -0.01em; 
+}
+
+.ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 4px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
-.ios-glass-modal .setting-item-name { font-weight: 600; font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px;}
+.ios-glass-modal .setting-item-name { font-weight: 600; font-size: 12px; color: var(--bazi-text-muted); margin-left: 4px; opacity: 0.9;}
 .ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; position: relative !important; }
 
+/* 🌟 重新优化比例：输入框瘦身 🌟 */
 .ios-glass-modal input[type="text"] {
-    border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.08) !important;
-    background: rgba(0, 0, 0, 0.02) !important; padding: 14px 16px !important; font-size: 15px !important; width: 100%;
-    color: var(--bazi-text-main) !important; font-weight: 600; transition: all 0.3s ease;
+    border-radius: 12px !important; border: 1px solid rgba(150,150,150,0.2) !important;
+    background: rgba(255, 255, 255, 0.4) !important; 
+    padding: 12px 14px !important; font-size: 14px !important; width: 100%;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important; color: var(--bazi-text-main) !important; font-weight: 500; transition: all 0.3s ease;
 }
-.theme-dark .ios-glass-modal input[type="text"] { background: rgba(255, 255, 255, 0.05) !important; border-color: rgba(255,255,255,0.05) !important;}
-.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-text-muted) !important; background: transparent !important;}
+.theme-dark .ios-glass-modal input[type="text"] { background: rgba(0, 0, 0, 0.25) !important; border-color: rgba(255,255,255,0.1) !important;}
+.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; box-shadow: 0 0 0 2px rgba(138, 46, 46, 0.15) !important; background: rgba(255, 255, 255, 0.7) !important;}
 
-/* 极简纯黑按钮 */
+/* 🌟 重新优化比例：棕红确认按钮瘦身 🌟 */
 .ios-glass-modal button.mod-cta {
-    background: var(--bazi-text-main) !important; color: white !important;
-    border-radius: 12px !important; padding: 16px !important; font-size: 16px !important; font-weight: 700 !important; width: 100%; 
-    margin-top: 16px; border: none !important; transition: transform 0.2s ease;
+    background: var(--bazi-accent-red) !important; color: white !important;
+    border-radius: 12px !important; padding: 14px !important; font-size: 15px !important; font-weight: 700 !important; width: 100%; 
+    margin-top: 16px; box-shadow: 0 6px 16px rgba(138, 46, 46, 0.25) !important;
+    border: none !important; transition: transform 0.2s ease; letter-spacing: 0.02em;
 }
-.ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; opacity: 0.8 !important; }
+.ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; }
 
 @media (max-width: 480px) {
-    .dashboard-container { padding: 5vh 6vw; gap: 24px; }
-    .baseline-title.bazi-title { font-size: 26px; }
-    .dashboard-data-section { padding: 28px 16px; border-radius: 24px; }
+    .dashboard-container { padding: 4vh 5vw; gap: 24px; }
+    .baseline-title.bazi-title { font-size: 15px; letter-spacing: 0.04em; }
+    .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
-    .modal.ios-glass-modal { margin-top: 12vh !important; padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
+    .modal.ios-glass-modal { margin-top: 15vh !important; padding: 20px 16px 16px 16px !important; border-radius: 20px !important; }
+    .ios-glass-modal h3 { font-size: 17px !important; margin-bottom: 16px !important; }
 }
