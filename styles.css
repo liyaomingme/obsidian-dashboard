@@ -1,141 +1,178 @@
-/* --- Notion 风格全局 --- */
+/* --- 全局容器 --- */
 .dashboard-container {
-    padding: 32px 10%;
-    max-width: 900px;
+    padding: 6vh 5vw;
+    max-width: 860px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 32px;
-    overflow-y: auto;
     height: 100%;
-    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    color: var(--text-normal);
-}
-
-/* --- 顶栏 --- */
-.notion-header { margin-bottom: 8px; }
-.notion-date { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; display: block; }
-.notion-title { font-size: 32px; font-weight: 700; margin: 0; letter-spacing: -0.03em; }
-
-/* --- 横向滑动动作区 (Notion 卡片) --- */
-.notion-actions-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 16px;
-    padding-bottom: 8px;
-    /* 隐藏滚动条但保留功能 */
-    scrollbar-width: none; 
-}
-.notion-actions-scroll::-webkit-scrollbar { display: none; }
-
-.notion-action-card {
-    flex: 0 0 auto;
-    width: 140px;
-    height: 100px;
-    background: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 8px; /* Notion 经典小圆角 */
-    padding: 14px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: background 0.1s;
-}
-.notion-action-card:hover { background: var(--background-modifier-hover); }
-.notion-action-icon { font-size: 24px; color: var(--text-muted); }
-.notion-action-text { font-size: 14px; font-weight: 500; }
-
-/* --- 视图切换与标题 --- */
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-.section-title { font-size: 16px; font-weight: 600; margin: 0; }
-.notion-toggle-btn {
+    overflow-y: auto;
     background: transparent;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 12px;
-    color: var(--text-muted);
-    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
 }
-.notion-toggle-btn:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
+
+/* --- 顶栏排版 --- */
+.apple-header { padding-left: 8px; margin-bottom: 8px; }
+.apple-date { font-size: 13px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; opacity: 0.8; text-transform: uppercase; }
+.apple-title { margin: 2px 0 0 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; }
+
+/* --- 🌟 苹果液态玻璃材质 (Liquid Glass) 🌟 --- */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: saturate(180%) blur(25px);
+    -webkit-backdrop-filter: saturate(180%) blur(25px);
+    border-radius: 28px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.4); /* 极细的高光边缘 */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.theme-dark .glass-panel {
+    background: rgba(30, 30, 30, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+/* --- 动作卡片区 --- */
+.dashboard-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* 电脑端宽敞排版 */
+    gap: 16px;
+}
+.action-card {
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.action-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12); background: rgba(255, 255, 255, 0.6); }
+.theme-dark .action-card:hover { background: rgba(255, 255, 255, 0.08); }
+.action-card:active { transform: scale(0.97); }
+.action-title { font-weight: 700; font-size: 18px; color: var(--text-normal); letter-spacing: 0.02em; }
 
 /* --- 数据看板区 --- */
-.notion-board {
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 8px;
-    padding: 24px;
-    background: var(--background-primary-alt);
+.board-panel { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+.board-header { display: flex; justify-content: space-between; align-items: center; }
+.board-title { font-size: 22px; font-weight: 700; margin: 0; }
+
+/* 无边框的玻璃切换按钮 */
+.view-toggle-btn {
+    background: rgba(120, 120, 120, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 14px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-normal);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
+.view-toggle-btn:hover { background: rgba(120, 120, 120, 0.25); transform: scale(1.05); }
 
-/* 日历视图 */
-.calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.calendar-nav-btn { background: transparent; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; color: var(--text-muted); }
-.calendar-nav-btn:hover { background: var(--background-modifier-hover); }
-.calendar-title { font-weight: 600; font-size: 14px; }
+/* --- 日历与热力图 --- */
+.calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.cal-nav-btn { background: transparent; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 4px 12px; transition: color 0.2s; }
+.cal-nav-btn:hover { color: var(--text-normal); }
+.cal-month-label { font-size: 16px; font-weight: 700; color: var(--text-normal); }
 
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-.calendar-header { font-size: 12px; color: var(--text-muted); padding-bottom: 8px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+.calendar-header-cell { font-size: 12px; font-weight: 700; color: var(--text-muted); padding-bottom: 12px; opacity: 0.6; }
 .calendar-cell {
     aspect-ratio: 1;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 50%; /* 完美的圆形 */
+    font-size: 14px; font-weight: 600;
     cursor: pointer;
-    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    opacity: 0.4;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.calendar-cell:not(.empty):hover { border-color: var(--background-modifier-border-focus); }
-.calendar-cell.has-data { font-weight: bold; color: var(--text-normal); }
-/* 热力色 */
-.calendar-cell.level-0 { color: var(--text-faint); }
-.calendar-cell.level-1 { background: rgba(var(--color-accent-rgb), 0.2); }
-.calendar-cell.level-2 { background: rgba(var(--color-accent-rgb), 0.4); }
-.calendar-cell.level-3 { background: rgba(var(--color-accent-rgb), 0.6); }
-.calendar-cell.level-4 { background: rgba(var(--color-accent-rgb), 0.8); color: white; }
-.calendar-cell.active { border: 2px solid var(--interactive-accent) !important; }
+.calendar-cell.empty { opacity: 0; pointer-events: none; }
+.calendar-cell.has-data { opacity: 1; color: var(--text-normal); }
+.calendar-cell:hover { transform: scale(1.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: var(--background-modifier-hover); }
+.calendar-cell.active-selection { box-shadow: 0 0 0 3px var(--interactive-accent); transform: scale(1.1); }
 
-/* 热力图视图 */
-.heatmap-wrapper { display: flex; flex-direction: column; gap: 8px; }
-.heatmap-grid { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 4px; }
-.heatmap-cell {
-    width: 12px; height: 12px;
-    border-radius: 3px;
-    background: var(--background-modifier-border);
-    cursor: pointer;
+/* 热力色阶 (复用 Obsidian 主题色) */
+.calendar-cell.level-1 { background-color: var(--interactive-accent); opacity: 0.3; color: var(--text-on-accent); }
+.calendar-cell.level-2 { background-color: var(--interactive-accent); opacity: 0.6; color: var(--text-on-accent); }
+.calendar-cell.level-3 { background-color: var(--interactive-accent); opacity: 0.8; color: var(--text-on-accent); }
+.calendar-cell.level-4 { background-color: var(--interactive-accent); opacity: 1.0; color: var(--text-on-accent); }
+
+/* 热力图网格 */
+.heatmap-grid { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; margin-bottom: 8px;}
+.heatmap-cell { width: 14px; height: 14px; border-radius: 50%; background: var(--background-modifier-border); opacity: 0.3; cursor: pointer; transition: transform 0.2s; }
+.heatmap-cell:hover { transform: scale(1.4); opacity: 1 !important; }
+.heatmap-cell.active-selection { box-shadow: 0 0 0 2px var(--text-normal); }
+
+/* --- 🌟 展开列表动画区 (iOS 阻尼滑动风格) 🌟 --- */
+.record-list-wrapper {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.4s ease, margin-top 0.4s ease;
+    opacity: 0;
+    margin-top: 0;
 }
-.heatmap-cell:hover { border: 1px solid var(--text-muted); }
-.heatmap-cell.level-1 { background: rgba(var(--color-accent-rgb), 0.3); }
-.heatmap-cell.level-2 { background: rgba(var(--color-accent-rgb), 0.6); }
-.heatmap-cell.level-3 { background: rgba(var(--color-accent-rgb), 0.8); }
-.heatmap-cell.level-4 { background: rgba(var(--color-accent-rgb), 1); }
-.heatmap-cell.active { border: 2px solid var(--text-normal); }
-.heatmap-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
+.record-list-wrapper.is-open {
+    max-height: 400px; /* 展开后的最大高度 */
+    opacity: 1;
+    margin-top: 16px;
+}
+.record-list-header { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; padding-left: 4px; }
+.record-list-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* 开启 iOS 丝滑阻尼滚动 */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px;
+}
+/* 隐藏滚动条但保留功能 */
+.record-list-scroll::-webkit-scrollbar { display: none; }
 
-/* --- 文档列表区 (点击日期后展示) --- */
-.notion-list-section { margin-top: 16px; border-top: 1px solid var(--background-modifier-border); padding-top: 16px; }
-.notion-list-title { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
-.notion-list-item {
+.record-item {
+    background: var(--background-primary);
+    border-radius: 16px;
+    padding: 16px;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 8px;
-    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.1s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
 }
-.notion-list-item:hover { background: var(--background-modifier-hover); }
-.notion-list-icon { color: var(--text-muted); font-size: 16px; }
-.notion-list-name { font-size: 15px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.theme-dark .record-item { background: rgba(0,0,0,0.3); }
+.record-item:hover { transform: translateX(4px); background: var(--background-modifier-hover); }
+.record-item:active { transform: scale(0.98); }
+.record-icon { font-size: 18px; }
+.record-title { font-size: 16px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
-/* --- 移动端适配 --- */
+/* =========================================
+   🌟 手机端专属排版 (完美奇偶数便当盒) 🌟
+========================================= */
 @media (max-width: 480px) {
-    .dashboard-container { padding: 24px 16px; gap: 24px;}
-    .notion-title { font-size: 28px; }
-    .notion-action-card { width: 120px; height: 90px; }
-    .notion-board { padding: 16px; }
+    .dashboard-container { padding: 4vh 5vw; gap: 24px; }
+    .apple-title { font-size: 32px; }
+    
+    .dashboard-actions {
+        /* 手机强制 2 列网格 */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    /* 奇数定律：如果卡片总数是奇数，最后一个卡片横跨两列填满 */
+    .action-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+    
+    .action-card { padding: 24px 12px; border-radius: 24px; }
+    .action-title { font-size: 16px; }
+    .board-panel { padding: 24px 20px; border-radius: 28px; }
+    .calendar-cell { font-size: 13px; }
+    .heatmap-cell { width: 12px; height: 12px; }
 }
