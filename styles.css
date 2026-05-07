@@ -1,253 +1,202 @@
 /* =========================================
-   🌟 全局定义：极致简约、清新哑光 iOS 审美 🌟
+   🌟 全局：极致冷淡极简风 (Monochrome Minimalist) 🌟
 ========================================= */
 .dashboard-container {
-    /* 核心哑光清新配色定义，完美克隆图片 */
-    --bazi-accent-pink: #D87A7A; /* 강조色: 哑光玫瑰粉 (用于+、右箭头、选中框) */
-    --bazi-text-normal: #555555;  /* 啞光深灰 (主文字) */
-    --bazi-text-muted: #999999;   /* 啞光淺灰 (副文字、周几、农历) */
-    
-    /* 克隆图片的马卡龙日历配色序列 */
-    --cal-level-0: #E0F2F1;     /* 基础底色/无数据：浅青绿 */
-    --cal-level-1: #A5D6A7;     /* 低频数据：马卡龙绿 */
-    --cal-level-2: #4DB6AC;     /* 中频数据：哑光青色 */
-    --cal-level-3: #26A69A;     /* 高频数据：深青绿 */
+    --bazi-text-main: #222222;    /* 核心纯黑/深灰 */
+    --bazi-text-muted: #999999;   /* 极简浅灰 */
+    --bazi-text-faint: #CCCCCC;   /* 无数据时的极淡灰 */
+    --bazi-bg-selected: #888888;  /* 选中时的哑光深灰背景 */
     
     padding: 6vh 5vw; max-width: 860px; margin: 0 auto;
     display: flex; flex-direction: column; gap: 32px;
     height: 100%; overflow-y: auto; background: transparent;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    color: var(--bazi-text-normal); -webkit-font-smoothing: antialiased;
+    color: var(--bazi-text-main); -webkit-font-smoothing: antialiased;
 }
 
-/* --- 顶栏八字标题（保留功能，提升排版） --- */
-.dashboard-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; position: relative; }
-.baseline-header { display: flex; flex-direction: column; gap: 4px; }
-.baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+/* --- 顶栏排版 --- */
+.dashboard-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; padding: 0 4px; position: relative; }
+.baseline-header { display: flex; flex-direction: column; gap: 2px; }
+.baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
 
-/* 🌟 极致优雅、中等字重的哑光八字标题 🌟 */
+/* 极简大标题 */
 .baseline-title.bazi-title { 
-    margin: 4px 0 0 0; font-size: 24px; font-weight: 500; 
-    color: var(--bazi-text-normal); letter-spacing: 0.08em; 
-    line-height: 1.2; white-space: nowrap; opacity: 0.9;
+    margin: 0; font-size: 36px; font-weight: 800; 
+    color: var(--bazi-text-main); letter-spacing: -0.02em; 
+    line-height: 1.1; white-space: nowrap;
 }
 
-/* 🌟 清新粉色 "+" 按钮 🌟 */
+/* 极简纯黑 "+" 按钮 */
 .floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 34px !important; font-weight: 300 !important;
-    color: var(--bazi-accent-pink) !important; transition: all 0.3s ease; padding: 0 !important;
+    cursor: pointer; font-size: 32px !important; font-weight: 300 !important;
+    color: var(--bazi-text-main) !important; transition: all 0.2s ease; padding: 0 !important;
+    margin-top: 4px;
 }
-.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
+.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.6; }
 .floating-plus-btn:active { transform: scale(0.9); }
 
+/* --- 下拉菜单 --- */
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.75); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
-    border-radius: 18px; width: 150px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15); z-index: 1000;
-    overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
-    transition: all 0. cubic-bezier(0.23, 1, 0.32, 1); padding: 8px; border: 1px solid rgba(200, 200, 200, 0.4);
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
+    border-radius: 16px; width: 140px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08); z-index: 1000;
+    overflow: hidden; transform: translateY(8px); opacity: 0; pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.15);}
-.plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);}
+.plus-dropdown.is-open { transform: translateY(12px); opacity: 1; pointer-events: auto; }
 
 .dropdown-item {
-    padding: 12px 14px; font-size: 15px; font-weight: 600; color: var(--text-normal);
-    cursor: pointer; border-radius: 12px; transition: background 0.2s; text-align: left; margin-bottom: 2px;
+    padding: 12px 14px; font-size: 15px; font-weight: 600; color: var(--bazi-text-main);
+    cursor: pointer; border-radius: 10px; transition: background 0.2s; text-align: center; margin-bottom: 2px;
 }
-.dropdown-item:hover { background: rgba(120, 120, 120, 0.15); }
+.dropdown-item:hover { background: rgba(0, 0, 0, 0.05); }
 
-/* --- 数据区域 (纯白毛玻璃容器) --- */
+/* --- 数据看板 (纯净白底) --- */
 .dashboard-data-section {
-    background: rgba(255, 255, 255, 0.7) !important; 
-    backdrop-filter: saturate(180%) blur(50px) !important; -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
-    border-radius: 28px; padding: 32px 20px 24px 20px; 
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); 
+    background: rgba(255, 255, 255, 0.6) !important; 
+    backdrop-filter: blur(40px) !important; -webkit-backdrop-filter: blur(40px) !important;
+    border-radius: 24px; padding: 32px 20px; 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04); 
     border: 1px solid rgba(255, 255, 255, 0.8) !important;
     display: flex; flex-direction: column; align-items: center; overflow: hidden;
 }
-.theme-dark .dashboard-data-section { 
-    background: rgba(30, 30, 30, 0.5) !important; 
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); 
-    border-color: rgba(255, 255, 255, 0.1) !important;
+.theme-dark .dashboard-data-section { background: rgba(0, 0, 0, 0.3) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.05) !important;}
+
+.chart-header-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding: 0 12px;}
+.chart-title { font-size: 18px; font-weight: 800; color: var(--bazi-text-main); margin: 0; }
+
+.view-toggle-btn {
+    background: transparent !important; border: 1px solid rgba(0,0,0,0.1) !important; border-radius: 20px !important;
+    font-size: 13px !important; font-weight: 600 !important; color: var(--bazi-text-main) !important;
+    cursor: pointer; transition: all 0.2s ease; padding: 6px 12px !important;
 }
+.view-toggle-btn:hover { background: rgba(0,0,0,0.05) !important; }
 
-.chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
-.chart-title { font-size: 20px; font-weight: 800; color: var(--bazi-text-normal); margin: 0; letter-spacing: -0.02em; }
+/* 🌟 日历导航排版 (极简) 🌟 */
+.heatmap-calendar-wrapper { width: 100%; max-width: 360px; margin: 0 auto; position: relative; }
+.month-nav { display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 28px; }
 
-/* 🌟 日历导航：克隆图片的灰色/粉色配色 🌟 */
-.heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; position: relative; }
-.month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
-
-/* 基础导航箭头样式 */
 .month-nav-btn {
     display: inline-flex; align-items: center; justify-content: center;
-    font-size: 28px; font-weight: 300;
-    cursor: pointer; padding: 4px 16px; user-select: none;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--bazi-text-main); font-size: 20px; font-weight: 400;
+    cursor: pointer; padding: 4px 12px; user-select: none; transition: all 0.2s ease;
 }
+.month-nav-btn:hover { opacity: 0.5; }
+.month-label { font-size: 17px; font-weight: 800; min-width: 120px; text-align: center; color: var(--bazi-text-main); letter-spacing: 0.02em; }
 
-/* 🌟 核心克隆：上个月箭头是灰色，下个月箭头是粉色 🌟 */
-.month-nav-btn.back-arrow { color: var(--bazi-text-muted) !important; }
-.month-nav-btn.next-arrow { color: var(--bazi-accent-pink) !important; }
-
-.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
-.month-nav-btn:active { transform: scale(0.8); }
-.month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--bazi-text-normal); letter-spacing: 0.02em; }
-
-/* 🌟 日历滑动动画的核心：优雅自然 Spring 曲线 🌟 */
-.calendar-anim-wrapper {
-    animation-duration: 0.5s;
-    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); /* 苹果级 Spring 阻尼曲线 */
-    animation-fill-mode: forwards;
-}
-@keyframes slideInFromLeft {
-    0% { transform: translateX(-12px) scale(0.98); opacity: 0; }
-    100% { transform: translateX(0) scale(1); opacity: 1; }
-}
-@keyframes slideInFromRight {
-    0% { transform: translateX(12px) scale(0.98); opacity: 0; }
-    100% { transform: translateX(0) scale(1); opacity: 1; }
-}
+/* 动画保留 */
+.calendar-anim-wrapper { animation-duration: 0.4s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); animation-fill-mode: forwards; }
+@keyframes slideInFromLeft { 0% { transform: translateX(-10px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+@keyframes slideInFromRight { 0% { transform: translateX(10px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 .slide-in-left { animation-name: slideInFromLeft; }
 .slide-in-right { animation-name: slideInFromRight; }
 
-.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 16px; opacity: 0.9; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 20px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px 4px; }
 
-/* 🌟 核心：日历格由圆变方，小圆角 🌟 */
+/* 🌟 核心：无背景的圆形文字排版，像艺术展一样 🌟 */
 .calendar-cell {
-    width: 46px; height: 46px; margin: 0 auto; 
-    border-radius: 6px; /* 方格小圆角 */
+    width: 44px; height: 44px; margin: 0 auto; border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; position: relative; border: 2px solid transparent;
-}
-.calendar-cell::before {
-    content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
-    border-radius: 6px; /* 方格小圆角 */
-    background: var(--cal-level-0); /* 基础底色：浅青绿 */
-    z-index: 0; transition: all 0.3s ease;
+    cursor: pointer; position: relative; border: none; background: transparent;
+    transition: all 0.2s ease;
 }
 
-.calendar-cell > * { z-index: 1; position: relative; }
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
-/* 字体配色与字重优化 */
-.cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--bazi-text-normal) !important; }
-.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-muted) !important; opacity: 0.9; }
+/* 字体配色严格区分：无数据 = 极淡灰；有数据 = 黑字 */
+.cal-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; margin-bottom: 2px; color: var(--bazi-text-faint) !important; transition: color 0.2s; }
+.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-faint) !important; transition: color 0.2s; }
 
-.calendar-cell.has-data .cal-date-num { font-weight: 800; }
-.calendar-cell:not(.empty):hover::before { transform: scale(1.1); background: rgba(120, 120, 120, 0.12); }
+/* 有笔记的天数：字变深色，加微弱的灰底表示层级 */
+.calendar-cell.has-data .cal-date-num { color: var(--bazi-text-main) !important; font-weight: 700; }
+.calendar-cell.has-data .cal-lunar-text { color: var(--bazi-text-muted) !important; font-weight: 600; }
 
-/* 🌟 选中状态边框颜色为强调色：啞光粉 🌟 */
-.calendar-cell.active-selection::before { border: 2px solid var(--bazi-accent-pink); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.calendar-cell.level-1 { background-color: rgba(0, 0, 0, 0.02); }
+.calendar-cell.level-2 { background-color: rgba(0, 0, 0, 0.04); }
+.calendar-cell.level-3 { background-color: rgba(0, 0, 0, 0.06); }
+.theme-dark .calendar-cell.level-1 { background-color: rgba(255, 255, 255, 0.02); }
+.theme-dark .calendar-cell.level-2 { background-color: rgba(255, 255, 255, 0.04); }
+.theme-dark .calendar-cell.level-3 { background-color: rgba(255, 255, 255, 0.06); }
 
-/* 只调整伪元素(背景)的哑光颜色 */
-.calendar-cell.level-1::before { background-color: var(--cal-level-1) !important; }
-.calendar-cell.level-2::before { background-color: var(--cal-level-2) !important; }
-.calendar-cell.level-3::before { background-color: var(--cal-level-3) !important; }
-.calendar-cell.level-4::before { background-color: var(--cal-level-3) !important; } /* 图片只有三个青绿级，level4沿用 */
+/* 🌟 选中状态：深灰实心圆 + 纯白文字 (克隆你的图片) 🌟 */
+.calendar-cell.active-selection { background-color: var(--bazi-bg-selected) !important; transform: scale(1.05); }
+.calendar-cell.active-selection .cal-date-num, .calendar-cell.active-selection .cal-lunar-text { color: #FFFFFF !important; }
 
-/* 高级热力图，在有数据时字体颜色保持清晰深灰 */
-.calendar-cell.has-data .cal-date-num { color: var(--bazi-text-normal) !important; }
-.calendar-cell.level-3 .cal-date-num, .calendar-cell.level-3 .cal-lunar-text { color: white !important; } /* 高频级可改为白色 */
-
-/* 🌟 无框平铺式足迹列表 (极简哑光版) 🌟 */
+/* --- 极简平铺足迹列表 --- */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; }
-.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
-.record-list-header { margin-bottom: 16px; padding-left: 8px; }
-.record-list-date { font-size: 20px; font-weight: 800; color: var(--bazi-text-normal); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 10px;}
-.record-list-count { font-size: 14px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.8; }
-.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.9; margin-top: 6px; }
+.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 36px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 24px;}
+.theme-dark .record-list-wrapper.is-open { border-top-color: rgba(255,255,255,0.05); }
 
-.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
+.record-list-header { margin-bottom: 20px; padding-left: 8px; text-align: center; }
+.record-list-date { font-size: 18px; font-weight: 800; color: var(--bazi-text-main); display: flex; align-items: center; justify-content: center; gap: 8px;}
+.record-list-count { font-size: 13px; font-weight: 500; color: var(--bazi-text-muted); }
+.record-list-lunar { font-size: 12px; font-weight: 500; color: var(--bazi-text-muted); margin-top: 6px; }
+
+.record-list-scroll { max-height: 280px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
 
 .record-item {
     background: transparent !important; border-radius: 12px; padding: 16px 12px;
     display: flex; align-items: center; gap: 14px; cursor: pointer;
-    box-shadow: none !important; border: none !important;
-    border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important; /* 极细分割线 */
-    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important; transition: all 0.2s ease;
 }
 .record-item:last-child { border-bottom: none !important; }
-.theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
-.record-item:hover { background: rgba(120, 120, 120, 0.08) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
-.record-item:active { background: rgba(120, 120, 120, 0.15) !important; transform: scale(0.98); }
+.theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.04) !important; }
+.record-item:hover { background: rgba(0, 0, 0, 0.03) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
+.record-item:active { background: rgba(0, 0, 0, 0.06) !important; transform: scale(0.98); }
 
-.record-icon { font-size: 20px; color: var(--bazi-text-muted); }
-.record-title { font-size: 16px; font-weight: 600; color: var(--bazi-text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-
-
-/* =========================================
-   🌟 悬浮防形变下拉菜单 (哑光版) 🌟
-========================================= */
-.folder-suggest-wrapper {
-    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10000;
-    visibility: hidden; opacity: 0; transform: translateY(-8px);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.folder-suggest-wrapper.is-open { visibility: visible; opacity: 1; transform: translateY(0); }
-
-.folder-suggest-menu {
-    width: 100%; max-height: 180px; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(150, 150, 150, 0.2); border-radius: 16px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-}
-.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,255,255,0.15); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
-.folder-suggest-menu::-webkit-scrollbar { display: none; }
-.suggest-item { padding: 14px 16px; font-size: 15px; font-weight: 600; color: var(--bazi-text-normal); cursor: pointer; border-radius: 12px; transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-.suggest-item:hover, .suggest-item:active { background: rgba(120, 120, 120, 0.15); color: var(--interactive-accent); }
+.record-icon { font-size: 20px; filter: grayscale(100%); opacity: 0.6; } /* 图标去色，维持冷淡风 */
+.record-title { font-size: 15px; font-weight: 600; color: var(--bazi-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
 
 /* =========================================
-   🌟 iOS 原生级毛玻璃弹窗 (固定高度，极致紧凑) 🌟
+   🌟 iOS 极简白弹窗 🌟
 ========================================= */
 .modal.ios-glass-modal {
     align-self: flex-start !important; margin-top: 10vh !important; 
-    background: rgba(255, 255, 255, 0.65) !important;
-    backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
-    border-radius: 24px !important; border: 1px solid rgba(255, 255, 255, 0.6) !important;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.15) !important; padding: 24px 24px 20px 24px !important; 
-    display: flex !important; flex-direction: column !important;
-    max-height: 80vh !important; 
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(50px) !important; -webkit-backdrop-filter: blur(50px) !important;
+    border-radius: 24px !important; border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.1) !important; padding: 28px 24px 24px 24px !important; 
+    display: flex !important; flex-direction: column !important; max-height: 80vh !important; 
 }
-.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.65) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.9) !important; border-color: rgba(255, 255, 255, 0.05) !important; }
 
-.ios-glass-modal .modal-content {
-    overflow: visible !important; scrollbar-width: none; flex: 1 1 auto;
-}
+.ios-glass-modal .modal-content { overflow: visible !important; scrollbar-width: none; flex: 1 1 auto; }
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
 
-.ios-glass-modal h3 { font-weight: 800; font-size: 20px; text-align: center; margin-top: 0; margin-bottom: 16px; color: var(--bazi-text-normal); letter-spacing: -0.02em; }
-.ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 4px; }
+.ios-glass-modal h3 { font-weight: 800; font-size: 20px; text-align: center; margin-top: 0; margin-bottom: 20px; color: var(--bazi-text-main); }
+.ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 6px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
-.ios-glass-modal .setting-item-name { font-weight: 700; font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px; opacity: 0.9;}
+.ios-glass-modal .setting-item-name { font-weight: 600; font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px;}
 .ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; position: relative !important; }
 
 .ios-glass-modal input[type="text"] {
-    border-radius: 14px !important; border: 1px solid rgba(150,150,150,0.2) !important;
-    background: rgba(255, 255, 255, 0.4) !important; padding: 12px 14px !important; font-size: 15px !important; width: 100%;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important; color: var(--bazi-text-normal) !important; font-weight: 600; transition: all 0.3s ease;
+    border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.08) !important;
+    background: rgba(0, 0, 0, 0.02) !important; padding: 14px 16px !important; font-size: 15px !important; width: 100%;
+    color: var(--bazi-text-main) !important; font-weight: 600; transition: all 0.3s ease;
 }
-.theme-dark .ios-glass-modal input[type="text"] { background: rgba(0, 0, 0, 0.25) !important; border-color: rgba(255,255,255,0.1) !important;}
-.ios-glass-modal input[type="text"]:focus { border-color: var(--interactive-accent) !important; box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2) !important; background: rgba(255, 255, 255, 0.7) !important;}
+.theme-dark .ios-glass-modal input[type="text"] { background: rgba(255, 255, 255, 0.05) !important; border-color: rgba(255,255,255,0.05) !important;}
+.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-text-muted) !important; background: transparent !important;}
 
+/* 极简纯黑按钮 */
 .ios-glass-modal button.mod-cta {
-    background: var(--interactive-accent) !important; color: white !important;
-    border-radius: 14px !important; padding: 16px !important; font-size: 16px !important; font-weight: 700 !important; width: 100%; 
-    margin-top: 12px; box-shadow: 0 6px 16px rgba(var(--color-accent-rgb), 0.25) !important;
-    border: none !important; transition: transform 0.2s ease; letter-spacing: 0.02em;
+    background: var(--bazi-text-main) !important; color: white !important;
+    border-radius: 12px !important; padding: 16px !important; font-size: 16px !important; font-weight: 700 !important; width: 100%; 
+    margin-top: 16px; border: none !important; transition: transform 0.2s ease;
 }
-.ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; }
+.ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; opacity: 0.8 !important; }
 
 @media (max-width: 480px) {
-    .dashboard-container { padding: 4vh 5vw; gap: 24px; }
-    .baseline-title.bazi-title { font-size: 15px; letter-spacing: 0.04em; }
-    .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
+    .dashboard-container { padding: 5vh 6vw; gap: 24px; }
+    .baseline-title.bazi-title { font-size: 26px; }
+    .dashboard-data-section { padding: 28px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
-    .modal.ios-glass-modal { margin-top: 12vh !important; padding: 20px 16px 16px 16px !important; border-radius: 24px !important; }
+    .modal.ios-glass-modal { margin-top: 12vh !important; padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
 }
