@@ -25,7 +25,18 @@ export default class DashboardPlugin extends Plugin {
         this.addRibbonIcon('layout-dashboard', '控制中心', () => this.activateView());
         this.addCommand({ id: 'show-dashboard', name: '显示控制中心', callback: () => this.activateView() });
         this.addSettingTab(new DashboardSettingTab(this.app, this));
-        this.app.workspace.onLayoutReady(() => { if (this.settings.openOnStartup) this.activateView(); });
+        
+        // 🌟 核心：设为主页的逻辑优化 🌟
+        this.app.workspace.onLayoutReady(() => { 
+            if (this.settings.openOnStartup) {
+                const emptyLeaves = this.app.workspace.getLeavesOfType("empty");
+                if (emptyLeaves.length > 0) {
+                    emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
+                } else {
+                    this.activateView();
+                }
+            }
+        });
     }
 
     async loadSettings() { this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData()); }
@@ -52,7 +63,6 @@ class DashboardView extends ItemView {
     boardArea: HTMLElement;
     currentMonth: moment.Moment;
     
-    viewType: 'calendar' | 'heatmap' = 'calendar';
     fileDataMap: Record<string, TFile[]> = {}; 
     
     listWrapper: HTMLElement;
@@ -96,19 +106,14 @@ class DashboardView extends ItemView {
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
         chartHeader.createEl('span', { text: '足迹回顾', cls: 'chart-title' });
-        
-        const toggleBtn = chartHeader.createEl('button', { text: '切换视图 ◓', cls: 'view-toggle-btn' });
-        toggleBtn.onclick = () => {
-            this.viewType = this.viewType === 'calendar' ? 'heatmap' : 'calendar';
-            this.renderBoard();
-        };
+        // 🌟 彻底移除了“切换视图”按钮和热力图逻辑 🌟
 
         this.boardArea = dataSection.createDiv({ cls: 'heatmap-calendar-wrapper' });
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
-        this.renderBoard();
+        this.renderCalendar();
     }
 
     renderActionsInMenu() {
@@ -136,14 +141,8 @@ class DashboardView extends ItemView {
         for (const key in this.fileDataMap) { this.fileDataMap[key].sort((a, b) => b.stat.ctime - a.stat.ctime); }
     }
 
-    renderBoard() {
-        this.boardArea.empty();
-        this.closeListAnimation();
-        if (this.viewType === 'calendar') this.renderCalendar();
-        else this.renderHeatmap();
-    }
-
     renderCalendar() {
+        this.boardArea.empty();
         this.closeListAnimation();
 
         const year = this.currentMonth.year();
@@ -151,9 +150,9 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        nav.createEl('button', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderBoard(); };
+        nav.createEl('button', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar(); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        nav.createEl('button', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderBoard(); };
+        nav.createEl('button', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar(); };
 
         const weekdaysGrid = this.boardArea.createDiv({ cls: 'calendar-weekdays' });
         ['日', '一', '二', '三', '四', '五', '六'].forEach(day => weekdaysGrid.createDiv({ text: day }));
@@ -168,7 +167,6 @@ class DashboardView extends ItemView {
 
             const cell = grid.createDiv({ cls: 'calendar-cell' });
             
-            // 🌟 获取农历日 (例如：初一、廿五)
             const d = new Date(year, month, day);
             const lunar = Lunar.fromDate(d);
             const lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
@@ -189,33 +187,9 @@ class DashboardView extends ItemView {
         }
     }
 
-    renderHeatmap() {
-        this.closeListAnimation(); 
-        const grid = this.boardArea.createDiv({ cls: 'heatmap-grid' });
-        for (let i = 83; i >= 0; i--) {
-            const dateKey = moment().subtract(i, 'days').format('YYYY-MM-DD');
-            const files = this.fileDataMap[dateKey] || [];
-            const count = files.length;
-
-            const cell = grid.createDiv({ cls: 'heatmap-cell' });
-            if (count > 0) cell.addClass(`level-${Math.min(Math.ceil(count / 2), 4)}`);
-            
-            cell.onclick = () => {
-                grid.findAll('.heatmap-cell').forEach(el => el.removeClass('active-selection'));
-                cell.addClass('active-selection');
-                const lunar = Lunar.fromDate(moment(dateKey).toDate());
-                this.triggerListAnimation(dateKey, files, lunar);
-            };
-        }
-        const labels = this.boardArea.createDiv({ cls: 'calendar-weekdays', attr: {style: 'margin-top: 8px; justify-content: space-between; display: flex;'} });
-        labels.createSpan({ text: '12周前' });
-        labels.createSpan({ text: '今天' });
-    }
-
     triggerListAnimation(dateStr: string, files: TFile[], lunar: Lunar) {
         this.listScrollArea.empty();
         
-        // 🌟 提取年月日的干支 (不含时辰，因为这是一个全天的统计视图) 🌟
         const baziDay = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${lunar.getDayInGanZhi()}日`;
 
         if (files.length === 0) { 
@@ -245,23 +219,20 @@ class DashboardView extends ItemView {
 
     // --- 新建笔记相关 ---
     async promptNewNote(config: ActionConfig) {
-        new QuickNoteModal(this.app, async (title, date) => {
+        new QuickNoteModal(this.app, config, async (title, date, folderPath) => {
             
-            // 🌟 核心：计算文章生成的完整干支八字（含时辰） 🌟
             const selectedDate = moment(date).toDate();
-            // 继承当前的真实时间，以推算准确的时辰
-            selectedDate.setHours(new Date().getHours());
+            selectedDate.setHours(new Date().getHours()); // 继承当前真实时辰
             const lunarFull = Lunar.fromDate(selectedDate);
             const baziFullStr = `${lunarFull.getYearInGanZhi()}年 ${lunarFull.getMonthInGanZhi()}月 ${lunarFull.getDayInGanZhi()}日 ${lunarFull.getTimeInGanZhi()}时`;
 
-            const parsedFolder = config.folder.replace(/\{\{YYYY\}\}/g, moment(date).format('YYYY')).replace(/\{\{MM\}\}/g, moment(date).format('MM'));
             const parsedContent = config.template
                 .replace(/\{\{DATE\}\}/g, date)
                 .replace(/\{\{TITLE\}\}/g, title)
-                .replace(/\{\{BAZI\}\}/g, baziFullStr); // 将八字注入文章！
+                .replace(/\{\{BAZI\}\}/g, baziFullStr);
 
-            await this.ensureFolder(parsedFolder);
-            const fileName = `${parsedFolder}/${title}.md`;
+            await this.ensureFolder(folderPath);
+            const fileName = `${folderPath}/${title}.md`;
             try {
                 const file = await this.app.vault.create(fileName, parsedContent);
                 await this.app.workspace.getLeaf(true).openFile(file);
@@ -280,19 +251,44 @@ class DashboardView extends ItemView {
 }
 
 class QuickNoteModal extends Modal {
-    title: string = ""; date: string = moment().format('YYYY-MM-DD');
-    onSubmit: (title: string, date: string) => void;
-    constructor(app: any, onSubmit: (title: string, date: string) => void) { super(app); this.onSubmit = onSubmit; this.title = `${moment().format('MMDD')}-`; }
+    title: string = ""; 
+    date: string = moment().format('YYYY-MM-DD');
+    folderPath: string = ""; // 🌟 新增保存路径变量 🌟
+    actionConfig: ActionConfig;
+    onSubmit: (title: string, date: string, folder: string) => void;
+    
+    constructor(app: any, config: ActionConfig, onSubmit: (title: string, date: string, folder: string) => void) { 
+        super(app); 
+        this.actionConfig = config;
+        this.onSubmit = onSubmit; 
+        this.title = `${moment().format('MMDD')}-`; 
+        
+        // 动态计算默认的保存路径
+        this.folderPath = config.folder
+            .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
+            .replace(/\{\{MM\}\}/g, moment().format('MM'));
+    }
     
     onOpen() {
         const { contentEl } = this;
-        // 🌟 为弹窗强加 iOS 毛玻璃 Class 🌟
         this.modalEl.addClass('ios-glass-modal');
         
-        contentEl.createEl('h3', { text: `记录新内容` });
+        contentEl.createEl('h3', { text: `新建: ${this.actionConfig.name}` });
+        
         new Setting(contentEl).setName('标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
-        new Setting(contentEl).addButton(btn => btn.setButtonText('确认创建').setCta().onClick(() => { if (!this.title) return; this.close(); this.onSubmit(this.title, this.date); }));
+        
+        // 🌟 允许用户在创建时随时修改文件夹路径 🌟
+        new Setting(contentEl).setName('保存路径 (可修改)').addText(text => { 
+            text.setValue(this.folderPath); 
+            text.onChange(value => this.folderPath = value); 
+        });
+        
+        new Setting(contentEl).addButton(btn => btn.setButtonText('确认创建').setCta().onClick(() => { 
+            if (!this.title || !this.folderPath) return; 
+            this.close(); 
+            this.onSubmit(this.title, this.date, this.folderPath); 
+        }));
     }
 }
 
@@ -303,10 +299,14 @@ class DashboardSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
         containerEl.createEl('h2', { text: '控制中心设置' });
-        new Setting(containerEl).setName('启动时自动打开').addToggle(toggle => toggle.setValue(this.plugin.settings.openOnStartup).onChange(async (val) => { this.plugin.settings.openOnStartup = val; await this.plugin.saveSettings(); }));
+        
+        // 🌟 开屏主页开关 🌟
+        new Setting(containerEl).setName('设为开屏主页 (打开时启动)')
+            .setDesc('每次打开 Obsidian 时，将默认的新建空白页替换为控制中心。')
+            .addToggle(toggle => toggle.setValue(this.plugin.settings.openOnStartup).onChange(async (val) => { this.plugin.settings.openOnStartup = val; await this.plugin.saveSettings(); }));
         
         containerEl.createEl('h3', { text: '新建类型管理' });
-        containerEl.createEl('p', { text: '支持的模板变量: {{DATE}}, {{TITLE}}, {{BAZI}} (天干地支八字)', cls: 'setting-item-description' });
+        containerEl.createEl('p', { text: '支持的模板变量: {{DATE}}, {{TITLE}}, {{BAZI}} (生成: 丙午年 癸巳月 辛巳日 丙申时)', cls: 'setting-item-description' });
 
         this.plugin.settings.actions.forEach((action, index) => {
             containerEl.createEl('h4', { text: `类型 ${index + 1}` });
