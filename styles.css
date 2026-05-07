@@ -1,59 +1,99 @@
-
+/* 限制最大宽度并居中，防止在宽屏上拉伸变形 */
 .dashboard-container {
-    padding: 20px;
+    padding: 30px 20px;
+    max-width: 700px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
     overflow-y: auto;
     height: 100%;
 }
 
-.dashboard-header h2 { margin-bottom: 5px; }
-.dashboard-header p { color: var(--text-muted); font-size: 0.9em; }
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.dashboard-header h2 { 
+    margin-bottom: 8px; 
+    font-weight: 700;
+    font-size: 1.8em;
+}
+
+.dashboard-header p { 
+    color: var(--text-muted); 
+    font-size: 1em; 
+}
 
 .dashboard-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
 }
 
+/* 干净的线条轮廓和背景 */
 .dashboard-card {
-    background-color: var(--background-secondary);
-    border: 1px solid var(--background-modifier-border);
+    background-color: var(--background-primary);
+    border: 2px solid var(--background-modifier-border);
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px 16px;
     text-align: center;
     cursor: pointer;
-    transition: transform 0.1s;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.dashboard-card:hover {
+    border-color: var(--interactive-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.1);
 }
 
 .dashboard-card:active {
-    transform: scale(0.95);
-    background-color: var(--background-modifier-hover);
+    transform: scale(0.97);
 }
 
-.dashboard-card-icon { font-size: 24px; margin-bottom: 10px; }
-.dashboard-card-title { font-weight: bold; }
+.dashboard-card-icon { 
+    font-size: 32px; 
+    margin-bottom: 12px; 
+}
 
+.dashboard-card-title { 
+    font-weight: 600; 
+    font-size: 1.1em;
+}
+
+/* 图表容器美化 */
 .dashboard-chart-container {
     background-color: var(--background-primary);
     border-radius: 12px;
-    padding: 15px;
-    border: 1px solid var(--background-modifier-border);
+    padding: 20px;
+    border: 2px solid var(--background-modifier-border);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .chart-controls {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
 .chart-btn {
-    padding: 4px 8px;
-    font-size: 12px;
-    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-normal);
+    border: 1px solid var(--background-modifier-border);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chart-btn:hover {
     background: var(--interactive-accent);
     color: white;
-    border: none;
+    border-color: var(--interactive-accent);
 }
