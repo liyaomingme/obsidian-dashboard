@@ -1,24 +1,14 @@
 /* --- 全局统一：苹果液态玻璃美学 --- */
 .dashboard-container {
-    padding: 6vh 5vw;
-    max-width: 860px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    height: 100%;
-    overflow-y: auto;
-    background: transparent;
+    padding: 6vh 5vw; max-width: 860px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 32px;
+    height: 100%; overflow-y: auto; background: transparent;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    color: var(--text-normal);
-    -webkit-font-smoothing: antialiased;
+    color: var(--text-normal); -webkit-font-smoothing: antialiased;
 }
 
 /* --- 顶栏与悬浮 "+" 按钮 --- */
-.dashboard-header-row {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 8px; padding: 0 4px; position: relative;
-}
+.dashboard-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; position: relative; }
 .baseline-header { display: flex; flex-direction: column; gap: 1px; }
 .baseline-date { font-size: 13px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 .baseline-title { margin: 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; }
@@ -27,21 +17,19 @@ button.floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 32px !important; font-weight: 300 !important;
-    color: var(--interactive-accent) !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); padding: 0 !important;
+    color: var(--interactive-accent) !important; transition: all 0.3s ease; padding: 0 !important;
 }
 button.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
 button.floating-plus-btn:active { transform: scale(0.9); }
 
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: saturate(200%) blur(30px); -webkit-backdrop-filter: saturate(200%) blur(30px);
-    border-radius: 16px; width: 140px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
-    z-index: 1000; overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
+    background: rgba(255, 255, 255, 0.7); backdrop-filter: saturate(200%) blur(30px); -webkit-backdrop-filter: saturate(200%) blur(30px);
+    border-radius: 16px; width: 140px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15); z-index: 1000;
+    overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding: 6px; border: 1px solid rgba(200, 200, 200, 0.3);
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);}
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.7); border: 1px solid rgba(255, 255, 255, 0.1);}
 .plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
 
 .dropdown-item {
@@ -52,13 +40,11 @@ button.floating-plus-btn:active { transform: scale(0.9); }
 
 /* --- 数据看板区 --- */
 .dashboard-data-section {
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px);
-    border-radius: 28px; padding: 32px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); border: none;
+    background: rgba(255, 255, 255, 0.4); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px);
+    border-radius: 28px; padding: 32px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); border: none;
     display: flex; flex-direction: column; align-items: center; 
 }
-.theme-dark .dashboard-data-section { background: rgba(0, 0, 0, 0.15); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); }
+.theme-dark .dashboard-data-section { background: rgba(0, 0, 0, 0.25); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); }
 
 .chart-header-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .chart-title { font-size: 18px; font-weight: 700; color: var(--text-normal); margin: 0; }
@@ -70,96 +56,105 @@ button.view-toggle-btn {
 }
 button.view-toggle-btn:hover { color: var(--text-normal) !important; transform: scale(1.05); }
 
-/* 🌟 限制日历最大宽度锁定 🌟 */
-.heatmap-calendar-wrapper {
-    width: 100%;
-    max-width: 380px; 
-    margin: 0 auto;
-}
-
+/* 🌟 日历宽度锁定与排版 🌟 */
+.heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; }
 .month-nav { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 24px; }
 button.month-nav-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     color: var(--interactive-accent) !important; font-size: 24px !important; font-weight: 300 !important;
-    cursor: pointer; padding: 0 12px !important; min-width: auto !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer; padding: 0 12px !important; min-width: auto !important; transition: all 0.2s ease;
 }
 button.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
-button.month-nav-btn:active { transform: scale(0.8); }
 .month-label { font-size: 18px; font-weight: 700; min-width: 110px; text-align: center; color: var(--text-normal); }
 
-.calendar-weekdays {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    text-align: center; font-size: 12px; font-weight: 600;
-    color: var(--text-muted); margin-bottom: 12px;
-}
-
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 2px; }
 
-/* 🌟 修复白底隐身：赋予基础可见底色，移除全局 opacity 🌟 */
+/* 🌟 日期格子：强制清晰的文字颜色 🌟 */
 .calendar-cell {
-    width: 44px; height: 44px; 
-    margin: 0 auto; 
-    border-radius: 50%;
+    width: 44px; height: 44px; margin: 0 auto; border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer;
-    background: rgba(128, 128, 128, 0.08); /* 基础可见底纹，不再透明隐身 */
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 2px solid transparent; 
+    cursor: pointer; transition: all 0.2s ease; border: 2px solid transparent;
+    background: rgba(128, 128, 128, 0.08); /* 极弱底纹，确保可见 */
 }
 .theme-dark .calendar-cell { background: rgba(255, 255, 255, 0.05); }
-
-/* 隐藏占位符 */
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
-.cal-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; color: var(--text-normal); }
-.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1.2; color: var(--text-muted); margin-top: 1px; }
+/* 强行指定公历和农历的颜色，绝对清晰 */
+.cal-date-num { font-size: 16px; font-weight: 600; line-height: 1.1; color: var(--text-normal) !important; }
+.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1.2; color: var(--text-muted) !important; margin-top: 1px; }
 
+.calendar-cell.has-data .cal-date-num { font-weight: 800; }
 .calendar-cell:not(.empty):hover { transform: scale(1.1); background: rgba(128, 128, 128, 0.15); }
 .calendar-cell.active-selection { border-color: var(--interactive-accent); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 
-/* 有记录的日子，动态覆盖强调色 */
-.calendar-cell.level-1 { background-color: var(--interactive-accent); opacity: 0.4; }
-.calendar-cell.level-2 { background-color: var(--interactive-accent); opacity: 0.6; }
-.calendar-cell.level-3 { background-color: var(--interactive-accent); opacity: 0.8; }
-.calendar-cell.level-4 { background-color: var(--interactive-accent); opacity: 1.0; }
+/* 热力色阶 */
+.calendar-cell.level-1 { background-color: rgba(var(--color-accent-rgb), 0.2); }
+.calendar-cell.level-2 { background-color: rgba(var(--color-accent-rgb), 0.4); }
+.calendar-cell.level-3 { background-color: rgba(var(--color-accent-rgb), 0.6); }
+/* 只有最深色的底，才将文字反白 */
+.calendar-cell.level-4 { background-color: rgba(var(--color-accent-rgb), 0.9); }
+.calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: white !important; }
 
-/* 确保深色背景下的字能看清 */
-.calendar-cell[class*="level-"] .cal-date-num { color: var(--text-on-accent) !important; font-weight: 800; }
-.calendar-cell[class*="level-"] .cal-lunar-text { color: var(--text-on-accent) !important; font-weight: 600; opacity: 0.9; }
-
-/* 热力图 */
+/* 热力图网格 */
 .heatmap-grid { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; margin-bottom: 8px;}
 .heatmap-cell { width: 14px; height: 14px; margin: 0 auto; border-radius: 50%; background: rgba(128, 128, 128, 0.15); cursor: pointer; transition: transform 0.2s; }
-.heatmap-cell:hover { transform: scale(1.4); }
+.heatmap-cell:hover { transform: scale(1.4); background: var(--interactive-accent); }
 .heatmap-cell.active-selection { box-shadow: 0 0 0 2px var(--text-normal); }
-.heatmap-cell.level-1 { background-color: var(--interactive-accent); opacity: 0.4; }
-.heatmap-cell.level-2 { background-color: var(--interactive-accent); opacity: 0.6; }
-.heatmap-cell.level-3 { background-color: var(--interactive-accent); opacity: 0.8; }
-.heatmap-cell.level-4 { background-color: var(--interactive-accent); opacity: 1.0; }
+.heatmap-cell.level-1 { background-color: rgba(var(--color-accent-rgb), 0.3); }
+.heatmap-cell.level-2 { background-color: rgba(var(--color-accent-rgb), 0.6); }
+.heatmap-cell.level-3 { background-color: rgba(var(--color-accent-rgb), 0.8); }
+.heatmap-cell.level-4 { background-color: rgba(var(--color-accent-rgb), 1.0); }
 
-/* 丝滑列表区 (增加天干地支排版) */
+/* 🌟 双重日期列表区 🌟 */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; }
 .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 24px; }
-.record-list-header { margin-bottom: 16px; text-align: center; }
-.record-list-date { font-size: 20px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.02em; }
-.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--interactive-accent); margin-top: 4px; }
+.record-list-header { margin-bottom: 16px; padding-left: 8px; }
+.record-list-date { font-size: 22px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 8px;}
+.record-list-count { font-size: 14px; font-weight: normal; color: var(--text-muted); }
+.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--text-muted); opacity: 0.8; margin-top: 4px; }
 
 .record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
 .record-item { background: var(--background-primary); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s ease; border: 1px solid transparent; }
 .theme-dark .record-item { background: rgba(0,0,0,0.3); }
 .record-item:hover { transform: translateX(4px); border-color: var(--background-modifier-border); }
-.record-item:active { transform: scale(0.98); }
 .record-icon { font-size: 18px; }
 .record-title { font-size: 15px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+/* =========================================
+   🌟 终极美化：iOS 毛玻璃新建弹窗 🌟
+========================================= */
+.ios-glass-modal {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+    padding: 32px !important;
+}
+.theme-dark .ios-glass-modal { background: rgba(30, 30, 30, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
+
+.ios-glass-modal h3 { font-weight: 800; font-size: 20px; text-align: center; margin-top: 0; margin-bottom: 24px; color: var(--text-normal); }
+.ios-glass-modal .setting-item { border: none !important; padding: 12px 0 !important; }
+.ios-glass-modal .setting-item-name { font-weight: 600; font-size: 14px; color: var(--text-muted); }
+.ios-glass-modal input[type="text"] {
+    border-radius: 12px !important; border: 1px solid rgba(120,120,120,0.2) !important;
+    background: var(--background-primary) !important; padding: 12px 16px !important; font-size: 16px !important; width: 100%;
+}
+.ios-glass-modal button.mod-cta {
+    background: var(--interactive-accent) !important; color: white !important;
+    border-radius: 14px !important; padding: 24px !important; font-size: 16px !important;
+    font-weight: 700 !important; width: 100%; margin-top: 16px; box-shadow: 0 8px 20px rgba(var(--color-accent-rgb), 0.3);
+}
 
 @media (max-width: 480px) {
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
     .baseline-title { font-size: 34px; }
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
-    button.floating-plus-btn { width: 38px; height: 38px; font-size: 28px !important; }
     .calendar-cell { width: 38px; height: 38px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
+    .ios-glass-modal { padding: 24px !important; }
 }
