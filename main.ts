@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf, ItemView, TFile, TFolder, Modal, Setting } from 'obsidian';
+import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App } from 'obsidian';
 import { Chart, registerables } from 'chart.js';
 import moment from 'moment';
 
