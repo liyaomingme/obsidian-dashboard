@@ -155,15 +155,23 @@ class DashboardView extends ItemView {
         else this.renderHeatmap();
     }
 
-    // 🌟 原生农历 API，不依赖外部库，绝不报错崩盘 🌟
+    // 🌟 短农历：用于网格内显示（如：初一）
     getLunarDayStr(year: number, month: number, day: number): string {
         try {
-            const dateObj = new Date(year, month, day);
             const formatter = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { day: 'numeric' });
-            return formatter.format(dateObj); 
-        } catch (e) {
-            return ''; // 极小概率不支持时，优雅留空
-        }
+            return formatter.format(new Date(year, month, day)); 
+        } catch (e) { return ''; }
+    }
+
+    // 🌟 完整天干地支：用于点击后底部展示（如：丙午年 四月廿一）
+    getLunarFullDateStr(dateStr: string): string {
+        try {
+            const dateObj = moment(dateStr).toDate();
+            const formatter = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { dateStyle: 'long' });
+            let str = formatter.format(dateObj);
+            // 剥离西历年份，只留下中国历法部分，如“甲辰年四月廿三”
+            return str.replace(/^[0-9]+/, ''); 
+        } catch (e) { return ''; }
     }
 
     renderCalendar() {
@@ -234,9 +242,23 @@ class DashboardView extends ItemView {
 
     triggerListAnimation(dateStr: string, files: TFile[]) {
         this.listScrollArea.empty();
-        if (files.length === 0) { this.listHeader.innerText = `${dateStr} 没有留下记录`; this.listWrapper.addClass('is-open'); return; }
         
-        this.listHeader.innerText = `${dateStr} 的足迹 (${files.length})`;
+        // 🌟 生成完整的天干地支与公历组合 🌟
+        const lunarFull = this.getLunarFullDateStr(dateStr);
+
+        if (files.length === 0) { 
+            this.listHeader.innerHTML = `
+                <div class="record-list-date">${dateStr}</div>
+                <div class="record-list-lunar">${lunarFull} · 暂无记录</div>
+            `;
+            this.listWrapper.addClass('is-open'); 
+            return; 
+        }
+        
+        this.listHeader.innerHTML = `
+            <div class="record-list-date">${dateStr}</div>
+            <div class="record-list-lunar">${lunarFull} · 找到 ${files.length} 篇足迹</div>
+        `;
         
         files.forEach(file => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
