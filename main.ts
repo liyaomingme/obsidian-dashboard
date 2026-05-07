@@ -273,7 +273,14 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 核心：原生JS手搓的超级丝滑下拉菜单 🌟
+        const datalistId = 'vault-folder-list';
+        const datalist = contentEl.createEl('datalist', { attr: { id: datalistId } });
+        
+        const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/');
+        allFolders.forEach(folder => {
+            datalist.createEl('option', { attr: { value: folder.path } });
+        });
+        
         new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
@@ -285,20 +292,15 @@ class QuickNoteModal extends Modal {
                 const suggestMenu = parent.createDiv({ cls: 'folder-suggest-menu' });
                 suggestMenu.hide();
 
-                // 提取仓库中所有的真实文件夹
-                const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
-
                 const showSuggestions = () => {
                     suggestMenu.empty();
                     const query = inputEl.value.toLowerCase();
-                    // 模糊匹配并限制只显示前 10 个防止撑爆屏幕
                     const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 10);
 
                     if (matches.length > 0) {
                         suggestMenu.show();
                         matches.forEach(folder => {
                             const item = suggestMenu.createDiv({ cls: 'suggest-item', text: folder.path });
-                            // 使用 mousedown 抢在 input 的 blur 事件前触发，完美解决手机点击失效问题
                             item.onmousedown = (e) => { 
                                 e.preventDefault();
                                 inputEl.value = folder.path;
@@ -314,7 +316,6 @@ class QuickNoteModal extends Modal {
 
                 inputEl.addEventListener('input', showSuggestions);
                 inputEl.addEventListener('focus', showSuggestions);
-                // 失去焦点时稍微延迟关闭，容错保护
                 inputEl.addEventListener('blur', () => { setTimeout(() => suggestMenu.hide(), 150); }); 
             }
         });
