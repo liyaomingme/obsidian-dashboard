@@ -148,7 +148,6 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        // 🌟 核心：使用 span 而不是 button，摆脱所有主题强加的底色与边框 🌟
         nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar(); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
         nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar(); };
@@ -194,7 +193,7 @@ class DashboardView extends ItemView {
         if (files.length === 0) { 
             this.listHeader.innerHTML = `
                 <div class="record-list-date">${dateStr}</div>
-                <div class="record-list-lunar">${baziDay} · 暂无记录</div>
+                <div class="record-list-lunar">${baziDay} · 暂无足迹</div>
             `;
             this.listWrapper.addClass('is-open'); 
             return; 
@@ -274,21 +273,50 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 核心：原生的文件路径自动补全 (下拉列表与手输兼顾) 🌟
-        const datalistId = 'vault-folder-list';
-        const datalist = contentEl.createEl('datalist', { attr: { id: datalistId } });
-        
-        // 获取所有真实存在的文件夹路径
-        const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/');
-        allFolders.forEach(folder => {
-            datalist.createEl('option', { attr: { value: folder.path } });
-        });
-        
+        // 🌟 核心：原生JS手搓的超级丝滑下拉菜单 🌟
         new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
-            // 绑定原生补全
-            text.inputEl.setAttribute('list', datalistId);
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
+            
+            const inputEl = text.inputEl;
+            const parent = inputEl.parentElement;
+            if(parent) {
+                parent.style.position = 'relative';
+                const suggestMenu = parent.createDiv({ cls: 'folder-suggest-menu' });
+                suggestMenu.hide();
+
+                // 提取仓库中所有的真实文件夹
+                const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
+
+                const showSuggestions = () => {
+                    suggestMenu.empty();
+                    const query = inputEl.value.toLowerCase();
+                    // 模糊匹配并限制只显示前 10 个防止撑爆屏幕
+                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 10);
+
+                    if (matches.length > 0) {
+                        suggestMenu.show();
+                        matches.forEach(folder => {
+                            const item = suggestMenu.createDiv({ cls: 'suggest-item', text: folder.path });
+                            // 使用 mousedown 抢在 input 的 blur 事件前触发，完美解决手机点击失效问题
+                            item.onmousedown = (e) => { 
+                                e.preventDefault();
+                                inputEl.value = folder.path;
+                                this.folderPath = folder.path;
+                                suggestMenu.hide();
+                                inputEl.dispatchEvent(new Event('input'));
+                            };
+                        });
+                    } else {
+                        suggestMenu.hide();
+                    }
+                };
+
+                inputEl.addEventListener('input', showSuggestions);
+                inputEl.addEventListener('focus', showSuggestions);
+                // 失去焦点时稍微延迟关闭，容错保护
+                inputEl.addEventListener('blur', () => { setTimeout(() => suggestMenu.hide(), 150); }); 
+            }
         });
         
         new Setting(contentEl).addButton(btn => btn.setButtonText('确认创建').setCta().onClick(() => { 
