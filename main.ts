@@ -26,7 +26,6 @@ export default class DashboardPlugin extends Plugin {
         this.addCommand({ id: 'show-dashboard', name: '显示控制中心', callback: () => this.activateView() });
         this.addSettingTab(new DashboardSettingTab(this.app, this));
         
-        // 🌟 核心：设为主页的逻辑优化 🌟
         this.app.workspace.onLayoutReady(() => { 
             if (this.settings.openOnStartup) {
                 const emptyLeaves = this.app.workspace.getLeavesOfType("empty");
@@ -93,7 +92,7 @@ class DashboardView extends ItemView {
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
         header.createEl('h1', { text: '控制中心', cls: 'baseline-title' });
 
-        const plusBtn = headerRow.createEl('button', { text: '+', cls: 'floating-plus-btn' });
+        const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
         this.renderActionsInMenu();
 
@@ -106,7 +105,6 @@ class DashboardView extends ItemView {
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
         chartHeader.createEl('span', { text: '足迹回顾', cls: 'chart-title' });
-        // 🌟 彻底移除了“切换视图”按钮和热力图逻辑 🌟
 
         this.boardArea = dataSection.createDiv({ cls: 'heatmap-calendar-wrapper' });
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
@@ -150,9 +148,10 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        nav.createEl('button', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar(); };
+        // 🌟 核心：使用 span 而不是 button，摆脱所有主题强加的底色与边框 🌟
+        nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar(); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        nav.createEl('button', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar(); };
+        nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar(); };
 
         const weekdaysGrid = this.boardArea.createDiv({ cls: 'calendar-weekdays' });
         ['日', '一', '二', '三', '四', '五', '六'].forEach(day => weekdaysGrid.createDiv({ text: day }));
@@ -202,7 +201,7 @@ class DashboardView extends ItemView {
         }
         
         this.listHeader.innerHTML = `
-            <div class="record-list-date">${dateStr} <span class="record-list-count">${files.length} 篇足迹</span></div>
+            <div class="record-list-date">${dateStr} <span class="record-list-count">${files.length} 篇</span></div>
             <div class="record-list-lunar">${baziDay}</div>
         `;
         
@@ -217,12 +216,10 @@ class DashboardView extends ItemView {
 
     closeListAnimation() { this.listWrapper.removeClass('is-open'); }
 
-    // --- 新建笔记相关 ---
     async promptNewNote(config: ActionConfig) {
         new QuickNoteModal(this.app, config, async (title, date, folderPath) => {
-            
             const selectedDate = moment(date).toDate();
-            selectedDate.setHours(new Date().getHours()); // 继承当前真实时辰
+            selectedDate.setHours(new Date().getHours()); 
             const lunarFull = Lunar.fromDate(selectedDate);
             const baziFullStr = `${lunarFull.getYearInGanZhi()}年 ${lunarFull.getMonthInGanZhi()}月 ${lunarFull.getDayInGanZhi()}日 ${lunarFull.getTimeInGanZhi()}时`;
 
@@ -253,7 +250,7 @@ class DashboardView extends ItemView {
 class QuickNoteModal extends Modal {
     title: string = ""; 
     date: string = moment().format('YYYY-MM-DD');
-    folderPath: string = ""; // 🌟 新增保存路径变量 🌟
+    folderPath: string = ""; 
     actionConfig: ActionConfig;
     onSubmit: (title: string, date: string, folder: string) => void;
     
@@ -263,7 +260,6 @@ class QuickNoteModal extends Modal {
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
         
-        // 动态计算默认的保存路径
         this.folderPath = config.folder
             .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
             .replace(/\{\{MM\}\}/g, moment().format('MM'));
@@ -275,11 +271,22 @@ class QuickNoteModal extends Modal {
         
         contentEl.createEl('h3', { text: `新建: ${this.actionConfig.name}` });
         
-        new Setting(contentEl).setName('标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
+        new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 允许用户在创建时随时修改文件夹路径 🌟
-        new Setting(contentEl).setName('保存路径 (可修改)').addText(text => { 
+        // 🌟 核心：原生的文件路径自动补全 (下拉列表与手输兼顾) 🌟
+        const datalistId = 'vault-folder-list';
+        const datalist = contentEl.createEl('datalist', { attr: { id: datalistId } });
+        
+        // 获取所有真实存在的文件夹路径
+        const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/');
+        allFolders.forEach(folder => {
+            datalist.createEl('option', { attr: { value: folder.path } });
+        });
+        
+        new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
+            // 绑定原生补全
+            text.inputEl.setAttribute('list', datalistId);
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
         });
@@ -300,7 +307,6 @@ class DashboardSettingTab extends PluginSettingTab {
         containerEl.empty();
         containerEl.createEl('h2', { text: '控制中心设置' });
         
-        // 🌟 开屏主页开关 🌟
         new Setting(containerEl).setName('设为开屏主页 (打开时启动)')
             .setDesc('每次打开 Obsidian 时，将默认的新建空白页替换为控制中心。')
             .addToggle(toggle => toggle.setValue(this.plugin.settings.openOnStartup).onChange(async (val) => { this.plugin.settings.openOnStartup = val; await this.plugin.saveSettings(); }));
