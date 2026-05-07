@@ -1,0 +1,10 @@
+{
+    "id": "obsidian-mobile-dashboard",
+    "name": "Mobile Dashboard & Stats",
+    "version": "1.0.0",
+    "minAppVersion": "1.0.0",
+    "description": "A mobile-first dashboard for quick capture and note statistics with charts.",
+    "author": "YourName",
+    "authorUrl": "https://github.com/yourusername",
+    "isDesktopOnly": false
+}
