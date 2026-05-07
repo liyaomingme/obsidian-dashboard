@@ -10,8 +10,18 @@
 /* --- 顶栏与悬浮 "+" 按钮 --- */
 .dashboard-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; position: relative; }
 .baseline-header { display: flex; flex-direction: column; gap: 4px; }
-.baseline-date { font-size: 13px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
-.baseline-title { margin: 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; line-height: 1; }
+.baseline-date { font-size: 13px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* 🌟 专门为天干地支长文本优化的标题排版 🌟 */
+.baseline-title.bazi-title { 
+    margin: 2px 0 0 0; 
+    font-size: 26px; 
+    font-weight: 800; 
+    color: var(--text-normal); 
+    letter-spacing: 0.05em; 
+    line-height: 1.2; 
+    white-space: nowrap; 
+}
 
 .floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
@@ -49,7 +59,7 @@
 .chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
 .chart-title { font-size: 20px; font-weight: 800; color: var(--text-normal); margin: 0; letter-spacing: -0.02em; }
 
-/* 🌟 日历排版与固定尺寸 🌟 */
+/* 🌟 日历排版 🌟 */
 .heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; }
 .month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
 
@@ -66,7 +76,6 @@
 .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; opacity: 0.8; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
 
-/* 🌟 核心：伪元素背景，确保文字绝对清晰 🌟 */
 .calendar-cell {
     width: 46px; height: 46px; margin: 0 auto; border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -88,7 +97,6 @@
 .calendar-cell:not(.empty):hover::before { transform: scale(1.1); background: rgba(128, 128, 128, 0.2); }
 .calendar-cell.active-selection::before { border: 2px solid var(--interactive-accent); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-/* 只调整伪元素(背景)的不透明度，字永远清晰 */
 .calendar-cell.level-1::before { background-color: var(--interactive-accent); opacity: 0.25; }
 .calendar-cell.level-2::before { background-color: var(--interactive-accent); opacity: 0.5; }
 .calendar-cell.level-3::before { background-color: var(--interactive-accent); opacity: 0.75; }
@@ -120,32 +128,42 @@
 .record-icon { font-size: 20px; }
 .record-title { font-size: 16px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
+
 /* =========================================
-   🌟 核心修复1：内嵌式文件夹列表 (果冻级丝滑展开) 🌟
+   🌟 核心修复1：悬浮式绝对定位下拉菜单 (不再拉长弹窗) 🌟
 ========================================= */
 .folder-suggest-wrapper {
-    width: 100%; margin-top: 8px;
-    overflow: hidden; 
-    transition: max-height 0.3s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.3s ease;
-    max-height: 0; opacity: 0;
+    position: absolute; /* 绝对悬浮，不占空间，不拉伸弹窗！ */
+    top: calc(100% + 8px); 
+    left: 0; 
+    right: 0;
+    z-index: 1000; /* 确保盖在所有按钮上方 */
+    
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .folder-suggest-wrapper.is-open {
-    max-height: 180px; 
+    visibility: visible;
     opacity: 1;
+    transform: translateY(0);
 }
 
 .folder-suggest-menu {
-    width: 100%; max-height: 170px;
+    width: 100%; max-height: 180px;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
-    background: rgba(120, 120, 120, 0.08); /* 果冻质感底色 */
+    background: rgba(255, 255, 255, 0.85); 
+    backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(150, 150, 150, 0.2);
     border-radius: 16px; padding: 6px;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
 }
-.theme-dark .folder-suggest-menu { background: rgba(0, 0, 0, 0.2); }
+.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,255,255,0.15); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
 .folder-suggest-menu::-webkit-scrollbar { display: none; }
 
 .suggest-item {
-    padding: 14px 16px; font-size: 15px; font-weight: 500; color: var(--text-normal);
+    padding: 14px 16px; font-size: 15px; font-weight: 600; color: var(--text-normal);
     cursor: pointer; border-radius: 12px; transition: all 0.2s;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;
 }
@@ -153,12 +171,11 @@
 
 
 /* =========================================
-   🌟 核心修复2：顶置对齐的防键盘遮挡弹窗 🌟
+   🌟 iOS 原生级毛玻璃弹窗 (固定高度，允许内部滑动) 🌟
 ========================================= */
 .modal.ios-glass-modal {
-    /* 强行打破居中，紧贴屏幕顶部 */
     align-self: flex-start !important;
-    margin-top: 6vh !important; 
+    margin-top: 8vh !important; 
     
     background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
@@ -166,7 +183,7 @@
     box-shadow: 0 24px 64px rgba(0,0,0,0.15) !important; padding: 32px 24px !important;
     
     display: flex !important; flex-direction: column !important;
-    max-height: 85vh !important; /* 防止超出屏幕 */
+    max-height: 80vh !important; 
 }
 .theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
@@ -176,23 +193,24 @@
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none;
     flex: 1 1 auto;
+    overflow-x: visible !important; /* 允许悬浮层溢出显示 */
 }
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
 
-/* 🌟 核心：键盘弹出时的隐藏“千斤顶” 🌟 */
+/* 键盘空间垫片，确保拉到底部时不会被遮住 */
 .keyboard-spacer {
     height: 0; pointer-events: none; transition: height 0.3s cubic-bezier(0.25, 1, 0.3, 1);
 }
-.keyboard-spacer.is-active {
-    height: 45vh; /* 撑开巨大空间，让用户随意上拉躲避键盘 */
-}
+.keyboard-spacer.is-active { height: 40vh; }
 
 /* 弹窗内部组件美化 */
 .ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 24px; color: var(--text-normal); letter-spacing: -0.02em; }
 .ios-glass-modal .setting-item { border: none !important; padding: 10px 0 !important; flex-direction: column; align-items: flex-start; gap: 8px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
 .ios-glass-modal .setting-item-name { font-weight: 700; font-size: 14px; color: var(--text-muted); margin-left: 4px; }
-.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; }
+
+/* 确保父容器是 relative，配合悬浮层 */
+.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; position: relative !important; }
 
 .ios-glass-modal input[type="text"] {
     border-radius: 16px !important; border: 1px solid rgba(150,150,150,0.2) !important;
@@ -213,7 +231,10 @@
 
 @media (max-width: 480px) {
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
-    .baseline-title { font-size: 34px; }
+    
+    /* 🌟 手机端天干地支字体适配 🌟 */
+    .baseline-title.bazi-title { font-size: 18px; white-space: normal; line-height: 1.3; margin-top: 6px; }
+    
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
