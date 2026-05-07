@@ -91,7 +91,6 @@ class DashboardView extends ItemView {
         const header = headerRow.createDiv({ cls: 'baseline-header' });
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
 
-        // 🌟 重新排版：用中点间隔的高级天干地支 🌟
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
         const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
@@ -144,7 +143,6 @@ class DashboardView extends ItemView {
         for (const key in this.fileDataMap) { this.fileDataMap[key].sort((a, b) => b.stat.ctime - a.stat.ctime); }
     }
 
-    // 🌟 引入方向参数，触发 CSS Keyframes 动画 🌟
     renderCalendar(direction: 'left' | 'right' | 'none' = 'none') {
         this.boardArea.empty();
         this.closeListAnimation();
@@ -154,13 +152,10 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        // 点击左侧 <：回到过去，新日历从左侧滑入
         nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        // 点击右侧 >：走向未来，新日历从右侧滑入
         nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
 
-        // 动画容器包裹日历网格
         const animWrapper = this.boardArea.createDiv({ cls: 'calendar-anim-wrapper' });
         if (direction === 'left') animWrapper.addClass('slide-in-left');
         if (direction === 'right') animWrapper.addClass('slide-in-right');
@@ -281,12 +276,12 @@ class QuickNoteModal extends Modal {
         const { contentEl, modalEl } = this;
         modalEl.addClass('ios-glass-modal');
         
-        contentEl.createEl('h3', { text: `新建: ${this.actionConfig.name}` });
+        // 🌟 修复啰嗦的标题，只保留动作名称 🌟
+        contentEl.createEl('h3', { text: this.actionConfig.name });
         
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 绝对定位的悬浮菜单，弹窗本身绝对不再被拉长 🌟
         const folderSetting = new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
@@ -333,8 +328,6 @@ class QuickNoteModal extends Modal {
             this.close(); 
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
-        
-        // 彻底移除 spacer 占位逻辑
     }
 }
 
