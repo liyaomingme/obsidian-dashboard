@@ -49,11 +49,10 @@
 .chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
 .chart-title { font-size: 20px; font-weight: 800; color: var(--text-normal); margin: 0; letter-spacing: -0.02em; }
 
-/* 🌟 日历排版调优 🌟 */
+/* 🌟 日历排版 🌟 */
 .heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; }
 .month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
 
-/* 彻底不用 button，避开所有主题劫持 */
 .month-nav-btn {
     display: inline-flex; align-items: center; justify-content: center;
     color: var(--interactive-accent); font-size: 24px; font-weight: 400;
@@ -65,8 +64,6 @@
 .month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--text-normal); letter-spacing: 0.02em; }
 
 .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; opacity: 0.8; }
-
-/* 🌟 拉大垂直间距，让上下周不再拥挤 🌟 */
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
 
 .calendar-cell {
@@ -74,7 +71,6 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; position: relative; border: 2px solid transparent;
 }
-
 .calendar-cell::before {
     content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
     border-radius: 50%; background: rgba(128, 128, 128, 0.08); z-index: 0; transition: all 0.3s ease;
@@ -84,7 +80,6 @@
 .calendar-cell > * { z-index: 1; position: relative; }
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
-/* 字体排版微调 */
 .cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--text-normal) !important; }
 .cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--text-muted) !important; opacity: 0.85; }
 
@@ -98,7 +93,9 @@
 .calendar-cell.level-4::before { background-color: var(--interactive-accent); opacity: 1.0; }
 .calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: white !important; }
 
-/* 🌟 双重日期列表区 🌟 */
+/* =========================================
+   🌟 核心大改：无框平铺式文章列表 🌟
+========================================= */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; }
 .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
 .record-list-header { margin-bottom: 16px; padding-left: 8px; }
@@ -106,14 +103,49 @@
 .record-list-count { font-size: 14px; font-weight: 600; color: var(--text-muted); opacity: 0.8; }
 .record-list-lunar { font-size: 13px; font-weight: 600; color: var(--interactive-accent); opacity: 0.9; margin-top: 6px; }
 
-.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding: 4px; }
+/* 取消所有的卡片底色，采用原生极简分割线设计 */
+.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
-.record-item { background: var(--background-primary); border-radius: 18px; padding: 18px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: all 0.2s ease; border: 1px solid transparent; }
-.theme-dark .record-item { background: rgba(0,0,0,0.3); }
-.record-item:hover { transform: translateX(6px); border-color: var(--background-modifier-border); }
-.record-item:active { transform: scale(0.98); }
+
+.record-item {
+    background: transparent !important; border-radius: 12px; padding: 16px 12px;
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+    box-shadow: none !important; border: none !important;
+    border-bottom: 1px solid rgba(150, 150, 150, 0.15) !important;
+    transition: all 0.2s ease;
+}
+.record-item:last-child { border-bottom: none !important; }
+.theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
+
+/* 鼠标悬停/按住时的极简微光反馈 */
+.record-item:hover { background: rgba(120, 120, 120, 0.1) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
+.record-item:active { background: rgba(120, 120, 120, 0.2) !important; transform: scale(0.98); }
+
 .record-icon { font-size: 20px; }
 .record-title { font-size: 16px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+
+/* =========================================
+   🌟 自定义悬浮输入框的下拉补全菜单 🌟
+========================================= */
+.folder-suggest-menu {
+    position: absolute; top: 100%; left: 0; right: 0;
+    max-height: 180px; overflow-y: auto;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(200, 200, 200, 0.3);
+    border-radius: 14px; z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    margin-top: 8px; padding: 6px;
+}
+.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.suggest-item {
+    padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--text-normal);
+    cursor: pointer; border-radius: 10px; transition: background 0.2s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.suggest-item:hover { background: rgba(120, 120, 120, 0.15); color: var(--interactive-accent); }
+
 
 /* =========================================
    🌟 终极美化：iOS 原生级毛玻璃弹窗 🌟
@@ -153,7 +185,7 @@
     .baseline-title { font-size: 34px; }
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
-    .cal-date-num { font-size: 16px; }
+    .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
     .ios-glass-modal { padding: 28px 20px !important; border-radius: 24px !important; }
 }
