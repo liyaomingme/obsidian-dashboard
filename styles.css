@@ -24,12 +24,12 @@
 
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
+    background: rgba(255, 255, 255, 0.75); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
     border-radius: 18px; width: 150px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15); z-index: 1000;
     overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding: 8px; border: 1px solid rgba(200, 200, 200, 0.4);
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.15);}
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.15);}
 .plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
 
 .dropdown-item {
@@ -49,7 +49,7 @@
 .chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
 .chart-title { font-size: 20px; font-weight: 800; color: var(--text-normal); margin: 0; letter-spacing: -0.02em; }
 
-/* 🌟 日历排版 🌟 */
+/* 🌟 日历排版与固定尺寸 🌟 */
 .heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; }
 .month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
 
@@ -66,6 +66,7 @@
 .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; opacity: 0.8; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
 
+/* 🌟 核心：伪元素背景，确保文字绝对清晰 🌟 */
 .calendar-cell {
     width: 46px; height: 46px; margin: 0 auto; border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -87,6 +88,7 @@
 .calendar-cell:not(.empty):hover::before { transform: scale(1.1); background: rgba(128, 128, 128, 0.2); }
 .calendar-cell.active-selection::before { border: 2px solid var(--interactive-accent); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
+/* 只调整伪元素(背景)的不透明度，字永远清晰 */
 .calendar-cell.level-1::before { background-color: var(--interactive-accent); opacity: 0.25; }
 .calendar-cell.level-2::before { background-color: var(--interactive-accent); opacity: 0.5; }
 .calendar-cell.level-3::before { background-color: var(--interactive-accent); opacity: 0.75; }
@@ -115,30 +117,27 @@
 .theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
 .record-item:hover { background: rgba(120, 120, 120, 0.1) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
 .record-item:active { background: rgba(120, 120, 120, 0.2) !important; transform: scale(0.98); }
-
 .record-icon { font-size: 20px; }
 .record-title { font-size: 16px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
-
 /* =========================================
-   🌟 核心修复1：内嵌式文件夹列表 (彻底告别悬浮剪裁) 🌟
+   🌟 核心修复1：内嵌式文件夹列表 (果冻级丝滑展开) 🌟
 ========================================= */
 .folder-suggest-wrapper {
     width: 100%; margin-top: 8px;
-    overflow: hidden; /* 动画容器 */
+    overflow: hidden; 
     transition: max-height 0.3s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.3s ease;
     max-height: 0; opacity: 0;
 }
 .folder-suggest-wrapper.is-open {
-    max-height: 180px; /* 展开高度 */
+    max-height: 180px; 
     opacity: 1;
 }
 
 .folder-suggest-menu {
     width: 100%; max-height: 170px;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
-    /* 采用极度柔和的果冻背景 */
-    background: rgba(120, 120, 120, 0.08);
+    background: rgba(120, 120, 120, 0.08); /* 果冻质感底色 */
     border-radius: 16px; padding: 6px;
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
 }
@@ -154,22 +153,46 @@
 
 
 /* =========================================
-   🌟 核心修复2：iOS 原生级毛玻璃弹窗 (允许内容自适应滚动) 🌟
+   🌟 核心修复2：顶置对齐的防键盘遮挡弹窗 🌟
 ========================================= */
-.ios-glass-modal {
+.modal.ios-glass-modal {
+    /* 强行打破居中，紧贴屏幕顶部 */
+    align-self: flex-start !important;
+    margin-top: 6vh !important; 
+    
     background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
     border-radius: 28px !important; border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important; padding: 32px 24px !important;
-    overflow: visible !important; /* 让 Obsidian 的 Modal-content 自己去滚动 */
+    box-shadow: 0 24px 64px rgba(0,0,0,0.15) !important; padding: 32px 24px !important;
+    
+    display: flex !important; flex-direction: column !important;
+    max-height: 85vh !important; /* 防止超出屏幕 */
 }
-.theme-dark .ios-glass-modal { background: rgba(30, 30, 30, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
+/* 允许内容在弹窗内自由滚动 */
+.ios-glass-modal .modal-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none;
+    flex: 1 1 auto;
+}
+.ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
+
+/* 🌟 核心：键盘弹出时的隐藏“千斤顶” 🌟 */
+.keyboard-spacer {
+    height: 0; pointer-events: none; transition: height 0.3s cubic-bezier(0.25, 1, 0.3, 1);
+}
+.keyboard-spacer.is-active {
+    height: 45vh; /* 撑开巨大空间，让用户随意上拉躲避键盘 */
+}
+
+/* 弹窗内部组件美化 */
 .ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 24px; color: var(--text-normal); letter-spacing: -0.02em; }
 .ios-glass-modal .setting-item { border: none !important; padding: 10px 0 !important; flex-direction: column; align-items: flex-start; gap: 8px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
 .ios-glass-modal .setting-item-name { font-weight: 700; font-size: 14px; color: var(--text-muted); margin-left: 4px; }
-.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; /* 允许子元素(列表)垂直堆叠 */ }
+.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; }
 
 .ios-glass-modal input[type="text"] {
     border-radius: 16px !important; border: 1px solid rgba(150,150,150,0.2) !important;
@@ -195,5 +218,5 @@
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
-    .ios-glass-modal { padding: 24px 20px !important; border-radius: 24px !important; }
+    .modal.ios-glass-modal { margin-top: 4vh !important; padding: 24px 20px !important; border-radius: 24px !important; }
 }
