@@ -304,32 +304,34 @@ class QuickNoteModal extends Modal {
                     const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 15); 
 
                     if (matches.length > 0) {
-                        suggestWrapper.addClass('is-open');
+                        suggestWrapper.style.maxHeight = '180px';
+                        suggestWrapper.style.opacity = '1';
                         matches.forEach(folder => {
                             const item = suggestMenu.createDiv({ cls: 'suggest-item', text: folder.path });
                             item.onmousedown = (e) => { 
                                 e.preventDefault();
                                 inputEl.value = folder.path;
                                 this.folderPath = folder.path;
-                                suggestWrapper.removeClass('is-open');
+                                suggestWrapper.style.maxHeight = '0';
+                                suggestWrapper.style.opacity = '0';
                                 inputEl.dispatchEvent(new Event('input'));
                             };
                         });
                     } else {
-                        suggestWrapper.removeClass('is-open');
+                        suggestWrapper.style.maxHeight = '0';
+                        suggestWrapper.style.opacity = '0';
                     }
                 };
 
                 inputEl.addEventListener('input', showSuggestions);
                 
-                // 🌟 彻底修复打字卡顿的Bug：删除了 input 事件里的 scrollIntoView，只在点进去的那一瞬间轻微滚动一次 🌟
-                inputEl.addEventListener('focus', () => {
-                    showSuggestions();
-                    // 仅在首次点击时平滑对焦，防止键盘遮挡
-                    setTimeout(() => { settingControl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 300);
-                });
+                // 🌟 解决卡顿：只显示菜单，绝不强制调用 scrollIntoView 去抢夺视口 🌟
+                inputEl.addEventListener('focus', () => { showSuggestions(); });
                 
-                inputEl.addEventListener('blur', () => { setTimeout(() => suggestWrapper.removeClass('is-open'), 200); }); 
+                inputEl.addEventListener('blur', () => { setTimeout(() => {
+                    suggestWrapper.style.maxHeight = '0';
+                    suggestWrapper.style.opacity = '0';
+                }, 200); }); 
             }
         });
         
@@ -338,6 +340,16 @@ class QuickNoteModal extends Modal {
             this.close(); 
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
+
+        // 🌟 核心：一个完全静默的动态垫片。只有聚焦“文件夹”时才拉开空间，让你滑动！无滚动劫持！🌟
+        const spacer = contentEl.createDiv({ cls: 'keyboard-dynamic-spacer' });
+        const inputs = contentEl.findAll('input[type="text"]');
+        
+        // 只有最后一个（保存路径）才会触发垫片
+        if(inputs.length >= 3) {
+            inputs[2].addEventListener('focus', () => { spacer.style.height = '200px'; });
+            inputs[2].addEventListener('blur', () => { setTimeout(() => { spacer.style.height = '0'; }, 200); });
+        }
     }
 }
 
