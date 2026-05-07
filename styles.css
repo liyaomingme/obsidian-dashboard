@@ -9,18 +9,18 @@
 
 /* --- 顶栏与悬浮 "+" 按钮 --- */
 .dashboard-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; position: relative; }
-.baseline-header { display: flex; flex-direction: column; gap: 1px; }
+.baseline-header { display: flex; flex-direction: column; gap: 4px; }
 .baseline-date { font-size: 13px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
-.baseline-title { margin: 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; }
+.baseline-title { margin: 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; line-height: 1; }
 
-button.floating-plus-btn {
+.floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
-    width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 32px !important; font-weight: 300 !important;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 34px !important; font-weight: 300 !important;
     color: var(--interactive-accent) !important; transition: all 0.3s ease; padding: 0 !important;
 }
-button.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
-button.floating-plus-btn:active { transform: scale(0.9); }
+.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
+.floating-plus-btn:active { transform: scale(0.9); }
 
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
@@ -41,115 +41,110 @@ button.floating-plus-btn:active { transform: scale(0.9); }
 /* --- 数据看板区 --- */
 .dashboard-data-section {
     background: rgba(255, 255, 255, 0.4); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px);
-    border-radius: 28px; padding: 32px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); border: none;
+    border-radius: 28px; padding: 36px 20px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); border: none;
     display: flex; flex-direction: column; align-items: center; 
 }
 .theme-dark .dashboard-data-section { background: rgba(0, 0, 0, 0.25); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); }
 
-.chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 24px; }
-.chart-title { font-size: 18px; font-weight: 700; color: var(--text-normal); margin: 0; }
+.chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
+.chart-title { font-size: 20px; font-weight: 800; color: var(--text-normal); margin: 0; letter-spacing: -0.02em; }
 
-/* 🌟 日历宽度锁定与排版 🌟 */
+/* 🌟 日历排版调优 🌟 */
 .heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; }
-.month-nav { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 24px; }
-button.month-nav-btn {
-    background: transparent !important; border: none !important; box-shadow: none !important;
-    color: var(--interactive-accent) !important; font-size: 24px !important; font-weight: 300 !important;
-    cursor: pointer; padding: 0 12px !important; min-width: auto !important; transition: all 0.2s ease;
+.month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
+
+/* 彻底不用 button，避开所有主题劫持 */
+.month-nav-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--interactive-accent); font-size: 24px; font-weight: 400;
+    cursor: pointer; padding: 4px 16px; user-select: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-button.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
-.month-label { font-size: 18px; font-weight: 700; min-width: 110px; text-align: center; color: var(--text-normal); }
+.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
+.month-nav-btn:active { transform: scale(0.8); }
+.month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--text-normal); letter-spacing: 0.02em; }
 
-.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 2px; }
+.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; opacity: 0.8; }
 
-/* 🌟 核心修复：文字永久清晰的底层逻辑 🌟 */
+/* 🌟 拉大垂直间距，让上下周不再拥挤 🌟 */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
+
 .calendar-cell {
-    width: 44px; height: 44px; margin: 0 auto; border-radius: 50%;
+    width: 46px; height: 46px; margin: 0 auto; border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; position: relative; border: 2px solid transparent;
 }
-/* 利用伪元素做背景，背景变淡，但文字绝不变淡！ */
+
 .calendar-cell::before {
-    content: ""; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+    content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
     border-radius: 50%; background: rgba(128, 128, 128, 0.08); z-index: 0; transition: all 0.3s ease;
 }
 .theme-dark .calendar-cell::before { background: rgba(255, 255, 255, 0.05); }
 
-/* 文字层始终在最上层 */
 .calendar-cell > * { z-index: 1; position: relative; }
-
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
-.cal-date-num { font-size: 16px; font-weight: 600; line-height: 1.1; color: var(--text-normal) !important; }
-.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1.2; color: var(--text-muted) !important; margin-top: 1px; }
+
+/* 字体排版微调 */
+.cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--text-normal) !important; }
+.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--text-muted) !important; opacity: 0.85; }
 
 .calendar-cell.has-data .cal-date-num { font-weight: 800; }
 .calendar-cell:not(.empty):hover::before { transform: scale(1.1); background: rgba(128, 128, 128, 0.2); }
-.calendar-cell.active-selection::before { border: 2px solid var(--interactive-accent); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.calendar-cell.active-selection::before { border: 2px solid var(--interactive-accent); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-/* 真正清晰的层级背景色 (仅改变 ::before 的透明度) */
 .calendar-cell.level-1::before { background-color: var(--interactive-accent); opacity: 0.25; }
 .calendar-cell.level-2::before { background-color: var(--interactive-accent); opacity: 0.5; }
 .calendar-cell.level-3::before { background-color: var(--interactive-accent); opacity: 0.75; }
 .calendar-cell.level-4::before { background-color: var(--interactive-accent); opacity: 1.0; }
-
-/* 只有最深的颜色，才将上面的文字反白 */
 .calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: white !important; }
 
 /* 🌟 双重日期列表区 🌟 */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; }
-.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 24px; }
+.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
 .record-list-header { margin-bottom: 16px; padding-left: 8px; }
-.record-list-date { font-size: 22px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 8px;}
-.record-list-count { font-size: 14px; font-weight: normal; color: var(--text-muted); }
-.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--interactive-accent); opacity: 0.9; margin-top: 4px; }
+.record-list-date { font-size: 22px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 10px;}
+.record-list-count { font-size: 14px; font-weight: 600; color: var(--text-muted); opacity: 0.8; }
+.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--interactive-accent); opacity: 0.9; margin-top: 6px; }
 
-.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding: 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
-.record-item { background: var(--background-primary); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s ease; border: 1px solid transparent; }
+.record-item { background: var(--background-primary); border-radius: 18px; padding: 18px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: all 0.2s ease; border: 1px solid transparent; }
 .theme-dark .record-item { background: rgba(0,0,0,0.3); }
-.record-item:hover { transform: translateX(4px); border-color: var(--background-modifier-border); }
-.record-icon { font-size: 18px; }
-.record-title { font-size: 15px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.record-item:hover { transform: translateX(6px); border-color: var(--background-modifier-border); }
+.record-item:active { transform: scale(0.98); }
+.record-icon { font-size: 20px; }
+.record-title { font-size: 16px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
 /* =========================================
    🌟 终极美化：iOS 原生级毛玻璃弹窗 🌟
 ========================================= */
 .ios-glass-modal {
-    background: rgba(255, 255, 255, 0.75) !important;
-    backdrop-filter: blur(50px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
-    border-radius: 28px !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important;
-    padding: 36px 24px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
+    border-radius: 28px !important; border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important; padding: 36px 28px !important;
 }
-.theme-dark .ios-glass-modal { 
-    background: rgba(30, 30, 30, 0.75) !important; 
-    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
-}
+.theme-dark .ios-glass-modal { background: rgba(30, 30, 30, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
-.ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 24px; color: var(--text-normal); }
-.ios-glass-modal .setting-item { border: none !important; padding: 12px 0 !important; }
-.ios-glass-modal .setting-item-name { font-weight: 600; font-size: 14px; color: var(--text-muted); }
+.ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 28px; color: var(--text-normal); letter-spacing: -0.02em; }
+.ios-glass-modal .setting-item { border: none !important; padding: 12px 0 !important; flex-direction: column; align-items: flex-start; gap: 8px; }
+.ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
+.ios-glass-modal .setting-item-name { font-weight: 700; font-size: 14px; color: var(--text-muted); margin-left: 4px; }
+.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; }
 
-/* iOS 风格内阴影输入框 */
 .ios-glass-modal input[type="text"] {
-    border-radius: 14px !important; 
-    border: 1px solid rgba(150,150,150,0.2) !important;
-    background: rgba(255, 255, 255, 0.5) !important; 
-    padding: 14px 16px !important; font-size: 16px !important; width: 100%;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important;
-    color: var(--text-normal) !important;
+    border-radius: 16px !important; border: 1px solid rgba(150,150,150,0.2) !important;
+    background: rgba(255, 255, 255, 0.5) !important; padding: 16px 18px !important; font-size: 16px !important; width: 100%;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02) !important; color: var(--text-normal) !important; font-weight: 500;
 }
 .theme-dark .ios-glass-modal input[type="text"] { background: rgba(0, 0, 0, 0.3) !important; border-color: rgba(255,255,255,0.1) !important;}
+.ios-glass-modal input[type="text"]:focus { border-color: var(--interactive-accent) !important; box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2) !important; }
 
-/* 高级高亮确认按钮 */
 .ios-glass-modal button.mod-cta {
     background: var(--interactive-accent) !important; color: white !important;
-    border-radius: 14px !important; padding: 24px !important; font-size: 16px !important;
-    font-weight: 700 !important; width: 100%; margin-top: 16px; box-shadow: 0 8px 20px rgba(var(--color-accent-rgb), 0.3) !important;
-    border: none !important; transition: transform 0.2s ease;
+    border-radius: 16px !important; padding: 26px !important; font-size: 17px !important;
+    font-weight: 700 !important; width: 100%; margin-top: 24px; box-shadow: 0 8px 20px rgba(var(--color-accent-rgb), 0.3) !important;
+    border: none !important; transition: transform 0.2s ease; letter-spacing: 0.02em;
 }
 .ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; }
 
@@ -157,8 +152,8 @@ button.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
     .baseline-title { font-size: 34px; }
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
-    .calendar-cell { width: 38px; height: 38px; }
-    .cal-date-num { font-size: 15px; }
+    .calendar-cell { width: 40px; height: 40px; }
+    .cal-date-num { font-size: 16px; }
     .cal-lunar-text { font-size: 9px; }
-    .ios-glass-modal { padding: 24px !important; border-radius: 24px !important; }
+    .ios-glass-modal { padding: 28px 20px !important; border-radius: 24px !important; }
 }
