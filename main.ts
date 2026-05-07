@@ -90,7 +90,13 @@ class DashboardView extends ItemView {
         const headerRow = container.createDiv({ cls: 'dashboard-header-row' });
         const header = headerRow.createDiv({ cls: 'baseline-header' });
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
-        header.createEl('h1', { text: '控制中心', cls: 'baseline-title' });
+
+        // 🌟 核心：计算此时此刻的天干地支，并替换“控制中心”四个字 🌟
+        const now = new Date();
+        const lunarNow = Lunar.fromDate(now);
+        const baziNowStr = `${lunarNow.getYearInGanZhi()}年 ${lunarNow.getMonthInGanZhi()}月 ${lunarNow.getDayInGanZhi()}日 ${lunarNow.getTimeInGanZhi()}时`;
+        // 加入特定的 bazi-title 类名以触发优化的排版
+        header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
 
         const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
@@ -258,13 +264,14 @@ class QuickNoteModal extends Modal {
         this.actionConfig = config;
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
-        this.folderPath = config.folder.replace(/\{\{YYYY\}\}/g, moment().format('YYYY')).replace(/\{\{MM\}\}/g, moment().format('MM'));
+        
+        this.folderPath = config.folder
+            .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
+            .replace(/\{\{MM\}\}/g, moment().format('MM'));
     }
     
     onOpen() {
         const { contentEl, modalEl } = this;
-        
-        // 🌟 添加置顶显示的 Class，彻底躲避键盘 🌟
         modalEl.addClass('ios-glass-modal');
         
         contentEl.createEl('h3', { text: `新建: ${this.actionConfig.name}` });
@@ -272,7 +279,7 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 文件夹下拉选框
+        // 🌟 核心：悬浮式绝对定位的下拉菜单，永远不会拉伸弹窗的高度 🌟
         const folderSetting = new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
@@ -281,6 +288,9 @@ class QuickNoteModal extends Modal {
             const settingControl = inputEl.parentElement;
             
             if(settingControl) {
+                // 确保容器能容纳绝对定位的子元素
+                settingControl.style.position = 'relative';
+                
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 const suggestMenu = suggestWrapper.createDiv({ cls: 'folder-suggest-menu' });
 
@@ -304,8 +314,7 @@ class QuickNoteModal extends Modal {
                             };
                         });
                         
-                        // 🌟 焦点追踪，稍微向下滚动确保列表可见 🌟
-                        setTimeout(() => { settingControl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
+                        setTimeout(() => { settingControl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
                     } else {
                         suggestWrapper.removeClass('is-open');
                     }
@@ -323,7 +332,7 @@ class QuickNoteModal extends Modal {
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
 
-        // 🌟 核心防遮挡垫片：当任何输入框获焦时，在底部撑开一个巨大的空白区域 🌟
+        // 键盘空间垫片
         const spacer = contentEl.createDiv({ cls: 'keyboard-spacer' });
         const allInputs = contentEl.findAll('input[type="text"]');
         
