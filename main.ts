@@ -277,7 +277,6 @@ class QuickNoteModal extends Modal {
     onOpen() {
         const { contentEl, modalEl, containerEl } = this;
         
-        // 🌟 核心：给 Obsidian 最外层的 Modal 容器加上这个 Class，以触发 CSS 里的全局背景模糊 🌟
         containerEl.addClass('ios-glass-modal-container');
         modalEl.addClass('ios-glass-modal');
         
@@ -322,7 +321,14 @@ class QuickNoteModal extends Modal {
                 };
 
                 inputEl.addEventListener('input', showSuggestions);
-                inputEl.addEventListener('focus', showSuggestions);
+                
+                // 🌟 彻底修复打字卡顿的Bug：删除了 input 事件里的 scrollIntoView，只在点进去的那一瞬间轻微滚动一次 🌟
+                inputEl.addEventListener('focus', () => {
+                    showSuggestions();
+                    // 仅在首次点击时平滑对焦，防止键盘遮挡
+                    setTimeout(() => { settingControl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 300);
+                });
+                
                 inputEl.addEventListener('blur', () => { setTimeout(() => suggestWrapper.removeClass('is-open'), 200); }); 
             }
         });
