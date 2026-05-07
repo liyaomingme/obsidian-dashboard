@@ -91,11 +91,10 @@ class DashboardView extends ItemView {
         const header = headerRow.createDiv({ cls: 'baseline-header' });
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
 
-        // 🌟 核心：计算此时此刻的天干地支，并替换“控制中心”四个字 🌟
+        // 🌟 重新排版：用中点间隔的高级天干地支 🌟
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
-        const baziNowStr = `${lunarNow.getYearInGanZhi()}年 ${lunarNow.getMonthInGanZhi()}月 ${lunarNow.getDayInGanZhi()}日 ${lunarNow.getTimeInGanZhi()}时`;
-        // 加入特定的 bazi-title 类名以触发优化的排版
+        const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
         header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
 
         const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
@@ -117,7 +116,7 @@ class DashboardView extends ItemView {
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
-        this.renderCalendar();
+        this.renderCalendar('none');
     }
 
     renderActionsInMenu() {
@@ -145,7 +144,8 @@ class DashboardView extends ItemView {
         for (const key in this.fileDataMap) { this.fileDataMap[key].sort((a, b) => b.stat.ctime - a.stat.ctime); }
     }
 
-    renderCalendar() {
+    // 🌟 引入方向参数，触发 CSS Keyframes 动画 🌟
+    renderCalendar(direction: 'left' | 'right' | 'none' = 'none') {
         this.boardArea.empty();
         this.closeListAnimation();
 
@@ -154,14 +154,21 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar(); };
+        // 点击左侧 <：回到过去，新日历从左侧滑入
+        nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar(); };
+        // 点击右侧 >：走向未来，新日历从右侧滑入
+        nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
 
-        const weekdaysGrid = this.boardArea.createDiv({ cls: 'calendar-weekdays' });
+        // 动画容器包裹日历网格
+        const animWrapper = this.boardArea.createDiv({ cls: 'calendar-anim-wrapper' });
+        if (direction === 'left') animWrapper.addClass('slide-in-left');
+        if (direction === 'right') animWrapper.addClass('slide-in-right');
+
+        const weekdaysGrid = animWrapper.createDiv({ cls: 'calendar-weekdays' });
         ['日', '一', '二', '三', '四', '五', '六'].forEach(day => weekdaysGrid.createDiv({ text: day }));
 
-        const grid = this.boardArea.createDiv({ cls: 'calendar-grid' });
+        const grid = animWrapper.createDiv({ cls: 'calendar-grid' });
         for (let i = 0; i < firstDay; i++) grid.createDiv({ cls: 'calendar-cell empty' });
 
         for (let day = 1; day <= this.currentMonth.daysInMonth(); day++) {
@@ -279,7 +286,7 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 核心：悬浮式绝对定位的下拉菜单，永远不会拉伸弹窗的高度 🌟
+        // 🌟 绝对定位的悬浮菜单，弹窗本身绝对不再被拉长 🌟
         const folderSetting = new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
@@ -288,9 +295,6 @@ class QuickNoteModal extends Modal {
             const settingControl = inputEl.parentElement;
             
             if(settingControl) {
-                // 确保容器能容纳绝对定位的子元素
-                settingControl.style.position = 'relative';
-                
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 const suggestMenu = suggestWrapper.createDiv({ cls: 'folder-suggest-menu' });
 
@@ -313,8 +317,6 @@ class QuickNoteModal extends Modal {
                                 inputEl.dispatchEvent(new Event('input'));
                             };
                         });
-                        
-                        setTimeout(() => { settingControl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
                     } else {
                         suggestWrapper.removeClass('is-open');
                     }
@@ -331,20 +333,8 @@ class QuickNoteModal extends Modal {
             this.close(); 
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
-
-        // 键盘空间垫片
-        const spacer = contentEl.createDiv({ cls: 'keyboard-spacer' });
-        const allInputs = contentEl.findAll('input[type="text"]');
         
-        allInputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                spacer.addClass('is-active');
-                setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
-            });
-            input.addEventListener('blur', () => {
-                setTimeout(() => { spacer.removeClass('is-active'); }, 200);
-            });
-        });
+        // 彻底移除 spacer 占位逻辑
     }
 }
 
