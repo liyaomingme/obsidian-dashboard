@@ -273,50 +273,65 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        const datalistId = 'vault-folder-list';
-        const datalist = contentEl.createEl('datalist', { attr: { id: datalistId } });
-        
-        const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/');
-        allFolders.forEach(folder => {
-            datalist.createEl('option', { attr: { value: folder.path } });
-        });
-        
+        // 🌟 核心升级：内嵌推拉式菜单 (Accordion) + 智能视口追踪 🌟
         new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
             
             const inputEl = text.inputEl;
-            const parent = inputEl.parentElement;
-            if(parent) {
-                parent.style.position = 'relative';
-                const suggestMenu = parent.createDiv({ cls: 'folder-suggest-menu' });
-                suggestMenu.hide();
+            // 找到包含 input 的容器，在其下方插入一个专属的“抽屉层”
+            const settingControl = inputEl.parentElement;
+            
+            if(settingControl) {
+                // 不使用绝对定位，使用天然文档流占位的 wrapper
+                const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
+                const suggestMenu = suggestWrapper.createDiv({ cls: 'folder-suggest-menu' });
+
+                const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
 
                 const showSuggestions = () => {
                     suggestMenu.empty();
                     const query = inputEl.value.toLowerCase();
-                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 10);
+                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 15); // 给 15 个选项
 
                     if (matches.length > 0) {
-                        suggestMenu.show();
+                        suggestWrapper.addClass('is-open');
                         matches.forEach(folder => {
                             const item = suggestMenu.createDiv({ cls: 'suggest-item', text: folder.path });
+                            // mousedown 比 blur 早触发，完美适配手机触摸
                             item.onmousedown = (e) => { 
                                 e.preventDefault();
                                 inputEl.value = folder.path;
                                 this.folderPath = folder.path;
-                                suggestMenu.hide();
+                                suggestWrapper.removeClass('is-open');
                                 inputEl.dispatchEvent(new Event('input'));
                             };
                         });
+                        
+                        // 🌟 智能追踪：当菜单展开时，把输入框连同菜单平滑滚动到屏幕中央 🌟
+                        setTimeout(() => {
+                            settingControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                        
                     } else {
-                        suggestMenu.hide();
+                        suggestWrapper.removeClass('is-open');
                     }
                 };
 
                 inputEl.addEventListener('input', showSuggestions);
-                inputEl.addEventListener('focus', showSuggestions);
-                inputEl.addEventListener('blur', () => { setTimeout(() => suggestMenu.hide(), 150); }); 
+                
+                // 当输入框获得焦点时，等待键盘升起(约300ms)，然后将自己推到屏幕中央！
+                inputEl.addEventListener('focus', () => {
+                    setTimeout(() => {
+                        settingControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 350);
+                    showSuggestions();
+                });
+                
+                inputEl.addEventListener('blur', () => { 
+                    // 失去焦点时收起下拉菜单
+                    setTimeout(() => suggestWrapper.removeClass('is-open'), 200); 
+                }); 
             }
         });
         
