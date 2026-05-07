@@ -81,7 +81,7 @@ class DashboardView extends ItemView {
 
         this.buildFileDataMap();
 
-        // 1. 顶栏 (原生排版 + 无框加号)
+        // 顶栏 
         const headerRow = container.createDiv({ cls: 'dashboard-header-row' });
         const header = headerRow.createDiv({ cls: 'baseline-header' });
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
@@ -100,19 +100,18 @@ class DashboardView extends ItemView {
             if(this.plusMenu) this.plusMenu.removeClass('is-open');
         });
 
-        // 2. 数据看板区
+        // 数据看板区
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
         
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
         chartHeader.createEl('span', { text: '足迹回顾', cls: 'chart-title' });
         
-        const toggleBtn = chartHeader.createEl('button', { text: '切换数据 ◓', cls: 'view-toggle-btn' });
+        const toggleBtn = chartHeader.createEl('button', { text: '切换视图 ◓', cls: 'view-toggle-btn' });
         toggleBtn.onclick = () => {
             this.viewType = this.viewType === 'calendar' ? 'heatmap' : 'calendar';
             this.renderBoard();
         };
 
-        // 导航区放在头部下方
         this.boardArea = dataSection.createDiv({ cls: 'heatmap-calendar-wrapper' });
 
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
@@ -156,15 +155,14 @@ class DashboardView extends ItemView {
         else this.renderHeatmap();
     }
 
-    // ⭐ 稳定版历法生成器：纯内置，绝对不崩溃 ⭐
+    // 🌟 原生农历 API，不依赖外部库，绝不报错崩盘 🌟
     getLunarDayStr(year: number, month: number, day: number): string {
         try {
             const dateObj = new Date(year, month, day);
-            // 调用原生 V8/浏览器底层国际化 API 获取农历
             const formatter = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { day: 'numeric' });
-            return formatter.format(dateObj); // 完美返回 "初一", "廿五" 等
+            return formatter.format(dateObj); 
         } catch (e) {
-            return ''; // 极小概率环境不支持时，优雅降级为空，绝不导致崩溃
+            return ''; // 极小概率不支持时，优雅留空
         }
     }
 
@@ -175,7 +173,6 @@ class DashboardView extends ItemView {
         const month = this.currentMonth.month();
         const firstDay = moment([year, month, 1]).day();
 
-        // 居中的苹果原生月份导航 (无边框强力清除)
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
         nav.createEl('button', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderBoard(); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
@@ -194,7 +191,6 @@ class DashboardView extends ItemView {
 
             const cell = grid.createDiv({ cls: 'calendar-cell' });
             
-            // 写入数字和历法
             const lunarText = this.getLunarDayStr(year, month, day);
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
             cell.createDiv({ text: lunarText, cls: 'cal-lunar-text' });
@@ -231,6 +227,9 @@ class DashboardView extends ItemView {
                 this.triggerListAnimation(dateKey, files);
             };
         }
+        const labels = this.boardArea.createDiv({ cls: 'calendar-weekdays', attr: {style: 'margin-top: 8px; justify-content: space-between; display: flex;'} });
+        labels.createSpan({ text: '12周前' });
+        labels.createSpan({ text: '今天' });
     }
 
     triggerListAnimation(dateStr: string, files: TFile[]) {
