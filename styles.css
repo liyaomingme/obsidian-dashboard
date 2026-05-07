@@ -93,9 +93,7 @@
 .calendar-cell.level-4::before { background-color: var(--interactive-accent); opacity: 1.0; }
 .calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: white !important; }
 
-/* =========================================
-   🌟 核心大改：无框平铺式文章列表 🌟
-========================================= */
+/* 🌟 无框平铺式文章列表 🌟 */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; }
 .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
 .record-list-header { margin-bottom: 16px; padding-left: 8px; }
@@ -103,7 +101,6 @@
 .record-list-count { font-size: 14px; font-weight: 600; color: var(--text-muted); opacity: 0.8; }
 .record-list-lunar { font-size: 13px; font-weight: 600; color: var(--interactive-accent); opacity: 0.9; margin-top: 6px; }
 
-/* 取消所有的卡片底色，采用原生极简分割线设计 */
 .record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
 
@@ -116,8 +113,6 @@
 }
 .record-item:last-child { border-bottom: none !important; }
 .theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
-
-/* 鼠标悬停/按住时的极简微光反馈 */
 .record-item:hover { background: rgba(120, 120, 120, 0.1) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
 .record-item:active { background: rgba(120, 120, 120, 0.2) !important; transform: scale(0.98); }
 
@@ -126,36 +121,45 @@
 
 
 /* =========================================
-   🌟 自定义悬浮输入框的下拉补全菜单 🌟
+   🌟 核心升级：液态玻璃版下拉菜单 🌟
 ========================================= */
 .folder-suggest-menu {
-    position: absolute; top: 100%; left: 0; right: 0;
-    max-height: 180px; overflow-y: auto;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(200, 200, 200, 0.3);
-    border-radius: 14px; z-index: 9999;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    margin-top: 8px; padding: 6px;
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+    max-height: 220px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px; z-index: 9999;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    padding: 8px;
 }
-.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.85); border-color: rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.folder-suggest-menu::-webkit-scrollbar { display: none; }
+.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.75); border-color: rgba(255,255,255,0.15); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+
 .suggest-item {
-    padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--text-normal);
-    cursor: pointer; border-radius: 10px; transition: background 0.2s;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding: 14px 16px; font-size: 15px; font-weight: 600; color: var(--text-normal);
+    cursor: pointer; border-radius: 12px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;
 }
-.suggest-item:hover { background: rgba(120, 120, 120, 0.15); color: var(--interactive-accent); }
+.suggest-item:last-child { margin-bottom: 0; }
+.suggest-item:hover, .suggest-item:active { background: rgba(120, 120, 120, 0.12); color: var(--interactive-accent); transform: scale(0.98); }
 
 
 /* =========================================
-   🌟 终极美化：iOS 原生级毛玻璃弹窗 🌟
+   🌟 终极美化：iOS 弹窗与滚动修复 🌟
 ========================================= */
 .ios-glass-modal {
     background: rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
     border-radius: 28px !important; border: 1px solid rgba(255, 255, 255, 0.8) !important;
     box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important; padding: 36px 28px !important;
+    
+    /* 🌟 核心：允许弹窗在键盘弹出时丝滑上下滚动 🌟 */
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
 }
+.ios-glass-modal::-webkit-scrollbar { display: none; }
 .theme-dark .ios-glass-modal { background: rgba(30, 30, 30, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
 .ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 28px; color: var(--text-normal); letter-spacing: -0.02em; }
