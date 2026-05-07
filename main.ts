@@ -258,32 +258,29 @@ class QuickNoteModal extends Modal {
         this.actionConfig = config;
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
-        
-        this.folderPath = config.folder
-            .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
-            .replace(/\{\{MM\}\}/g, moment().format('MM'));
+        this.folderPath = config.folder.replace(/\{\{YYYY\}\}/g, moment().format('YYYY')).replace(/\{\{MM\}\}/g, moment().format('MM'));
     }
     
     onOpen() {
-        const { contentEl } = this;
-        this.modalEl.addClass('ios-glass-modal');
+        const { contentEl, modalEl } = this;
+        
+        // 🌟 添加置顶显示的 Class，彻底躲避键盘 🌟
+        modalEl.addClass('ios-glass-modal');
         
         contentEl.createEl('h3', { text: `新建: ${this.actionConfig.name}` });
         
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 核心升级：内嵌推拉式菜单 (Accordion) + 智能视口追踪 🌟
-        new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
+        // 文件夹下拉选框
+        const folderSetting = new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
             
             const inputEl = text.inputEl;
-            // 找到包含 input 的容器，在其下方插入一个专属的“抽屉层”
             const settingControl = inputEl.parentElement;
             
             if(settingControl) {
-                // 不使用绝对定位，使用天然文档流占位的 wrapper
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 const suggestMenu = suggestWrapper.createDiv({ cls: 'folder-suggest-menu' });
 
@@ -292,13 +289,12 @@ class QuickNoteModal extends Modal {
                 const showSuggestions = () => {
                     suggestMenu.empty();
                     const query = inputEl.value.toLowerCase();
-                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 15); // 给 15 个选项
+                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 15); 
 
                     if (matches.length > 0) {
                         suggestWrapper.addClass('is-open');
                         matches.forEach(folder => {
                             const item = suggestMenu.createDiv({ cls: 'suggest-item', text: folder.path });
-                            // mousedown 比 blur 早触发，完美适配手机触摸
                             item.onmousedown = (e) => { 
                                 e.preventDefault();
                                 inputEl.value = folder.path;
@@ -308,30 +304,16 @@ class QuickNoteModal extends Modal {
                             };
                         });
                         
-                        // 🌟 智能追踪：当菜单展开时，把输入框连同菜单平滑滚动到屏幕中央 🌟
-                        setTimeout(() => {
-                            settingControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 100);
-                        
+                        // 🌟 焦点追踪，稍微向下滚动确保列表可见 🌟
+                        setTimeout(() => { settingControl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
                     } else {
                         suggestWrapper.removeClass('is-open');
                     }
                 };
 
                 inputEl.addEventListener('input', showSuggestions);
-                
-                // 当输入框获得焦点时，等待键盘升起(约300ms)，然后将自己推到屏幕中央！
-                inputEl.addEventListener('focus', () => {
-                    setTimeout(() => {
-                        settingControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 350);
-                    showSuggestions();
-                });
-                
-                inputEl.addEventListener('blur', () => { 
-                    // 失去焦点时收起下拉菜单
-                    setTimeout(() => suggestWrapper.removeClass('is-open'), 200); 
-                }); 
+                inputEl.addEventListener('focus', showSuggestions);
+                inputEl.addEventListener('blur', () => { setTimeout(() => suggestWrapper.removeClass('is-open'), 200); }); 
             }
         });
         
@@ -340,6 +322,20 @@ class QuickNoteModal extends Modal {
             this.close(); 
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
+
+        // 🌟 核心防遮挡垫片：当任何输入框获焦时，在底部撑开一个巨大的空白区域 🌟
+        const spacer = contentEl.createDiv({ cls: 'keyboard-spacer' });
+        const allInputs = contentEl.findAll('input[type="text"]');
+        
+        allInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                spacer.addClass('is-active');
+                setTimeout(() => { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+            });
+            input.addEventListener('blur', () => {
+                setTimeout(() => { spacer.removeClass('is-active'); }, 200);
+            });
+        });
     }
 }
 
