@@ -1,4 +1,4 @@
-/* --- 全局容器 --- */
+/* --- 全局统一：苹果液态玻璃美学 --- */
 .dashboard-container {
     padding: 6vh 5vw;
     max-width: 860px;
@@ -9,170 +9,190 @@
     height: 100%;
     overflow-y: auto;
     background: transparent;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-}
-
-/* --- 顶栏排版 --- */
-.apple-header { padding-left: 8px; margin-bottom: 8px; }
-.apple-date { font-size: 13px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; opacity: 0.8; text-transform: uppercase; }
-.apple-title { margin: 2px 0 0 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; }
-
-/* --- 🌟 苹果液态玻璃材质 (Liquid Glass) 🌟 --- */
-.glass-panel {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: saturate(180%) blur(25px);
-    -webkit-backdrop-filter: saturate(180%) blur(25px);
-    border-radius: 28px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.4); /* 极细的高光边缘 */
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.theme-dark .glass-panel {
-    background: rgba(30, 30, 30, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
-}
-
-/* --- 动作卡片区 --- */
-.dashboard-actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* 电脑端宽敞排版 */
-    gap: 16px;
-}
-.action-card {
-    padding: 32px 20px;
-    text-align: center;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.action-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12); background: rgba(255, 255, 255, 0.6); }
-.theme-dark .action-card:hover { background: rgba(255, 255, 255, 0.08); }
-.action-card:active { transform: scale(0.97); }
-.action-title { font-weight: 700; font-size: 18px; color: var(--text-normal); letter-spacing: 0.02em; }
-
-/* --- 数据看板区 --- */
-.board-panel { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
-.board-header { display: flex; justify-content: space-between; align-items: center; }
-.board-title { font-size: 22px; font-weight: 700; margin: 0; }
-
-/* 无边框的玻璃切换按钮 */
-.view-toggle-btn {
-    background: rgba(120, 120, 120, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: none;
-    border-radius: 14px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 600;
+    /* 极致纯净排版字体 */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     color: var(--text-normal);
-    cursor: pointer;
-    transition: all 0.3s ease;
+    -webkit-font-smoothing: antialiased;
 }
-.view-toggle-btn:hover { background: rgba(120, 120, 120, 0.25); transform: scale(1.05); }
 
-/* --- 日历与热力图 --- */
-.calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.cal-nav-btn { background: transparent; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 4px 12px; transition: color 0.2s; }
-.cal-nav-btn:hover { color: var(--text-normal); }
-.cal-month-label { font-size: 16px; font-weight: 700; color: var(--text-normal); }
+/* --- 🌟 优化：顶栏与统一悬浮 "+" 按钮 --- */
+.dashboard-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 0 4px;
+    position: relative; /* 方便下拉菜单定位 */
+}
 
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-.calendar-header-cell { font-size: 12px; font-weight: 700; color: var(--text-muted); padding-bottom: 12px; opacity: 0.6; }
-.calendar-cell {
-    aspect-ratio: 1;
+.baseline-header { display: flex; flex-direction: column; gap: 1px; }
+.baseline-date { font-size: 13px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; opacity: 0.7; text-transform: uppercase; }
+.baseline-title { margin: 0; font-size: 38px; font-weight: 800; color: var(--text-normal); letter-spacing: -0.03em; }
+
+/* 极致毛玻璃 "+" 按钮 */
+.floating-plus-btn {
+    background: rgba(120, 120, 120, 0.1);
+    backdrop-filter: saturate(200%) blur(30px);
+    -webkit-backdrop-filter: saturate(200%) blur(30px);
+    width: 42px; height: 42px;
+    border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; /* 完美的圆形 */
-    font-size: 14px; font-weight: 600;
     cursor: pointer;
-    background: transparent;
-    color: var(--text-muted);
-    opacity: 0.4;
+    border: none;
+    font-size: 24px; font-weight: 300;
+    color: var(--interactive-accent);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.calendar-cell.empty { opacity: 0; pointer-events: none; }
-.calendar-cell.has-data { opacity: 1; color: var(--text-normal); }
-.calendar-cell:hover { transform: scale(1.2); box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: var(--background-modifier-hover); }
-.calendar-cell.active-selection { box-shadow: 0 0 0 3px var(--interactive-accent); transform: scale(1.1); }
+.floating-plus-btn:hover { background: rgba(120, 120, 120, 0.2); transform: scale(1.08); }
+.floating-plus-btn:active { transform: scale(0.95); }
 
-/* 热力色阶 (复用 Obsidian 主题色) */
-.calendar-cell.level-1 { background-color: var(--interactive-accent); opacity: 0.3; color: var(--text-on-accent); }
-.calendar-cell.level-2 { background-color: var(--interactive-accent); opacity: 0.6; color: var(--text-on-accent); }
-.calendar-cell.level-3 { background-color: var(--interactive-accent); opacity: 0.8; color: var(--text-on-accent); }
-.calendar-cell.level-4 { background-color: var(--interactive-accent); opacity: 1.0; color: var(--text-on-accent); }
+/* 毛玻璃下拉菜单 */
+.plus-dropdown {
+    position: absolute; top: 100%; right: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: saturate(200%) blur(30px);
+    -webkit-backdrop-filter: saturate(200%) blur(30px);
+    border-radius: 16px;
+    width: 140px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    transform: translateY(10px); opacity: 0; pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    padding: 6px;
+}
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.5); }
+.plus-dropdown.is-open { transform: translateY(18px); opacity: 1; pointer-events: auto; }
 
-/* 热力图网格 */
-.heatmap-grid { display: grid; grid-template-rows: repeat(7, 1fr); grid-auto-flow: column; gap: 6px; margin-bottom: 8px;}
-.heatmap-cell { width: 14px; height: 14px; border-radius: 50%; background: var(--background-modifier-border); opacity: 0.3; cursor: pointer; transition: transform 0.2s; }
+.dropdown-item {
+    padding: 10px 14px;
+    font-size: 14px; font-weight: 600;
+    color: var(--text-normal);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.2s;
+    text-align: left;
+}
+.dropdown-item:hover { background: rgba(120, 120, 120, 0.1); }
+
+/* --- 🌟 核心优化：月度数据看板 (Notion 风格 & 苹果日历参考) --- */
+.dashboard-data-section {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: saturate(180%) blur(30px);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    border-radius: 28px;
+    padding: 32px 28px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+    border: none;
+    position: relative;
+    /* 彻底移除框框，依赖材质区分层级 */
+}
+.theme-dark .dashboard-data-section { background: rgba(0, 0, 0, 0.15); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); }
+
+.chart-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.chart-title { font-size: 18px; font-weight: 700; color: var(--text-normal); margin: 0; }
+
+/* 🌟 无边框纯文本导航 (点按有动画) 🌟 */
+.month-nav {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px; font-weight: 700;
+    color: var(--text-normal);
+}
+.month-nav-btn {
+    background: transparent; border: none;
+    color: var(--text-muted); font-size: 18px; font-weight: bold;
+    cursor: pointer; padding: 4px 8px;
+    transition: all 0.2s ease;
+}
+.month-nav-btn:hover { color: var(--text-normal); transform: scale(1.1); }
+.month-nav-btn:active { transform: scale(0.9); opacity: 0.7; } /* 按下动画 */
+
+.month-label { min-width: 75px; text-align: center; color: var(--text-normal); }
+
+/* 🌟 核心排边：集成中国历法的日期网格 🌟 */
+.heatmap-calendar-wrapper { width: 100%; }
+
+.calendar-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    text-align: center; font-size: 11px; font-weight: 700;
+    color: var(--text-muted); margin-bottom: 14px; opacity: 0.6; text-transform: uppercase;
+}
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+
+.calendar-cell {
+    aspect-ratio: 1; /* 保持正圆/正方形 */
+    border-radius: 50%; /* 圆形参考之前的设计 */
+    display: flex; flex-direction: column; /* 上下排版 */
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    background: transparent;
+    opacity: 0.2; /* 空状态透明 */
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    border: 1px solid transparent;
+}
+
+/* 隐藏占位格子 */
+.calendar-cell.empty { opacity: 0 !important; pointer-events: none; }
+
+/* 🌟 天干地支双行排版 🌟 */
+.cal-date-num { font-size: 15px; font-weight: 700; line-height: 1.1; color: var(--text-faint); }
+.cal-lunar-text { font-size: 10px; font-weight: 600; line-height: 1.1; color: var(--text-faint); opacity: 0.7; margin-top: 1px; }
+
+/* 有笔记的天数样式 */
+.calendar-cell.has-data { opacity: 1; border-color: rgba(120, 120, 120, 0.05); }
+.calendar-cell.has-data .cal-date-num { color: var(--text-normal); }
+.calendar-cell.has-data .cal-lunar-text { color: var(--text-muted); }
+
+/* 点击选中反馈 */
+.calendar-cell:not(.empty):hover {
+    transform: scale(1.15); opacity: 1 !important;
+    background: rgba(120, 120, 120, 0.08);
+}
+.calendar-cell.active-selection { box-shadow: 0 0 0 3px var(--interactive-accent); }
+
+/* 🌟 精致热力图：纯色阶，无文字 🌟 */
+.heatmap-cell {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--background-modifier-border);
+    opacity: 0.3;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
 .heatmap-cell:hover { transform: scale(1.4); opacity: 1 !important; }
 .heatmap-cell.active-selection { box-shadow: 0 0 0 2px var(--text-normal); }
 
-/* --- 🌟 展开列表动画区 (iOS 阻尼滑动风格) 🌟 --- */
-.record-list-wrapper {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.6s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.4s ease, margin-top 0.4s ease;
-    opacity: 0;
-    margin-top: 0;
-}
-.record-list-wrapper.is-open {
-    max-height: 400px; /* 展开后的最大高度 */
-    opacity: 1;
-    margin-top: 16px;
-}
-.record-list-header { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; padding-left: 4px; }
-.record-list-scroll {
-    max-height: 300px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* 开启 iOS 丝滑阻尼滚动 */
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 4px;
-}
-/* 隐藏滚动条但保留功能 */
-.record-list-scroll::-webkit-scrollbar { display: none; }
+/* 色阶：依靠强调色的不透明度区分 */
+.level-0 { color: var(--text-faint); } /* 纯数字 */
+.calendar-cell.level-1 { background-color: var(--interactive-accent); opacity: 0.3; }
+.calendar-cell.level-2 { background-color: var(--interactive-accent); opacity: 0.55; }
+.calendar-cell.level-3 { background-color: var(--interactive-accent); opacity: 0.8; }
+.calendar-cell.level-4 { background-color: var(--interactive-accent); opacity: 1.0; }
+/* 热力色块下的文字颜色反转 */
+.calendar-cell[class*="level-"] .cal-date-num { color: var(--text-on-accent); }
+.calendar-cell[class*="level-"] .cal-lunar-text { color: var(--text-on-accent); opacity: 0.8;}
 
-.record-item {
-    background: var(--background-primary);
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    transition: all 0.2s ease;
-}
+
+/* --- 丝滑列表与手机适配部分保持原样 --- */
+.record-list-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.6s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; margin-top: 0; }
+.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 16px; }
+.record-list-header { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; padding-left: 4px; }
+.record-list-scroll { max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+.record-list-scroll::-webkit-scrollbar { display: none; }
+.record-item { background: var(--background-primary); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s ease; }
 .theme-dark .record-item { background: rgba(0,0,0,0.3); }
 .record-item:hover { transform: translateX(4px); background: var(--background-modifier-hover); }
 .record-item:active { transform: scale(0.98); }
 .record-icon { font-size: 18px; }
 .record-title { font-size: 16px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
-/* =========================================
-   🌟 手机端专属排版 (完美奇偶数便当盒) 🌟
-========================================= */
 @media (max-width: 480px) {
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
-    .apple-title { font-size: 32px; }
-    
-    .dashboard-actions {
-        /* 手机强制 2 列网格 */
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    
-    /* 奇数定律：如果卡片总数是奇数，最后一个卡片横跨两列填满 */
-    .action-card:last-child:nth-child(odd) {
-        grid-column: 1 / -1;
-    }
-    
-    .action-card { padding: 24px 12px; border-radius: 24px; }
-    .action-title { font-size: 16px; }
-    .board-panel { padding: 24px 20px; border-radius: 28px; }
+    .baseline-title { font-size: 32px; }
+    .dashboard-data-section { padding: 24px 20px; border-radius: 24px; }
     .calendar-cell { font-size: 13px; }
     .heatmap-cell { width: 12px; height: 12px; }
 }
