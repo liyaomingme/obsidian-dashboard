@@ -9,8 +9,9 @@ interface DashboardSettings { openOnStartup: boolean; actions: ActionConfig[]; }
 const DEFAULT_SETTINGS: DashboardSettings = {
     openOnStartup: false,
     actions: [
-        { name: '新建文档', folder: '笔记/{{YYYY}}', template: "---\ndate: {{DATE}}\n---\n\n# {{TITLE}}\n\n" },
-        { name: '快速记录', folder: '日记/{{YYYY}}/{{MM}}', template: "---\ntype: diary\ndate: {{DATE}}\n---\n\n" }
+        { name: '新建日记', folder: '日记/{{YYYY}}/{{MM}}', template: "---\ntype: diary\ndate: {{DATE}}\n---\n\n" },
+        { name: '沉淀知识', folder: '知识库/{{YYYY}}', template: "---\ntype: knowledge\ndate: {{DATE}}\n---\n\n" },
+        { name: '灵感碎片', folder: '灵感捕捉', template: "---\ntype: idea\ndate: {{DATE}}\n---\n\n" }
     ]
 }
 
@@ -30,7 +31,12 @@ export default class DashboardPlugin extends Plugin {
     }
 
     async loadSettings() { this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData()); }
-    async saveSettings() { await this.saveData(this.settings); }
+    async saveSettings() { 
+        await this.saveData(this.settings); 
+        this.app.workspace.getLeavesOfType(VIEW_TYPE_DASHBOARD).forEach(leaf => {
+            if (leaf.view instanceof DashboardView) leaf.view.renderActions();
+        });
+    }
 
     async activateView() {
         const { workspace } = this.app;
@@ -45,12 +51,17 @@ export default class DashboardPlugin extends Plugin {
 
 class DashboardView extends ItemView {
     plugin: DashboardPlugin;
+    actionsContainer: HTMLElement;
     boardArea: HTMLElement;
-    listArea: HTMLElement;
     
     currentMonth: moment.Moment;
     viewType: 'calendar' | 'heatmap' = 'calendar';
-    fileDataMap: Record<string, TFile[]> = {}; // 核心：日期 -> 文件列表的映射
+    fileDataMap: Record<string, TFile[]> = {}; 
+    
+    // 动画列表容器
+    listWrapper: HTMLElement;
+    listScrollArea: HTMLElement;
+    listHeader: HTMLElement;
 
     constructor(leaf: WorkspaceLeaf, plugin: DashboardPlugin) {
         super(leaf);
@@ -68,42 +79,48 @@ class DashboardView extends ItemView {
         container.addClass('dashboard-container');
         moment.locale(window.localStorage.getItem('language') || 'zh-cn');
 
-        // 预处理所有文件数据
         this.buildFileDataMap();
 
         // 1. 顶栏
-        const header = container.createDiv({ cls: 'notion-header' });
-        header.createSpan({ text: moment().format('M月D日 dddd').toUpperCase(), cls: 'notion-date' });
-        header.createEl('h1', { text: '控制中心', cls: 'notion-title' });
+        const header = container.createDiv({ cls: 'apple-header' });
+        header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'apple-date' });
+        header.createEl('h1', { text: '控制中心', cls: 'apple-title' });
 
-        // 2. 快捷动作区 (横向滑动)
-        const actionsScroll = container.createDiv({ cls: 'notion-actions-scroll' });
-        this.plugin.settings.actions.forEach(action => {
-            if (!action.name) return;
-            const card = actionsScroll.createDiv({ cls: 'notion-action-card' });
-            card.createDiv({ text: '📄', cls: 'notion-action-icon' });
-            card.createDiv({ text: action.name, cls: 'notion-action-text' });
-            card.onclick = () => this.promptNewNote(action);
-        });
+        // 2. 快捷动作区 (Bento Box)
+        this.actionsContainer = container.createDiv({ cls: 'dashboard-actions' });
+        this.renderActions();
 
-        // 3. 视图头部
-        const sectionHeader = container.createDiv({ cls: 'section-header' });
-        sectionHeader.createEl('h3', { text: '足迹回顾', cls: 'section-title' });
-        const toggleBtn = sectionHeader.createEl('button', { text: '切换视图', cls: 'notion-toggle-btn' });
+        // 3. 数据看板区 (包含日历/热力图 + 隐藏的详情列表)
+        const boardPanel = container.createDiv({ cls: 'glass-panel board-panel' });
+        
+        const boardHeader = boardPanel.createDiv({ cls: 'board-header' });
+        boardHeader.createEl('h3', { text: '足迹回顾', cls: 'board-title' });
+        const toggleBtn = boardHeader.createEl('button', { text: '切换视图 ◓', cls: 'view-toggle-btn' });
         toggleBtn.onclick = () => {
             this.viewType = this.viewType === 'calendar' ? 'heatmap' : 'calendar';
             this.renderBoard();
         };
 
-        // 4. 看板区 & 列表区
-        this.boardArea = container.createDiv({ cls: 'notion-board' });
-        this.listArea = container.createDiv({ cls: 'notion-list-section' });
-        this.listArea.hide(); // 默认隐藏列表
+        this.boardArea = boardPanel.createDiv();
+
+        // 🌟 4. 苹果丝滑动画列表容器 (初始状态隐藏) 🌟
+        this.listWrapper = boardPanel.createDiv({ cls: 'record-list-wrapper' });
+        this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
+        this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
         this.renderBoard();
     }
 
-    // 核心逻辑：扫描仓库，建立日期和文件的对应关系
+    renderActions() {
+        this.actionsContainer.empty();
+        this.plugin.settings.actions.forEach(action => {
+            if (!action.name) return;
+            const card = this.actionsContainer.createDiv({ cls: 'glass-panel action-card' });
+            card.createDiv({ text: action.name, cls: 'action-title' });
+            card.onclick = () => this.promptNewNote(action);
+        });
+    }
+
     buildFileDataMap() {
         this.fileDataMap = {};
         const files = this.app.vault.getMarkdownFiles();
@@ -112,42 +129,39 @@ class DashboardView extends ItemView {
             const dateStr = cache?.frontmatter?.date || moment(file.stat.ctime).format('YYYY-MM-DD');
             const formatKey = moment(dateStr).format('YYYY-MM-DD');
             
-            if (!this.fileDataMap[formatKey]) {
-                this.fileDataMap[formatKey] = [];
-            }
+            if (!this.fileDataMap[formatKey]) this.fileDataMap[formatKey] = [];
             this.fileDataMap[formatKey].push(file);
         });
+        // 按文件创建时间或修改时间降序排序
+        for (const key in this.fileDataMap) {
+            this.fileDataMap[key].sort((a, b) => b.stat.ctime - a.stat.ctime);
+        }
     }
 
     renderBoard() {
         this.boardArea.empty();
-        this.listArea.hide();
+        this.closeListAnimation(); // 切换视图时收起列表
 
-        if (this.viewType === 'calendar') {
-            this.renderCalendar();
-        } else {
-            this.renderHeatmap();
-        }
+        if (this.viewType === 'calendar') this.renderCalendar();
+        else this.renderHeatmap();
     }
 
     renderCalendar() {
         const year = this.currentMonth.year();
         const month = this.currentMonth.month();
-        const daysInMonth = this.currentMonth.daysInMonth();
         const firstDay = moment([year, month, 1]).day();
 
-        // 导航
         const nav = this.boardArea.createDiv({ cls: 'calendar-nav' });
-        nav.createEl('button', { text: '<', cls: 'calendar-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderBoard(); };
-        nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'calendar-title' });
-        nav.createEl('button', { text: '>', cls: 'calendar-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderBoard(); };
+        nav.createEl('button', { text: '‹', cls: 'cal-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderBoard(); };
+        nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'cal-month-label' });
+        nav.createEl('button', { text: '›', cls: 'cal-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderBoard(); };
 
         const grid = this.boardArea.createDiv({ cls: 'calendar-grid' });
-        ['日', '一', '二', '三', '四', '五', '六'].forEach(d => grid.createDiv({ text: d, cls: 'calendar-header' }));
+        ['日', '一', '二', '三', '四', '五', '六'].forEach(d => grid.createDiv({ text: d, cls: 'calendar-header-cell' }));
 
         for (let i = 0; i < firstDay; i++) grid.createDiv({ cls: 'calendar-cell empty' });
 
-        for (let day = 1; day <= daysInMonth; day++) {
+        for (let day = 1; day <= this.currentMonth.daysInMonth(); day++) {
             const dateKey = moment([year, month, day]).format('YYYY-MM-DD');
             const files = this.fileDataMap[dateKey] || [];
             const count = files.length;
@@ -156,88 +170,84 @@ class DashboardView extends ItemView {
             
             if (count > 0) {
                 cell.addClass('has-data');
-                const level = Math.min(Math.ceil(count / 2), 4); // 简单分级
-                cell.addClass(`level-${level}`);
-            } else {
-                cell.addClass('level-0');
+                cell.addClass(`level-${Math.min(Math.ceil(count / 2), 4)}`);
             }
 
-            // ⭐ 点击单元格展示当天的笔记列表
+            // 绑定点击事件
             cell.onclick = () => {
-                // 移除其他选中状态
-                grid.findAll('.calendar-cell').forEach(el => el.removeClass('active'));
-                cell.addClass('active');
-                this.showFileList(dateKey, files);
+                grid.findAll('.calendar-cell').forEach(el => el.removeClass('active-selection'));
+                cell.addClass('active-selection');
+                this.triggerListAnimation(dateKey, files);
             };
         }
     }
 
     renderHeatmap() {
-        const wrapper = this.boardArea.createDiv({ cls: 'heatmap-wrapper' });
-        const grid = wrapper.createDiv({ cls: 'heatmap-grid' });
-        const daysToTrack = 84; // 12 周
-
-        for (let i = daysToTrack - 1; i >= 0; i--) {
+        const grid = this.boardArea.createDiv({ cls: 'heatmap-grid' });
+        for (let i = 83; i >= 0; i--) {
             const dateKey = moment().subtract(i, 'days').format('YYYY-MM-DD');
             const files = this.fileDataMap[dateKey] || [];
             const count = files.length;
 
             const cell = grid.createDiv({ cls: 'heatmap-cell' });
-            cell.title = `${dateKey}: ${count} 篇`;
+            if (count > 0) cell.addClass(`level-${Math.min(Math.ceil(count / 2), 4)}`);
+            cell.addClass('has-data');
 
-            if (count > 0) {
-                const level = Math.min(Math.ceil(count / 2), 4);
-                cell.addClass(`level-${level}`);
-            }
-
-            // ⭐ 点击热力图单元格同样展示列表
             cell.onclick = () => {
-                grid.findAll('.heatmap-cell').forEach(el => el.removeClass('active'));
-                cell.addClass('active');
-                this.showFileList(dateKey, files);
+                grid.findAll('.heatmap-cell').forEach(el => el.removeClass('active-selection'));
+                cell.addClass('active-selection');
+                this.triggerListAnimation(dateKey, files);
             };
         }
-
-        const labels = wrapper.createDiv({ cls: 'heatmap-labels' });
-        labels.createSpan({ text: '12周前' });
-        labels.createSpan({ text: '今天' });
+        const labels = this.boardArea.createDiv({ cls: 'calendar-nav' }); // 复用一点排版
+        labels.createSpan({ text: '12周前', cls: 'calendar-header-cell' });
+        labels.createSpan({ text: '今天', cls: 'calendar-header-cell' });
     }
 
-    // ⭐ 核心渲染：像 Notion 一样的文件列表
-    showFileList(dateStr: string, files: TFile[]) {
-        this.listArea.empty();
-        this.listArea.show();
-
-        this.listArea.createDiv({ text: `📝 ${dateStr} 的记录`, cls: 'notion-list-title' });
-
+    // 🌟 触发丝滑的展开动画 🌟
+    triggerListAnimation(dateStr: string, files: TFile[]) {
+        this.listScrollArea.empty();
+        
         if (files.length === 0) {
-            this.listArea.createDiv({ text: '这一天没有任何记录。', cls: 'notion-list-name' }).style.color = 'var(--text-muted)';
+            this.listHeader.innerText = `${dateStr} 没有留下记录`;
+            this.listWrapper.addClass('is-open');
             return;
         }
 
+        this.listHeader.innerText = `${dateStr} 的记录 (${files.length})`;
+        
         files.forEach(file => {
-            const item = this.listArea.createDiv({ cls: 'notion-list-item' });
-            item.createDiv({ text: '📄', cls: 'notion-list-icon' });
-            item.createDiv({ text: file.basename, cls: 'notion-list-name' });
+            const item = this.listScrollArea.createDiv({ cls: 'record-item' });
+            item.createDiv({ text: '📄', cls: 'record-icon' });
+            item.createDiv({ text: file.basename, cls: 'record-title' });
             
-            // 点击直接在 Obsidian 中打开该文件
+            // 🌟 关键修复：确保在不覆盖主页的情况下打开文件 🌟
             item.onclick = async () => {
-                const leaf = this.app.workspace.getLeaf(false);
+                // getLeaf(true) 会在新的标签页中打开文件，完美适配移动端和桌面端，且不破坏主页
+                const leaf = this.app.workspace.getLeaf(true);
                 await leaf.openFile(file);
             };
         });
+
+        // 赋予 CSS 展开类名
+        this.listWrapper.addClass('is-open');
+    }
+
+    closeListAnimation() {
+        this.listWrapper.removeClass('is-open');
     }
 
     // --- 新建笔记相关 ---
     async promptNewNote(config: ActionConfig) {
-        new QuickNoteModal(this.app, config.name, async (title, date) => {
+        new QuickNoteModal(this.app, async (title, date) => {
             const parsedFolder = config.folder.replace(/\{\{YYYY\}\}/g, moment(date).format('YYYY')).replace(/\{\{MM\}\}/g, moment(date).format('MM'));
             const parsedContent = config.template.replace(/\{\{DATE\}\}/g, date).replace(/\{\{TITLE\}\}/g, title);
             await this.ensureFolder(parsedFolder);
             const fileName = `${parsedFolder}/${title}.md`;
             try {
                 const file = await this.app.vault.create(fileName, parsedContent);
-                await this.app.workspace.getLeaf(false).openFile(file);
+                // 新建后直接在新标签页打开
+                await this.app.workspace.getLeaf(true).openFile(file);
             } catch (e) { console.error("创建失败", e); }
         }).open();
     }
@@ -255,7 +265,7 @@ class DashboardView extends ItemView {
 class QuickNoteModal extends Modal {
     title: string = ""; date: string = moment().format('YYYY-MM-DD');
     onSubmit: (title: string, date: string) => void;
-    constructor(app: any, titlePrefix: string, onSubmit: (title: string, date: string) => void) {
+    constructor(app: any, onSubmit: (title: string, date: string) => void) {
         super(app); this.onSubmit = onSubmit; this.title = `${moment().format('MMDD')}-`;
     }
     onOpen() {
