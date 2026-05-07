@@ -29,11 +29,8 @@ export default class DashboardPlugin extends Plugin {
         this.app.workspace.onLayoutReady(() => { 
             if (this.settings.openOnStartup) {
                 const emptyLeaves = this.app.workspace.getLeavesOfType("empty");
-                if (emptyLeaves.length > 0) {
-                    emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
-                } else {
-                    this.activateView();
-                }
+                if (emptyLeaves.length > 0) emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
+                else this.activateView();
             }
         });
     }
@@ -63,7 +60,6 @@ class DashboardView extends ItemView {
     currentMonth: moment.Moment;
     
     fileDataMap: Record<string, TFile[]> = {}; 
-    
     listWrapper: HTMLElement;
     listScrollArea: HTMLElement;
     listHeader: HTMLElement;
@@ -89,13 +85,10 @@ class DashboardView extends ItemView {
 
         const headerRow = container.createDiv({ cls: 'dashboard-header-row' });
         const header = headerRow.createDiv({ cls: 'baseline-header' });
+        
+        // 极简英文字母 + 控制中心大字
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
-
-        // 🌟 重新排版：哑光高级八字标题 (丙午年 · 癸巳月 · 辛巳日 · 丙申时) 🌟
-        const now = new Date();
-        const lunarNow = Lunar.fromDate(now);
-        const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
-        header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
+        header.createEl('h1', { text: '控制中心', cls: 'baseline-title bazi-title' });
 
         const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
@@ -108,8 +101,14 @@ class DashboardView extends ItemView {
         document.addEventListener('click', () => { if(this.plusMenu) this.plusMenu.removeClass('is-open'); });
 
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
+        
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
-        chartHeader.createEl('span', { text: '足迹回顾 (Footprint)', cls: 'chart-title' });
+        chartHeader.createEl('span', { text: '足迹回顾', cls: 'chart-title' });
+        const toggleBtn = chartHeader.createEl('button', { text: '切换视图', cls: 'view-toggle-btn' });
+        toggleBtn.onclick = () => {
+             const navEl = this.boardArea.querySelector('.month-nav');
+             if(navEl) navEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
 
         this.boardArea = dataSection.createDiv({ cls: 'heatmap-calendar-wrapper' });
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
@@ -153,11 +152,9 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        
-        // 🌟 核心：克隆图片配色，左箭头灰色 (back-arrow)，右箭头粉色 (next-arrow) 🌟
-        nav.createEl('span', { text: '‹', cls: 'month-nav-btn back-arrow' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
+        nav.createEl('span', { text: '‹', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        nav.createEl('span', { text: '›', cls: 'month-nav-btn next-arrow' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
+        nav.createEl('span', { text: '›', cls: 'month-nav-btn' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
 
         const animWrapper = this.boardArea.createDiv({ cls: 'calendar-anim-wrapper' });
         if (direction === 'left') animWrapper.addClass('slide-in-left');
@@ -178,8 +175,7 @@ class DashboardView extends ItemView {
             
             const d = new Date(year, month, day);
             const lunar = Lunar.fromDate(d);
-
-            // 🌟 "什么节日就不用出现"：确保这里只调用基础农历日期 (初几/正月)，彻底屏蔽所有节日算法 🌟
+            // 彻底屏蔽节日，只取初一十五这些字符串
             const lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
             
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
@@ -187,7 +183,6 @@ class DashboardView extends ItemView {
 
             if (count > 0) {
                 cell.addClass('has-data');
-                // 克隆马卡龙级热力配色 (styles.css定义)
                 cell.addClass(`level-${Math.min(count, 3)}`);
             }
 
@@ -202,7 +197,7 @@ class DashboardView extends ItemView {
     triggerListAnimation(dateStr: string, files: TFile[], lunar: Lunar) {
         this.listScrollArea.empty();
         
-        const baziDay = `${lunar.getYearInGanZhi()}年 · ${lunar.getMonthInGanZhi()}月 · ${lunar.getDayInGanZhi()}日`;
+        const baziDay = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${lunar.getDayInGanZhi()}日`;
 
         if (files.length === 0) { 
             this.listHeader.innerHTML = `
@@ -220,7 +215,6 @@ class DashboardView extends ItemView {
         
         files.forEach(file => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
-            // 🌟 极简哑光足迹图标 🌟
             item.createDiv({ text: '📄', cls: 'record-icon' });
             item.createDiv({ text: file.basename, cls: 'record-title' });
             item.onclick = async () => { await this.app.workspace.getLeaf(true).openFile(file); };
@@ -273,10 +267,7 @@ class QuickNoteModal extends Modal {
         this.actionConfig = config;
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
-        
-        this.folderPath = config.folder
-            .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
-            .replace(/\{\{MM\}\}/g, moment().format('MM'));
+        this.folderPath = config.folder.replace(/\{\{YYYY\}\}/g, moment().format('YYYY')).replace(/\{\{MM\}\}/g, moment().format('MM'));
     }
     
     onOpen() {
@@ -288,7 +279,7 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        const folderSetting = new Setting(contentEl).setName('保存路径 (可输入或下拉选择)').addText(text => { 
+        const folderSetting = new Setting(contentEl).setName('保存路径 (输入或选择)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
             
