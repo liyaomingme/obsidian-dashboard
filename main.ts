@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App } from 'obsidian';
+import { Plugin, WorkspaceLeaf, ItemView, TFile, TFolder, Modal, Setting, PluginSettingTab, App } from 'obsidian';
 import { Chart, registerables } from 'chart.js';
 import moment from 'moment';
 
@@ -8,17 +8,23 @@ const VIEW_TYPE_DASHBOARD = "mobile-dashboard-view";
 
 export default class DashboardPlugin extends Plugin {
     async onload() {
+        // 注册主页视图
         this.registerView(VIEW_TYPE_DASHBOARD, (leaf) => new DashboardView(leaf, this));
 
+        // 添加侧边栏按钮
         this.addRibbonIcon('layout-dashboard', '打开快捷主页', () => {
             this.activateView();
         });
 
+        // 添加命令面板命令
         this.addCommand({
             id: 'show-dashboard',
             name: '显示主页看板',
             callback: () => this.activateView(),
         });
+
+        // ⭐ 注册设置面板，使其在第三方插件设置中显示
+        this.addSettingTab(new DashboardSettingTab(this.app, this));
     }
 
     async activateView() {
@@ -212,5 +218,30 @@ class QuickNoteModal extends Modal {
                     this.close();
                     this.onSubmit(this.title, this.date);
                 }));
+    }
+}
+
+// ⭐ 新增：设置面板的实现
+class DashboardSettingTab extends PluginSettingTab {
+    plugin: DashboardPlugin;
+
+    constructor(app: App, plugin: DashboardPlugin) {
+        super(app, plugin);
+        this.plugin = plugin;
+    }
+
+    display(): void {
+        const { containerEl } = this;
+        containerEl.empty();
+
+        containerEl.createEl('h2', { text: '移动端控制中心设置' });
+
+        new Setting(containerEl)
+            .setName('日记默认文件夹')
+            .setDesc('目前固定在 "日记/YYYY/MM" 路径，未来版本将支持自定义。')
+            .addText(text => text
+                .setPlaceholder('日记')
+                .setDisabled(true)
+            );
     }
 }
