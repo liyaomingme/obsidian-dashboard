@@ -24,12 +24,12 @@
 
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.75); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
+    background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
     border-radius: 18px; width: 150px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15); z-index: 1000;
     overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); padding: 8px; border: 1px solid rgba(200, 200, 200, 0.4);
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.15);}
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.15);}
 .plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
 
 .dropdown-item {
@@ -121,65 +121,69 @@
 
 
 /* =========================================
-   🌟 核心升级：液态玻璃版下拉菜单 🌟
+   🌟 核心修复1：内嵌式文件夹列表 (彻底告别悬浮剪裁) 🌟
 ========================================= */
-.folder-suggest-menu {
-    position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-    max-height: 220px; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 16px; z-index: 9999;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
-    padding: 8px;
+.folder-suggest-wrapper {
+    width: 100%; margin-top: 8px;
+    overflow: hidden; /* 动画容器 */
+    transition: max-height 0.3s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.3s ease;
+    max-height: 0; opacity: 0;
 }
+.folder-suggest-wrapper.is-open {
+    max-height: 180px; /* 展开高度 */
+    opacity: 1;
+}
+
+.folder-suggest-menu {
+    width: 100%; max-height: 170px;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    /* 采用极度柔和的果冻背景 */
+    background: rgba(120, 120, 120, 0.08);
+    border-radius: 16px; padding: 6px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+}
+.theme-dark .folder-suggest-menu { background: rgba(0, 0, 0, 0.2); }
 .folder-suggest-menu::-webkit-scrollbar { display: none; }
-.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.75); border-color: rgba(255,255,255,0.15); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
 
 .suggest-item {
-    padding: 14px 16px; font-size: 15px; font-weight: 600; color: var(--text-normal);
-    cursor: pointer; border-radius: 12px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;
+    padding: 14px 16px; font-size: 15px; font-weight: 500; color: var(--text-normal);
+    cursor: pointer; border-radius: 12px; transition: all 0.2s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;
 }
-.suggest-item:last-child { margin-bottom: 0; }
-.suggest-item:hover, .suggest-item:active { background: rgba(120, 120, 120, 0.12); color: var(--interactive-accent); transform: scale(0.98); }
+.suggest-item:hover, .suggest-item:active { background: rgba(120, 120, 120, 0.15); color: var(--interactive-accent); }
 
 
 /* =========================================
-   🌟 终极美化：iOS 弹窗与滚动修复 🌟
+   🌟 核心修复2：iOS 原生级毛玻璃弹窗 (允许内容自适应滚动) 🌟
 ========================================= */
 .ios-glass-modal {
-    background: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
     border-radius: 28px !important; border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important; padding: 36px 28px !important;
-    
-    /* 🌟 核心：允许弹窗在键盘弹出时丝滑上下滚动 🌟 */
-    max-height: 85vh !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important; padding: 32px 24px !important;
+    overflow: visible !important; /* 让 Obsidian 的 Modal-content 自己去滚动 */
 }
-.ios-glass-modal::-webkit-scrollbar { display: none; }
-.theme-dark .ios-glass-modal { background: rgba(30, 30, 30, 0.8) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+.theme-dark .ios-glass-modal { background: rgba(30, 30, 30, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
-.ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 28px; color: var(--text-normal); letter-spacing: -0.02em; }
-.ios-glass-modal .setting-item { border: none !important; padding: 12px 0 !important; flex-direction: column; align-items: flex-start; gap: 8px; }
+.ios-glass-modal h3 { font-weight: 800; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 24px; color: var(--text-normal); letter-spacing: -0.02em; }
+.ios-glass-modal .setting-item { border: none !important; padding: 10px 0 !important; flex-direction: column; align-items: flex-start; gap: 8px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
 .ios-glass-modal .setting-item-name { font-weight: 700; font-size: 14px; color: var(--text-muted); margin-left: 4px; }
-.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; }
+.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; /* 允许子元素(列表)垂直堆叠 */ }
 
 .ios-glass-modal input[type="text"] {
     border-radius: 16px !important; border: 1px solid rgba(150,150,150,0.2) !important;
-    background: rgba(255, 255, 255, 0.5) !important; padding: 16px 18px !important; font-size: 16px !important; width: 100%;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02) !important; color: var(--text-normal) !important; font-weight: 500;
+    background: rgba(255, 255, 255, 0.6) !important; padding: 16px 18px !important; font-size: 16px !important; width: 100%;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02) !important; color: var(--text-normal) !important; font-weight: 600;
+    transition: all 0.3s ease;
 }
 .theme-dark .ios-glass-modal input[type="text"] { background: rgba(0, 0, 0, 0.3) !important; border-color: rgba(255,255,255,0.1) !important;}
 .ios-glass-modal input[type="text"]:focus { border-color: var(--interactive-accent) !important; box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2) !important; }
 
 .ios-glass-modal button.mod-cta {
     background: var(--interactive-accent) !important; color: white !important;
-    border-radius: 16px !important; padding: 26px !important; font-size: 17px !important;
-    font-weight: 700 !important; width: 100%; margin-top: 24px; box-shadow: 0 8px 20px rgba(var(--color-accent-rgb), 0.3) !important;
+    border-radius: 16px !important; padding: 22px !important; font-size: 17px !important;
+    font-weight: 700 !important; width: 100%; margin-top: 16px; box-shadow: 0 8px 24px rgba(var(--color-accent-rgb), 0.25) !important;
     border: none !important; transition: transform 0.2s ease; letter-spacing: 0.02em;
 }
 .ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; }
@@ -191,5 +195,5 @@
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
-    .ios-glass-modal { padding: 28px 20px !important; border-radius: 24px !important; }
+    .ios-glass-modal { padding: 24px 20px !important; border-radius: 24px !important; }
 }
