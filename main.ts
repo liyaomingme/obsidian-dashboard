@@ -272,13 +272,16 @@ class QuickNoteModal extends Modal {
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
         this.folderPath = config.folder.replace(/\{\{YYYY\}\}/g, moment().format('YYYY')).replace(/\{\{MM\}\}/g, moment().format('MM'));
+        
+        // 🌟 核心闪烁修复：在元素附加到 DOM 之前注入 CSS 类 🌟
+        // 这样弹窗在渲染的第一帧就拥有 opacity:0 和高级入场动画，绝不突兀！
+        this.containerEl.addClass('ios-glass-modal-container');
+        this.modalEl.addClass('ios-glass-modal');
     }
     
     onOpen() {
-        const { contentEl, modalEl, containerEl } = this;
-        
-        containerEl.addClass('ios-glass-modal-container');
-        modalEl.addClass('ios-glass-modal');
+        const { contentEl } = this;
+        // 原本在这里的 addClass 被移到了上方的 constructor 中
         
         contentEl.createEl('h3', { text: this.actionConfig.name });
         
@@ -333,11 +336,10 @@ class QuickNoteModal extends Modal {
         }));
     }
 
-    // 🌟 核心修复：拦截关闭事件，赋予退场动画时间 🌟
+    // 优雅退场：拦截关闭事件，赋予退场动画时间
     close() {
         this.modalEl.addClass('is-closing');
         this.containerEl.addClass('is-closing');
-        // 等待 300ms 动画播完，再真正移除 DOM
         setTimeout(() => {
             super.close();
         }, 300);
