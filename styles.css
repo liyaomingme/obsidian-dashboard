@@ -1,5 +1,5 @@
 /* =========================================
-   🌟 全局：极致哑光高级感 & 棕红配色 🌟
+   🌟 全局：手机端宋体美学 & 棕红配色 🌟
 ========================================= */
 .dashboard-container {
     --bazi-accent-red: #8A1F1F;
@@ -15,264 +15,113 @@
     padding: 6vh 5vw; max-width: 860px; margin: 0 auto;
     display: flex; flex-direction: column; gap: 32px;
     height: 100%; overflow-y: auto; background: transparent;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    /* 顶栏保持系统字体确保清晰 */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
     color: var(--bazi-text-main); -webkit-font-smoothing: antialiased;
 }
 
-/* --- 顶栏排版 --- */
-.dashboard-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; position: relative; }
-.baseline-header { display: flex; flex-direction: column; gap: 4px; }
-.baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
-
+/* --- 顶栏八字：楷体/宋体 --- */
 .baseline-title.bazi-title { 
-    margin: 4px 0 0 0; font-size: 26px; 
+    margin: 4px 0 0 0; font-size: 24px; 
     font-weight: 800; color: #111111; letter-spacing: 0.05em; line-height: 1.2; white-space: nowrap; 
+    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
 }
 .theme-dark .baseline-title.bazi-title { color: #FFFFFF; }
 
 .floating-plus-btn {
-    background: transparent !important; border: none !important; box-shadow: none !important;
+    background: transparent !important; border: none !important;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 34px !important; font-weight: 300 !important;
-    color: var(--bazi-accent-red) !important; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); padding: 0 !important;
+    color: var(--bazi-accent-red) !important; transition: transform 0.2s ease;
 }
-.floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
-.floating-plus-btn:active { transform: scale(0.9); }
 
-/* 下拉菜单 */
-.plus-dropdown {
-    position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
-    border-radius: 16px; width: 150px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12); z-index: 1000;
-    overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
+/* --- 列表与羽毛笔图标 --- */
+.record-item {
+    background: transparent !important; border-radius: 12px; padding: 16px 12px;
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+    border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), background 0.3s ease !important;
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);}
-.plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
+.record-item:active { transform: translateX(6px) !important; background: rgba(138, 31, 31, 0.04) !important; }
 
-.dropdown-item {
-    padding: 12px 14px; font-size: 15px; font-weight: 600; color: var(--text-normal);
-    cursor: pointer; border-radius: 10px; transition: background 0.2s; text-align: left; margin-bottom: 2px;
+.record-icon { 
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bazi-text-muted); opacity: 0.5;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
 }
-.dropdown-item:hover { background: rgba(0, 0, 0, 0.05); }
+.record-item:active .record-icon { color: var(--bazi-accent-red); opacity: 1; transform: scale(1.2) rotate(-8deg); }
 
-/* --- 数据区域 --- */
-.dashboard-data-section {
-    background: rgba(255, 255, 255, 0.7) !important; 
-    backdrop-filter: saturate(180%) blur(50px) !important; -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
-    border-radius: 28px; padding: 32px 20px 24px 20px; 
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    display: flex; flex-direction: column; align-items: center; overflow: hidden;
+.record-title { 
+    font-size: 15px; font-weight: 600; color: var(--text-normal);
+    font-family: "STKaiti", "KaiTi", "Songti SC", serif !important;
 }
-.theme-dark .dashboard-data-section { background: rgba(30, 30, 30, 0.5) !important; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1) !important;}
-
-.chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
-.chart-title { font-size: 20px; font-weight: 800; color: var(--text-normal); margin: 0; letter-spacing: -0.02em; }
-
-/* --- 日历排版 --- */
-.heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; position: relative; }
-.month-nav { display: flex; align-items: center; justify-content: center; gap: 32px; margin-bottom: 28px; }
-
-.month-nav-btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 28px; font-weight: 300; cursor: pointer; padding: 4px 16px; user-select: none; transition: transform 0.2s;
-}
-.month-nav-btn.back-arrow { color: var(--bazi-text-muted) !important; }
-.month-nav-btn.next-arrow { color: var(--bazi-accent-red) !important; }
-.month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
-.month-nav-btn:active { transform: scale(0.8); }
-.month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--text-normal); }
-
-.calendar-anim-wrapper { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); animation-fill-mode: forwards; will-change: transform, opacity; }
-@keyframes slideInFromLeft { 0% { transform: translateX(-16px) scale(0.98); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
-@keyframes slideInFromRight { 0% { transform: translateX(16px) scale(0.98); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
-.slide-in-left { animation-name: slideInFromLeft; }
-.slide-in-right { animation-name: slideInFromRight; }
-
-.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 16px; opacity: 0.9; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
-
-.calendar-cell { width: 46px; height: 46px; margin: 0 auto; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: 2px solid transparent; }
-.calendar-cell::before { content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px; border-radius: 8px; background: var(--cal-level-0); z-index: 0; transition: transform 0.2s ease, background 0.2s ease; }
-.calendar-cell > * { z-index: 1; position: relative; }
-.calendar-cell.empty { visibility: hidden; pointer-events: none; }
-
-.cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--text-normal) !important; transition: color 0.2s; }
-.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-muted) !important; opacity: 0.9; transition: color 0.2s; }
-
-.calendar-cell.has-data .cal-date-num { font-weight: 800; }
-.calendar-cell:not(.empty):hover::before { transform: scale(1.1); filter: brightness(0.95); }
-.calendar-cell.active-selection::before { border: 2px solid var(--bazi-accent-red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-
-.calendar-cell.level-1::before { background-color: var(--cal-level-1) !important; }
-.calendar-cell.level-2::before { background-color: var(--cal-level-2) !important; }
-.calendar-cell.level-3::before { background-color: var(--cal-level-3) !important; }
-.calendar-cell.level-4::before { background-color: var(--cal-level-4) !important; }
-.calendar-cell[class*="level-"] .cal-date-num, .calendar-cell[class*="level-"] .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
-
-/* --- 平铺足迹列表 --- */
-.record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease; opacity: 0; }
-.record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
-.record-list-header { margin-bottom: 16px; padding-left: 8px; }
-.record-list-date { font-size: 20px; font-weight: 800; color: var(--text-normal); display: flex; align-items: baseline; gap: 10px;}
-.record-list-count { font-size: 14px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.8; }
-.record-list-lunar { font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.9; margin-top: 6px; }
-.record-list-scroll { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
-.record-list-scroll::-webkit-scrollbar { display: none; }
-
-.record-item { background: transparent !important; border-radius: 12px; padding: 16px 12px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important; transition: transform 0.2s ease, background 0.2s ease; }
-.record-item:last-child { border-bottom: none !important; }
-.theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
-.record-item:hover { background: rgba(120, 120, 120, 0.08) !important; transform: translateX(4px); }
-.record-icon { font-size: 20px; color: var(--bazi-text-muted); }
-.record-title { font-size: 15px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-
 
 /* =========================================
-   🌟 弹窗美学终极进化：传统字体 & 雕刻比例 🌟
+   🌟 弹窗革命：宋体注入 & 黄金比例重构 🌟
 ========================================= */
 .ios-glass-modal-container .modal-bg {
-    backdrop-filter: blur(15px) saturate(150%) !important; -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
-    background-color: rgba(0, 0, 0, 0.4) !important; transition: all 0.4s ease;
-}
-
-@keyframes silkyModalPopup {
-    0% { opacity: 0; transform: scale(0.95) translateY(20px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
+    backdrop-filter: blur(15px) saturate(150%) !important;
+    background-color: rgba(0, 0, 0, 0.4) !important;
 }
 
 .modal.ios-glass-modal {
-    animation: silkyModalPopup 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
-    
-    background: rgba(255, 255, 255, 0.90) !important;
-    backdrop-filter: blur(40px) saturate(200%) !important; -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
-    
-    border-radius: 28px !important; /* 更高级的大圆角 */
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    border-radius: 28px !important; /* 更圆润高级 */
     border: 1px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8) !important; 
-    padding: 30px 24px !important; /* 更充裕的呼吸留白 */
-    
-    display: flex !important; flex-direction: column !important; 
-    align-self: center !important; margin: auto !important;
-    max-height: 80vh !important; width: 90vw !important; max-width: 420px !important;
-    
-    /* 🌟 全局弹窗注入传统宋体/楷体 🌟 */
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important;
+    padding: 28px 24px !important;
+    display: flex !important; flex-direction: column !important;
+    /* 全宋体注入 */
     font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
 }
-.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.90) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.92) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
 
-/* 允许弹窗内部滚动 */
-.ios-glass-modal .modal-content { 
-    overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; 
-    scrollbar-width: none; flex: 1 1 auto; padding-right: 4px; padding-bottom: 12px;
-}
-.ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
-
-/* 🌟 标题：古典加粗 🌟 */
+/* 标题：加黑宋体 */
 .ios-glass-modal h3 { 
-    font-weight: 800 !important; font-size: 22px !important; text-align: center; 
-    margin-top: 0; margin-bottom: 24px !important; color: var(--text-normal); 
-    letter-spacing: 1px; /* 增加一点字间距显得高级 */
-    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
+    font-weight: 800 !important; font-size: 22px !important; text-align: center;
+    margin-top: 0; margin-bottom: 24px; color: var(--text-normal); letter-spacing: 0.1em;
 }
 
-.ios-glass-modal .setting-item { border: none !important; padding: 10px 0 !important; flex-direction: column; align-items: flex-start; gap: 8px !important; }
-.ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
-.ios-glass-modal .setting-item-name { 
-    font-weight: 600 !important; font-size: 14px !important; color: var(--text-muted); margin-left: 4px;
-    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
-    letter-spacing: 0.5px;
-}
-.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; }
-
-/* 🌟 极致清晰的高级输入框：微雕刻质感 + 传统字体 🌟 */
+/* 🌟 输入框：强制宋体 + 微雕刻质感 🌟 */
 .ios-glass-modal input[type="text"] {
-    border-radius: 14px !important; border: 1px solid rgba(0,0,0,0.06) !important; 
-    background: rgba(0, 0, 0, 0.03) !important; 
+    border-radius: 14px !important; border: 1px solid rgba(0,0,0,0.06) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
     padding: 16px 18px !important; font-size: 16px !important; width: 100%;
-    color: var(--text-normal) !important; font-weight: 600 !important; transition: all 0.3s ease;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.02), 0 1px 0 rgba(255,255,255,1) !important;
-    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
+    color: #111111 !important; font-weight: 600 !important;
+    font-family: "STKaiti", "KaiTi", "Songti SC", serif !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 1px 0 rgba(255,255,255,1) !important;
+    transition: all 0.3s ease;
 }
 .theme-dark .ios-glass-modal input[type="text"] { 
-    background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255,255,255,0.08) !important;
+    background: rgba(255, 255, 255, 0.08) !important; color: #FFFFFF !important;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
 }
-.ios-glass-modal input[type="text"]:focus { 
-    border-color: var(--bazi-accent-red) !important; background: transparent !important;
-    box-shadow: 0 0 0 2px rgba(138, 31, 31, 0.15), inset 0 2px 4px rgba(0,0,0,0.02) !important;
-}
 
-/* 🌟 核心修复：按钮强制黑白高对比度 & 比例升级 🌟 */
-.ios-glass-modal button.mod-cta,
+/* 🌟 确认按钮：强制黑白对比 + 宋体 🌟 */
 .ios-glass-modal button {
-    background-color: #111111 !important; 
-    color: #FFFFFF !important;
-    opacity: 1 !important;
-    border-radius: 14px !important; 
-    padding: 18px !important; 
-    font-size: 17px !important; 
-    font-weight: 800 !important; 
-    width: 100% !important; 
-    margin-top: 24px !important; 
-    border: none !important; 
-    text-shadow: none !important;
-    transition: transform 0.2s ease !important; 
-    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
-    letter-spacing: 2px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+    background-color: #111111 !important; color: #FFFFFF !important;
+    border-radius: 14px !important; padding: 18px !important;
+    font-size: 17px !important; font-weight: 800 !important;
+    width: 100% !important; margin-top: 24px !important;
+    font-family: "STKaiti", "KaiTi", "Songti SC", serif !important;
+    letter-spacing: 0.2em; border: none !important;
 }
-.theme-dark .ios-glass-modal button.mod-cta,
-.theme-dark .ios-glass-modal button {
-    background-color: #FFFFFF !important; 
-    color: #111111 !important;
-    box-shadow: 0 8px 20px rgba(255,255,255,0.15) !important; 
-}
-.ios-glass-modal button:active { transform: scale(0.96) !important; opacity: 0.9 !important; }
+.theme-dark .ios-glass-modal button { background-color: #FFFFFF !important; color: #111111 !important; }
 
-/* 🌟 文件夹下拉选择器 - 字体升级 🌟 */
-.folder-suggest-wrapper {
-    display: none; width: 100%; margin-top: 8px;
-    background: rgba(255, 255, 255, 0.5); border-radius: 14px; border: 1px solid rgba(0, 0, 0, 0.05);
-    max-height: 180px; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+/* 🌟 下拉建议项：宋体化 🌟 */
+.suggest-item {
+    padding: 14px 18px; font-size: 15px; font-weight: 600;
+    font-family: "STKaiti", "KaiTi", "Songti SC", serif !important;
 }
-.theme-dark .folder-suggest-wrapper { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.1); }
-.folder-suggest-wrapper::-webkit-scrollbar { display: none; }
-.folder-suggest-wrapper.is-open { display: block; } 
-
-.suggest-item { 
-    padding: 14px 18px; font-size: 15px; font-weight: 600; color: var(--text-normal); cursor: pointer; 
-    border-bottom: 1px solid rgba(0,0,0,0.03); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif !important;
-}
-.suggest-item:last-child { border-bottom: none; }
-.suggest-item:hover, .suggest-item:active { background: rgba(138, 31, 31, 0.08); color: var(--bazi-accent-red); }
-
 
 /* =========================================
-   🌟 手机端：缩小、上移、内部滑动防键盘遮挡 🌟
+   🌟 手机端布局保护 (防遮挡) 🌟
 ========================================= */
 @media (max-width: 480px) {
-    .dashboard-container { padding: 4vh 5vw; gap: 24px; }
-    .baseline-title.bazi-title { font-size: 18px; }
-    .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
-    .calendar-cell { width: 40px; height: 40px; }
-    
-    /* 核心修复保持不变：缩小总高度，强制置顶，给底部留出键盘空间 */
     .modal.ios-glass-modal { 
-        align-self: flex-start !important; /* 强制靠上 */
-        margin-top: 6vh !important;        /* 顶部只留极小间距 */
-        max-height: 55vh !important;       /* 确保不挡键盘 */
-        width: 90vw !important; 
-        padding: 28px 24px !important; /* 调整内边距让视觉更饱满 */
-        border-radius: 28px !important; 
+        align-self: flex-start !important; margin-top: 5vh !important; 
+        max-height: 52vh !important; width: 90vw !important; 
     }
-    
-    .ios-glass-modal .modal-content {
-        overflow-y: auto !important;
-        padding-bottom: 16px !important;
-    }
+    .ios-glass-modal .modal-content { overflow-y: auto !important; padding-bottom: 16px !important; }
 }
