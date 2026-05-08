@@ -107,7 +107,6 @@ class DashboardView extends ItemView {
         document.addEventListener('click', () => { if(this.plusMenu) this.plusMenu.removeClass('is-open'); });
 
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
-        
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
         chartHeader.createEl('span', { text: '足迹回顾', cls: 'chart-title' });
 
@@ -153,7 +152,6 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        
         nav.createEl('span', { text: '‹', cls: 'month-nav-btn back-arrow' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
         nav.createEl('span', { text: '›', cls: 'month-nav-btn next-arrow' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
@@ -272,7 +270,9 @@ class QuickNoteModal extends Modal {
     }
     
     onOpen() {
-        const { contentEl, modalEl } = this;
+        const { contentEl, modalEl, containerEl } = this;
+        
+        containerEl.addClass('ios-glass-modal-container');
         modalEl.addClass('ios-glass-modal');
         
         contentEl.createEl('h3', { text: this.actionConfig.name });
@@ -280,8 +280,6 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 核心重构：内嵌流式菜单 (In-flow Accordion) 🌟
-        // 彻底解决手机端弹窗溢出截断问题。展开时弹窗会变长，用户可自行滑动弹窗内容，完美避开键盘！
         const folderSetting = new Setting(contentEl).setName('归档路径 (点击查看已有文件夹)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
@@ -290,7 +288,6 @@ class QuickNoteModal extends Modal {
             const settingControl = inputEl.parentElement;
             
             if(settingControl) {
-                // 这个包裹层直接跟在输入框下面，属于文档流
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 
                 const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
@@ -298,7 +295,7 @@ class QuickNoteModal extends Modal {
                 const showSuggestions = () => {
                     suggestWrapper.empty();
                     const query = inputEl.value.toLowerCase();
-                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 30); // 增加展示数量
+                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 30);
 
                     if (matches.length > 0) {
                         suggestWrapper.addClass('is-open');
@@ -317,7 +314,6 @@ class QuickNoteModal extends Modal {
                     }
                 };
 
-                // 随时点开看
                 inputEl.addEventListener('click', showSuggestions);
                 inputEl.addEventListener('input', showSuggestions);
                 inputEl.addEventListener('focus', showSuggestions);
@@ -325,7 +321,6 @@ class QuickNoteModal extends Modal {
             }
         });
         
-        // 我们不再需要手动调用 setCta()，而是通过 CSS 直接强力捕获模态框内的所有 button 元素
         new Setting(contentEl).addButton(btn => btn.setButtonText('确认创建').onClick(() => { 
             if (!this.title || !this.folderPath) return; 
             this.close(); 
