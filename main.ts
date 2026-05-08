@@ -94,7 +94,6 @@ class DashboardView extends ItemView {
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
         
-        // 🌟 核心排版重构：将单位和分隔符包裹在独立的 span 中，方便 CSS 单独控制大小和颜色 🌟
         const baziEl = header.createEl('h1', { cls: 'baseline-title bazi-title' });
         baziEl.innerHTML = `${lunarNow.getYearInGanZhi()}<span class="bazi-unit">年</span><span class="bazi-sep">·</span>${lunarNow.getMonthInGanZhi()}<span class="bazi-unit">月</span><span class="bazi-sep">·</span>${lunarNow.getDayInGanZhi()}<span class="bazi-unit">日</span><span class="bazi-sep">·</span>${lunarNow.getTimeInGanZhi()}<span class="bazi-unit">时</span>`;
 
@@ -332,6 +331,16 @@ class QuickNoteModal extends Modal {
             this.close(); 
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
+    }
+
+    // 🌟 核心修复：拦截关闭事件，赋予退场动画时间 🌟
+    close() {
+        this.modalEl.addClass('is-closing');
+        this.containerEl.addClass('is-closing');
+        // 等待 300ms 动画播完，再真正移除 DOM
+        setTimeout(() => {
+            super.close();
+        }, 300);
     }
 }
 
