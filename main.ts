@@ -93,6 +93,7 @@ class DashboardView extends ItemView {
 
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
+        // 🌟 八字标题 (丙午年 · 癸巳月 · 辛巳日 · 丙申时) 🌟
         const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
         header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
 
@@ -177,6 +178,7 @@ class DashboardView extends ItemView {
             
             const d = new Date(year, month, day);
             const lunar = Lunar.fromDate(d);
+            // 🌟 彻底屏蔽节日，只取初一十五农历数字 🌟
             const lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
             
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
@@ -184,6 +186,7 @@ class DashboardView extends ItemView {
 
             if (count > 0) {
                 cell.addClass('has-data');
+                // 克隆哑光棕红色阶 (styles.css定义)
                 cell.addClass(`level-${Math.min(count, 4)}`);
             }
 
@@ -216,6 +219,7 @@ class DashboardView extends ItemView {
         
         files.forEach(file => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
+            // 🌟 极简哑光图标 🌟
             item.createDiv({ text: '📄', cls: 'record-icon' });
             item.createDiv({ text: file.basename, cls: 'record-title' });
             item.onclick = async () => { await this.app.workspace.getLeaf(true).openFile(file); };
@@ -304,6 +308,8 @@ class QuickNoteModal extends Modal {
                     const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 15); 
 
                     if (matches.length > 0) {
+                        // 🌟 核心优化：彻底删除卡顿 Bug。只控制 Suggest 菜单高度弹性展开，绝不在输入时强制抢夺 Viewport ( scrollIntoView ) 🌟
+                        // 🌟 输入内容徹底不影響篩選結果（ record-list ），只篩選 suggest 菜單，輸入後出來的內容（ suggest ）看清楚，動畫絲滑 🌟
                         suggestWrapper.style.maxHeight = '180px';
                         suggestWrapper.style.opacity = '1';
                         matches.forEach(folder => {
@@ -324,10 +330,7 @@ class QuickNoteModal extends Modal {
                 };
 
                 inputEl.addEventListener('input', showSuggestions);
-                
-                // 🌟 解决卡顿：只显示菜单，绝不强制调用 scrollIntoView 去抢夺视口 🌟
-                inputEl.addEventListener('focus', () => { showSuggestions(); });
-                
+                inputEl.addEventListener('focus', showSuggestions);
                 inputEl.addEventListener('blur', () => { setTimeout(() => {
                     suggestWrapper.style.maxHeight = '0';
                     suggestWrapper.style.opacity = '0';
@@ -341,15 +344,9 @@ class QuickNoteModal extends Modal {
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
 
-        // 🌟 核心：一个完全静默的动态垫片。只有聚焦“文件夹”时才拉开空间，让你滑动！无滚动劫持！🌟
-        const spacer = contentEl.createDiv({ cls: 'keyboard-dynamic-spacer' });
-        const inputs = contentEl.findAll('input[type="text"]');
-        
-        // 只有最后一个（保存路径）才会触发垫片
-        if(inputs.length >= 3) {
-            inputs[2].addEventListener('focus', () => { spacer.style.height = '200px'; });
-            inputs[2].addEventListener('blur', () => { setTimeout(() => { spacer.style.height = '0'; }, 200); });
-        }
+        // 🌟 核心优化：No Keyboard Popping。徹底刪除了之前的 KeyboardSpacer 邏輯。🌟
+        // 🌟 對應的這個框（ modal ）也不要在輸入法點開的時候再彈出一段。整體均衡。🌟
+        // 彈窗（ modal ）改為 align-self: center， margin: auto。背后的 Obsidian 整個 parents container 隨鍵盤平滑上移， modal 本身絕不 Pop形变。🌟
     }
 }
 
