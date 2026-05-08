@@ -133,13 +133,11 @@
 /* =========================================
    🌟 弹窗美学：全面回归 Obsidian 原生动画生命周期 🌟
 ========================================= */
-/* 背景只保留我们绝美的毛玻璃质感，完全不干涉动画 */
 .ios-glass-modal-container .modal-bg {
     backdrop-filter: blur(15px) saturate(150%) !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
 }
 
-/* 弹窗本体只保留样式，进场退场完全依靠 Obsidian 自身 */
 .modal.ios-glass-modal {
     background: rgba(255, 255, 255, 0.95) !important; backdrop-filter: blur(40px) saturate(200%) !important;
     border-radius: clamp(20px, 6vw, 28px) !important; border: 1px solid rgba(255, 255, 255, 0.9) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important;
@@ -173,4 +171,16 @@
 .suggest-item:last-child { border-bottom: none; }
 .suggest-item:hover, .suggest-item:active { background: rgba(138, 31, 31, 0.08); color: var(--bazi-accent-red); }
 
-@media (max-width: 480px) { .modal.ios-glass-modal { align-self: flex-start !important; margin-top: 5vh !important; max-height: 55vh !important; width: 90vw !important; } }
+/* =========================================
+   🌟 核心防灵动岛遮挡补丁 🌟
+========================================= */
+@media (max-width: 480px) { 
+    .modal.ios-glass-modal { 
+        align-self: flex-start !important; 
+        /* 👇 将 margin-top 从 5vh 加大到 12vh，彻底避开灵动岛和刘海 👇 */
+        margin-top: 12vh !important; 
+        /* 👇 收紧最大高度到 52vh，确保底下留足空间给键盘 👇 */
+        max-height: 52vh !important; 
+        width: 90vw !important; 
+    } 
+}
