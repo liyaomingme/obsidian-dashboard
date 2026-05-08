@@ -212,9 +212,16 @@ class DashboardView extends ItemView {
             <div class="record-list-lunar">${baziDay}</div>
         `;
         
-        files.forEach(file => {
+        files.forEach((file, index) => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
-            item.createDiv({ text: '📄', cls: 'record-icon' });
+            
+            // 🌟 核心：注入阶梯式延迟，配合 CSS 实现轻柔的波浪展示效果 🌟
+            item.style.animationDelay = `${index * 0.05}s`;
+            
+            // 🌟 注入极简线框的 SVG 羽毛图标 🌟
+            const iconWrap = item.createDiv({ cls: 'record-icon' });
+            iconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>`;
+            
             item.createDiv({ text: file.basename, cls: 'record-title' });
             item.onclick = async () => { await this.app.workspace.getLeaf(true).openFile(file); };
         });
