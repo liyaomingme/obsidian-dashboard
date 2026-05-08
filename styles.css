@@ -1,5 +1,5 @@
 /* =========================================
-   🌟 全局：极致哑光高级感 & 全局宋体印刷美学 🌟
+   🌟 全局：极致哑光高级感 & 全平台宋体印刷美学 🌟
 ========================================= */
 .dashboard-container {
     --bazi-accent-red: #8A1F1F;
@@ -129,30 +129,37 @@
 .record-title { font-size: clamp(14px, 4vw, 15px) !important; font-weight: 600 !important; color: var(--bazi-text-main) !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.02em; font-family: "Songti SC", "STSongti-SC-Regular", "STSong", "Noto Serif SC", "SimSun", ui-serif, serif !important; }
 
 /* =========================================
-   🌟 弹窗美学：退场动画 & 强力防闪烁 🌟
+   🌟 弹窗美学：彻底防闪烁与退场阻尼 🌟
 ========================================= */
+/* 🌟 修复一：使用 both 锁死背景的第一帧，并干掉原生 transition 🌟 */
 .ios-glass-modal-container .modal-bg {
     backdrop-filter: blur(15px) saturate(150%) !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
-    transition: opacity 0.3s ease !important; /* 背景淡出过渡 */
+    transition: none !important; /* 干掉 Obsidian 自带的闪烁过渡 */
+    animation: silkyBgFadeIn 0.3s ease both !important; /* both 能在渲染瞬间强行应用 0% 的透明状态 */
 }
 
-/* 关闭时的退场动画 */
-.ios-glass-modal-container.is-closing .modal-bg { opacity: 0 !important; }
-.ios-glass-modal.is-closing { animation: silkyModalClose 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important; }
+@keyframes silkyBgFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes silkyBgFadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+.ios-glass-modal-container.is-closing .modal-bg { animation: silkyBgFadeOut 0.3s ease both !important; }
 
 @keyframes silkyModalPopup { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes silkyModalClose { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.95) translateY(20px); } }
 
+/* 🌟 修复二：同样使用 both 锁死弹窗本体的第一帧状态 🌟 */
 .modal.ios-glass-modal {
-    opacity: 0; /* 🌟 核心防闪烁：初始透明，彻底交给动画接管 🌟 */
-    animation: silkyModalPopup 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+    transition: none !important; /* 彻底干掉原生弹窗的形变过渡，避免撞车 */
+    animation: silkyModalPopup 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both !important; /* both 是解决 FOUC(样式闪烁) 的核心 */
+    
     background: rgba(255, 255, 255, 0.95) !important; backdrop-filter: blur(40px) saturate(200%) !important;
     border-radius: clamp(20px, 6vw, 28px) !important; border: 1px solid rgba(255, 255, 255, 0.9) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important;
     padding: clamp(20px, 6vw, 28px) clamp(16px, 5vw, 24px) !important; display: flex !important; flex-direction: column !important;
     font-family: "Songti SC", "STSongti-SC-Regular", "STSong", "Noto Serif SC", "SimSun", ui-serif, serif !important;
 }
 .theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.92) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
+
+.ios-glass-modal.is-closing { animation: silkyModalClose 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both !important; }
 
 .ios-glass-modal .modal-content { overflow-y: auto !important; padding-bottom: 16px !important; scrollbar-width: none; flex: 1 1 auto; }
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
