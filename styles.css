@@ -2,16 +2,16 @@
    🌟 全局：极致哑光高级感 & 棕红配色 🌟
 ========================================= */
 .dashboard-container {
-    --bazi-accent-red: #8A1F1F;   /* 强调色：深棕红 (Oxblood/酒红) */
-    --bazi-text-main: #333333;    /* 哑光深灰 (主文字) */
-    --bazi-text-muted: #888888;   /* 哑光浅灰 (副文字、周几、农历) */
+    --bazi-accent-red: #8A1F1F;   /* 强调色：高级深棕红 */
+    --bazi-text-main: var(--text-normal);    /* 智能适配主题的主文字 */
+    --bazi-text-muted: var(--text-muted);   /* 智能适配主题的副文字 */
     
-    /* 🌟 日历格子色阶：更深邃、高级 🌟 */
-    --cal-level-0: #F7EBEA;     /* 基础底色：极淡暖灰粉 */
-    --cal-level-1: #D84F4F;     /* 1篇：明顯的灰粉紅 */
-    --cal-level-2: #B02C2C;     /* 2篇：中度棕紅 */
-    --cal-level-3: #8A1F1F;     /* 3篇：高級深棕紅 */
-    --cal-level-4: #601212;     /* 4篇+：極致酒紅 */
+    /* 日历格子色阶：深邃、高级 */
+    --cal-level-0: rgba(138, 31, 31, 0.05); /* 极淡底色 */
+    --cal-level-1: #D84F4F;     
+    --cal-level-2: #B02C2C;     
+    --cal-level-3: #8A1F1F;     
+    --cal-level-4: #601212;     
     
     padding: 6vh 5vw; max-width: 860px; margin: 0 auto;
     display: flex; flex-direction: column; gap: 32px;
@@ -25,52 +25,49 @@
 .baseline-header { display: flex; flex-direction: column; gap: 4px; }
 .baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* 🌟 八字标题加黑加粗，在毛玻璃上凸显核心 🌟 */
+/* 🌟 八字标题加黑加粗 🌟 */
 .baseline-title.bazi-title { 
     margin: 4px 0 0 0; font-size: 26px; 
-    font-weight: 800; /* 加黑加粗 */
-    color: #111111;   /* 加黑 */
-    letter-spacing: 0.05em; 
-    line-height: 1.2; white-space: nowrap; 
+    font-weight: 800; color: var(--text-normal); 
+    letter-spacing: 0.05em; line-height: 1.2; white-space: nowrap; 
 }
 
-/* "+" 按钮强调色：棕红 */
+/* "+" 按钮 */
 .floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 34px !important; font-weight: 300 !important;
-    color: var(--bazi-accent-red) !important; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); padding: 0 !important;
+    color: var(--bazi-accent-red) !important; transition: transform 0.2s ease; padding: 0 !important;
 }
 .floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
 .floating-plus-btn:active { transform: scale(0.9); }
 
-/* 下拉菜单 */
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
-    background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
     border-radius: 16px; width: 150px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12); z-index: 1000;
     overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
 }
-.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);}
+.theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);}
 .plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
 
 .dropdown-item {
-    padding: 12px 14px; font-size: 15px; font-weight: 600; color: var(--bazi-text-main);
+    padding: 12px 14px; font-size: 15px; font-weight: 600; color: var(--text-normal);
     cursor: pointer; border-radius: 10px; transition: background 0.2s; text-align: left; margin-bottom: 2px;
 }
 .dropdown-item:hover { background: rgba(0, 0, 0, 0.05); }
 
 /* --- 数据区域 (纯白毛玻璃容器) --- */
 .dashboard-data-section {
-    background: rgba(255, 255, 255, 0.7) !important; 
+    background: rgba(255, 255, 255, 0.75) !important; 
     backdrop-filter: saturate(180%) blur(50px) !important; -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
     border-radius: 28px; padding: 32px 20px 24px 20px; 
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.8) !important;
     display: flex; flex-direction: column; align-items: center; overflow: hidden;
 }
-.theme-dark .dashboard-data-section { background: rgba(30, 30, 30, 0.5) !important; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1) !important;}
+.theme-dark .dashboard-data-section { background: rgba(30, 30, 30, 0.6) !important; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1) !important;}
 
 .chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 28px; padding-left: 8px;}
 .chart-title { font-size: 20px; font-weight: 800; color: var(--bazi-text-main); margin: 0; letter-spacing: -0.02em; }
@@ -81,23 +78,16 @@
 
 .month-nav-btn {
     display: inline-flex; align-items: center; justify-content: center;
-    font-size: 28px; font-weight: 300;
-    cursor: pointer; padding: 4px 16px; user-select: none;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 28px; font-weight: 300; cursor: pointer; padding: 4px 16px; user-select: none;
+    transition: transform 0.2s ease;
 }
 .month-nav-btn.back-arrow { color: var(--bazi-text-muted) !important; }
 .month-nav-btn.next-arrow { color: var(--bazi-accent-red) !important; }
 .month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
 .month-nav-btn:active { transform: scale(0.8); }
-.month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--bazi-text-main); letter-spacing: 0.02em; }
+.month-label { font-size: 18px; font-weight: 800; min-width: 120px; text-align: center; color: var(--bazi-text-main); }
 
-/* 🌟 日历丝滑滑动动画 🌟 */
-.calendar-anim-wrapper { 
-    animation-duration: 0.45s; 
-    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); 
-    animation-fill-mode: forwards; 
-    will-change: transform, opacity;
-}
+.calendar-anim-wrapper { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); animation-fill-mode: forwards; will-change: transform, opacity; }
 @keyframes slideInFromLeft { 0% { transform: translateX(-16px) scale(0.98); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
 @keyframes slideInFromRight { 0% { transform: translateX(16px) scale(0.98); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
 .slide-in-left { animation-name: slideInFromLeft; }
@@ -106,48 +96,37 @@
 .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 16px; opacity: 0.9; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
 
-/* 🌟 日历网格：带小圆角的正方形 🌟 */
 .calendar-cell {
-    width: 46px; height: 46px; margin: 0 auto; 
-    border-radius: 8px; 
+    width: 46px; height: 46px; margin: 0 auto; border-radius: 8px; 
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; position: relative; border: 2px solid transparent;
 }
 .calendar-cell::before {
     content: ""; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
     border-radius: 8px; background: var(--cal-level-0); 
-    z-index: 0; transition: transform 0.2s ease, background 0.2s ease;
-    will-change: transform;
+    z-index: 0; transition: transform 0.2s ease, filter 0.2s ease;
 }
-
 .calendar-cell > * { z-index: 1; position: relative; }
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
-.cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--bazi-text-main) !important; transition: color 0.2s; }
-.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-muted) !important; opacity: 0.9; transition: color 0.2s; }
+.cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--text-normal) !important; }
+.cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--text-muted) !important; opacity: 0.9; }
 
 .calendar-cell.has-data .cal-date-num { font-weight: 800; }
 .calendar-cell:not(.empty):hover::before { transform: scale(1.1); filter: brightness(0.95); }
-
-/* 🌟 选中状态：哑光棕红框 🌟 */
 .calendar-cell.active-selection::before { border: 2px solid var(--bazi-accent-red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-/* 🌟 有笔记时的热力色色阶应用 🌟 */
 .calendar-cell.level-1::before { background-color: var(--cal-level-1) !important; }
 .calendar-cell.level-2::before { background-color: var(--cal-level-2) !important; }
 .calendar-cell.level-3::before { background-color: var(--cal-level-3) !important; }
 .calendar-cell.level-4::before { background-color: var(--cal-level-4) !important; }
+.calendar-cell[class*="level-"] .cal-date-num, .calendar-cell[class*="level-"] .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
 
-/* 高频级反白显示以保持清晰 */
-.calendar-cell.level-3 .cal-date-num, .calendar-cell.level-3 .cal-lunar-text,
-.calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
-
-
-/* 🌟 无框平铺式足迹列表 (极简哑光版) 🌟 */
-.record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, margin-top 0.3s ease; opacity: 0; will-change: max-height, opacity;}
+/* --- 平铺足迹列表 --- */
+.record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease; opacity: 0; }
 .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
 .record-list-header { margin-bottom: 16px; padding-left: 8px; }
-.record-list-date { font-size: 20px; font-weight: 800; color: var(--bazi-text-main); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 10px;}
+.record-list-date { font-size: 20px; font-weight: 800; color: var(--bazi-text-main); display: flex; align-items: baseline; gap: 10px;}
 .record-list-count { font-size: 14px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.8; }
 .record-list-lunar { font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.9; margin-top: 6px; }
 
@@ -157,137 +136,111 @@
 .record-item {
     background: transparent !important; border-radius: 12px; padding: 16px 12px;
     display: flex; align-items: center; gap: 14px; cursor: pointer;
-    box-shadow: none !important; border: none !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important; /* 极细分割线 */
-    transition: transform 0.2s ease, background 0.2s ease;
-    will-change: transform;
+    border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important; transition: all 0.2s ease;
 }
 .record-item:last-child { border-bottom: none !important; }
 .theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
-.record-item:hover { background: rgba(0, 0, 0, 0.04) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
-.record-item:active { background: rgba(0, 0, 0, 0.08) !important; transform: scale(0.98); }
-
-.record-icon { font-size: 20px; color: var(--bazi-text-muted); }
-.record-title { font-size: 15px; font-weight: 600; color: var(--bazi-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.record-item:hover { background: rgba(120, 120, 120, 0.08) !important; transform: translateX(4px); }
 
 
 /* =========================================
-   🌟 悬浮防形变子菜单 (Folder Suggester) 🌟
+   🌟 核心进化：真正的苹果毛玻璃弹窗 (彻底解决遮挡与透明) 🌟
 ========================================= */
-.folder-suggest-wrapper {
-    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 10000;
-    max-height: 0; opacity: 0; overflow: hidden; /* 高度渐变防突兀 */
-    transition: max-height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
-    will-change: max-height, opacity;
-}
-/* 由 JS 动态赋予 max-height */
 
-.folder-suggest-menu {
-    width: 100%; max-height: 180px; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 14px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-}
-.theme-dark .folder-suggest-menu { background: rgba(30, 30, 30, 0.95); border-color: rgba(255,255,255,0.15); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
-.folder-suggest-menu::-webkit-scrollbar { display: none; }
-.suggest-item { padding: 14px 16px; font-size: 14px; font-weight: 500; color: var(--bazi-text-main); cursor: pointer; border-radius: 10px; transition: background 0.2s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-.suggest-item:hover, .suggest-item:active { background: rgba(0, 0, 0, 0.05); color: var(--bazi-accent-red); }
-
-/* =========================================
-   🌟 核心进化：真正的苹果毛玻璃弹窗 🌟
-========================================= */
-/* 利用容器选择器，让背后的页面也进行毛玻璃模糊和暗化 */
-.ios-glass-modal-container .modal-bg {
-    backdrop-filter: blur(12px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+/* 全局背景深度模糊，凸显弹窗 */
+.modal-bg {
+    backdrop-filter: blur(15px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
-    transition: backdrop-filter 0.4s ease;
 }
 
-/* 全链路弹性动画 */
+/* 弹窗滑入动效 */
 @keyframes silkyModalPopup {
     0% { opacity: 0; transform: scale(0.95) translateY(20px); }
     100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .modal.ios-glass-modal {
-    align-self: flex-start !important; margin-top: 15vh !important; /* 电脑端居中显示，限制高度 */
+    /* 🌟 让 Obsidian 自动居中弹窗，绝不强制靠上，保证完美比例 🌟 */
     animation: silkyModalPopup 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
-    will-change: transform, opacity;
     
-    /* 🌟 核心：大幅提升不透明度 (0.92)，让文字极致清晰，彻底解决看不清，全平台统一深邃棕红色 🌟 */
-    background: rgba(255, 255, 255, 0.92) !important;
-    backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
+    /* 🌟 高度不透明白底 + 强效高斯模糊，字迹绝对清晰 🌟 */
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important; 
+    -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
     
-    /* 🌟 核心：均衡的圆角与边距适配，告别头重脚轻 🌟 */
-    border-radius: 20px !important; 
+    border-radius: 24px !important; 
     border: 1px solid rgba(255, 255, 255, 0.8) !important;
     box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important; 
+    padding: 24px !important; 
     
-    padding: 28px 24px 24px 24px !important; 
-    display: flex !important; flex-direction: column !important; max-height: 80vh !important; 
+    display: flex !important; flex-direction: column !important; 
+    width: 90vw !important; max-width: 400px !important; /* 限制电脑端宽度 */
 }
-.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.92) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+.theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
-.ios-glass-modal .modal-content { overflow: visible !important; scrollbar-width: none; flex: 1 1 auto; }
+/* 🌟 核心：恢复原生滚动，解决显示不全和键盘遮挡 🌟 */
+.ios-glass-modal .modal-content { 
+    overflow-y: auto !important; /* 恢复滑动 */
+    max-height: 65vh !important; /* 限制高度，超出自动滑动 */
+    scrollbar-width: none; flex: 1 1 auto; padding-right: 4px; 
+}
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
 
-/* 🌟 解决卡顿 Bug 2：不要劫持打字输入框。在 CSS 里实现智能滚动垫片。 🌟 */
-/* 这个 spacer 隐藏在输入框下方，打字时不会Pop出来，但允许你在键盘挡住时向下滑动。 */
-.keyboard-dynamic-spacer {
-    height: 0;
-    transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.ios-glass-modal[data-focused="path"] .keyboard-dynamic-spacer {
-    height: 200px; /* 只在聚焦归档路径时撑高 */
-}
-
-
-/* 🌟 重新优化比例：精致的小号标题，彻底加黑加粗 🌟 */
+/* 弹窗标题加粗，比例舒服 */
 .ios-glass-modal h3 { 
     font-weight: 800 !important; font-size: 20px; text-align: center; 
-    margin-top: 0; margin-bottom: 20px; 
-    color: var(--bazi-text-main); letter-spacing: -0.01em; 
+    margin-top: 0; margin-bottom: 20px; color: var(--text-normal); letter-spacing: -0.01em; 
 }
 
-.ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 4px; }
+.ios-glass-modal .setting-item { border: none !important; padding: 8px 0 !important; flex-direction: column; align-items: flex-start; gap: 6px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
-.ios-glass-modal .setting-item-name { 
-    font-weight: 600 !important; /* 内容标签不用加粗 */
-    font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px; opacity: 0.9;
-}
-.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; position: relative !important; }
+.ios-glass-modal .setting-item-name { font-weight: 600 !important; font-size: 13px; color: var(--text-muted); margin-left: 4px;}
+.ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; }
 
-/* 🌟 重新优化比例：输入框瘦身，字体徹底加黑 🌟 */
+/* 🌟 极致清晰的输入框 🌟 */
 .ios-glass-modal input[type="text"] {
-    /* 更高级的深色内阴影底框 */
-    border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.06) !important;
-    background: rgba(255, 255, 255, 0.4) !important; padding: 12px 14px !important; font-size: 15px !important; width: 100%;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important; color: #111 !important; /* 文字彻底加黑 */
-    font-weight: 500 !important; /* 内容输入不加粗 */
+    border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.1) !important;
+    background: rgba(0, 0, 0, 0.04) !important; /* 浅色实底，增加对比度 */
+    padding: 14px 16px !important; font-size: 15px !important; width: 100%;
+    color: var(--text-normal) !important; font-weight: 500 !important; 
     transition: all 0.3s ease;
 }
-.theme-dark .ios-glass-modal input[type="text"] { background: rgba(0, 0, 0, 0.25) !important; border-color: rgba(255,255,255,0.05) !important;}
-.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; box-shadow: 0 0 0 2px rgba(138, 46, 46, 0.15) !important; background: rgba(255, 255, 255, 0.7) !important;}
+.theme-dark .ios-glass-modal input[type="text"] { background: rgba(255, 255, 255, 0.08) !important; border-color: rgba(255,255,255,0.1) !important;}
+.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; background: transparent !important;}
 
-/* 🌟 重新优化比例：棕红确认按钮瘦身 🌟 */
-.ios-glass-modal button.mod-cta {
-    background: var(--bazi-accent-red) !important; color: white !important;
+/* 🌟 高级实心稳重红按钮 (解决按钮透明看不见的问题) 🌟 */
+.ios-glass-modal button {
+    background-color: var(--bazi-accent-red) !important; /* 强制底色 */
+    color: #FFFFFF !important;
     border-radius: 12px !important; padding: 16px !important; font-size: 16px !important; 
-    font-weight: 700 !important; width: 100%; margin-top: 16px; 
-    box-shadow: 0 6px 16px rgba(138, 46, 46, 0.25) !important;
-    border: none !important; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); letter-spacing: 0.02em;
+    font-weight: 700 !important; width: 100% !important; margin-top: 16px !important; 
+    box-shadow: 0 4px 16px rgba(138, 31, 31, 0.3) !important;
+    border: none !important; transition: transform 0.2s ease !important; height: auto !important;
 }
-.ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; }
+.ios-glass-modal button:active { transform: scale(0.96) !important; opacity: 0.9 !important; }
+
+/* 🌟 核心：内嵌式文件夹建议器 (Accordion) 🌟 */
+.folder-suggest-wrapper {
+    display: none; /* 默认隐藏 */
+    width: 100%; margin-top: 8px;
+    background: rgba(0, 0, 0, 0.03); border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.05);
+    max-height: 180px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.theme-dark .folder-suggest-wrapper { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }
+.folder-suggest-wrapper::-webkit-scrollbar { display: none; }
+.folder-suggest-wrapper.is-open { display: block; } /* 展开时推开下方空间，原生支持滑动 */
+
+.suggest-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--text-normal); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); transition: background 0.2s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item:hover, .suggest-item:active { background: rgba(138, 31, 31, 0.1); color: var(--bazi-accent-red); }
 
 @media (max-width: 480px) {
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
-    .baseline-title.bazi-title { font-size: 15px; letter-spacing: 0.04em; }
+    .baseline-title.bazi-title { font-size: 18px; }
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
-    
-    /* 手机端完美圆角与均衡边距适配 */
-    .modal.ios-glass-modal { margin-top: 12vh !important; padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
-    .ios-glass-modal h3 { font-size: 18px !important; margin-bottom: 16px !important; }
+    .modal.ios-glass-modal { width: 85vw !important; padding: 24px 20px !important; border-radius: 24px !important; }
 }
