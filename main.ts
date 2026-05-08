@@ -93,8 +93,10 @@ class DashboardView extends ItemView {
 
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
-        const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
-        header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
+        
+        // 🌟 核心排版重构：将单位和分隔符包裹在独立的 span 中，方便 CSS 单独控制大小和颜色 🌟
+        const baziEl = header.createEl('h1', { cls: 'baseline-title bazi-title' });
+        baziEl.innerHTML = `${lunarNow.getYearInGanZhi()}<span class="bazi-unit">年</span><span class="bazi-sep">·</span>${lunarNow.getMonthInGanZhi()}<span class="bazi-unit">月</span><span class="bazi-sep">·</span>${lunarNow.getDayInGanZhi()}<span class="bazi-unit">日</span><span class="bazi-sep">·</span>${lunarNow.getTimeInGanZhi()}<span class="bazi-unit">时</span>`;
 
         const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
@@ -214,11 +216,8 @@ class DashboardView extends ItemView {
         
         files.forEach((file, index) => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
-            
-            // 🌟 核心：注入阶梯式延迟，配合 CSS 实现轻柔的波浪展示效果 🌟
             item.style.animationDelay = `${index * 0.05}s`;
             
-            // 🌟 注入极简线框的 SVG 羽毛图标 🌟
             const iconWrap = item.createDiv({ cls: 'record-icon' });
             iconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>`;
             
