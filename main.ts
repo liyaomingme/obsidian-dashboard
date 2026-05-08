@@ -93,7 +93,6 @@ class DashboardView extends ItemView {
 
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
-        // 🌟 八字标题现在是深棕黑色，字重 800 (styles.css定义) 🌟
         const baziNowStr = `${lunarNow.getYearInGanZhi()}年 · ${lunarNow.getMonthInGanZhi()}月 · ${lunarNow.getDayInGanZhi()}日 · ${lunarNow.getTimeInGanZhi()}时`;
         header.createEl('h1', { text: baziNowStr, cls: 'baseline-title bazi-title' });
 
@@ -178,7 +177,6 @@ class DashboardView extends ItemView {
             
             const d = new Date(year, month, day);
             const lunar = Lunar.fromDate(d);
-            // 🌟 彻底屏蔽节日，只取初一十五农历数字 🌟
             const lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
             
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
@@ -218,7 +216,6 @@ class DashboardView extends ItemView {
         
         files.forEach(file => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
-            // 📄 极简哑光图标
             item.createDiv({ text: '📄', cls: 'record-icon' });
             item.createDiv({ text: file.basename, cls: 'record-title' });
             item.onclick = async () => { await this.app.workspace.getLeaf(true).openFile(file); };
@@ -271,17 +268,11 @@ class QuickNoteModal extends Modal {
         this.actionConfig = config;
         this.onSubmit = onSubmit; 
         this.title = `${moment().format('MMDD')}-`; 
-        
-        this.folderPath = config.folder
-            .replace(/\{\{YYYY\}\}/g, moment().format('YYYY'))
-            .replace(/\{\{MM\}\}/g, moment().format('MM'));
+        this.folderPath = config.folder.replace(/\{\{YYYY\}\}/g, moment().format('YYYY')).replace(/\{\{MM\}\}/g, moment().format('MM'));
     }
     
     onOpen() {
-        const { contentEl, modalEl, containerEl } = this;
-        
-        // 🌟 核心：给 Obsidian 最外层的 Modal 容器加上这个 Class，以触发 CSS 里的全局背景模糊 🌟
-        containerEl.addClass('ios-glass-modal-container');
+        const { contentEl, modalEl } = this;
         modalEl.addClass('ios-glass-modal');
         
         contentEl.createEl('h3', { text: this.actionConfig.name });
@@ -289,8 +280,9 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        // 🌟 核心：Folder Suggester（“一键看文件夹有多少”） 🌟
-        const folderSetting = new Setting(contentEl).setName('归档路径 (可输入或下拉选择)').addText(text => { 
+        // 🌟 核心重构：内嵌流式菜单 (In-flow Accordion) 🌟
+        // 彻底解决手机端弹窗溢出截断问题。展开时弹窗会变长，用户可自行滑动弹窗内容，完美避开键盘！
+        const folderSetting = new Setting(contentEl).setName('归档路径 (点击查看已有文件夹)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
             
@@ -298,70 +290,47 @@ class QuickNoteModal extends Modal {
             const settingControl = inputEl.parentElement;
             
             if(settingControl) {
-                // 手搓一个 Suggest 子菜单容器，并应用毛玻璃
+                // 这个包裹层直接跟在输入框下面，属于文档流
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
-                const suggestMenu = suggestWrapper.createDiv({ cls: 'folder-suggest-menu' });
-
-                // 🌟 获取全量文件夹 (Obsidian API) 🌟
+                
                 const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
 
-                // 核心 Suggest 功能：输入筛选 + 点击选择
                 const showSuggestions = () => {
-                    suggestMenu.empty();
+                    suggestWrapper.empty();
                     const query = inputEl.value.toLowerCase();
-                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 15); 
+                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 30); // 增加展示数量
 
                     if (matches.length > 0) {
-                        // 弹性展开
-                        suggestWrapper.style.maxHeight = '180px';
-                        suggestWrapper.style.opacity = '1';
+                        suggestWrapper.addClass('is-open');
                         matches.forEach(folder => {
-                            const item = suggestMenu.createDiv({ cls: 'suggest-item', text: folder.path });
-                            // mousedown 防止失焦冲突
+                            const item = suggestWrapper.createDiv({ cls: 'suggest-item', text: folder.path });
                             item.onmousedown = (e) => { 
                                 e.preventDefault();
                                 inputEl.value = folder.path;
                                 this.folderPath = folder.path;
-                                // 弹性合拢
-                                suggestWrapper.style.maxHeight = '0';
-                                suggestWrapper.style.opacity = '0';
+                                suggestWrapper.removeClass('is-open');
                                 inputEl.dispatchEvent(new Event('input'));
                             };
                         });
                     } else {
-                        suggestWrapper.style.maxHeight = '0';
-                        suggestWrapper.style.opacity = '0';
+                        suggestWrapper.removeClass('is-open');
                     }
                 };
 
-                // 🌟 “能直接点开”：focus 立即触发建议 🌟
+                // 随时点开看
+                inputEl.addEventListener('click', showSuggestions);
                 inputEl.addEventListener('input', showSuggestions);
                 inputEl.addEventListener('focus', showSuggestions);
-                inputEl.addEventListener('blur', () => { setTimeout(() => {
-                    suggestWrapper.style.maxHeight = '0';
-                    suggestWrapper.style.opacity = '0';
-                }, 200); }); 
+                inputEl.addEventListener('blur', () => { setTimeout(() => suggestWrapper.removeClass('is-open'), 200); }); 
             }
         });
         
-        // 🌟 核心 Bug 修复：解决打字卡顿 🌟
-        // 上一版卡顿的原因是每次打字输入都会触发 scrollIntoView()。这里我删除它，配合 CSS 的 align-self: flex-start，移动端打字时画面将不再跳跃，极度丝滑。🌟
-        // 并在 CSS 里添加了一个 keyboard-spacer，只在归档路径对焦时动态扩展空间供你上下滑动查看 suggest 菜单。
-
-        new Setting(contentEl).addButton(btn => btn.setButtonText('确认创建').setCta().onClick(() => { 
+        // 我们不再需要手动调用 setCta()，而是通过 CSS 直接强力捕获模态框内的所有 button 元素
+        new Setting(contentEl).addButton(btn => btn.setButtonText('确认创建').onClick(() => { 
             if (!this.title || !this.folderPath) return; 
             this.close(); 
             this.onSubmit(this.title, this.date, this.folderPath); 
         }));
-
-        // 为归档路径输入框添加标签，供 CSS 垫片使用
-        const pathInput = contentEl.querySelector('input[type="text"][value^="' + this.folderPath.substring(0,2) + '"]');
-        if(pathInput) {
-            pathInput.addEventListener('focus', () => modalEl.setAttribute('data-focused', 'path'));
-            pathInput.addEventListener('blur', () => modalEl.removeAttribute('data-focused'));
-        }
-        // 添加垫片 DOM
-        contentEl.createDiv({ cls: 'keyboard-dynamic-spacer' });
     }
 }
 
