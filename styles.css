@@ -2,14 +2,13 @@
    🌟 全局：极致哑光高级感 & 棕红配色 🌟
 ========================================= */
 .dashboard-container {
-    /* 🌟 核心：成熟稳重的高级棕红配色 (Oxblood/Carmine) 🌟 */
     --bazi-accent-red: #8A1F1F;   /* 强调色：深棕红 (Oxblood/酒红) */
-    --bazi-text-main: #111111;    /* 哑光纯黑 (主文字) */
+    --bazi-text-main: #333333;    /* 哑光深灰 (主文字) */
     --bazi-text-muted: #888888;   /* 哑光浅灰 (副文字、周几、农历) */
     
-    /* 🌟 核心优化：加深日历格子的热力图配色，1篇也极明显，全平台统一深邃 🌟 */
+    /* 🌟 日历格子色阶：更深邃、高级 🌟 */
     --cal-level-0: #F7EBEA;     /* 基础底色：极淡暖灰粉 */
-    --cal-level-1: #D84F4F;     /* 1篇：明顯的灰粉紅 (加深) */
+    --cal-level-1: #D84F4F;     /* 1篇：明顯的灰粉紅 */
     --cal-level-2: #B02C2C;     /* 2篇：中度棕紅 */
     --cal-level-3: #8A1F1F;     /* 3篇：高級深棕紅 */
     --cal-level-4: #601212;     /* 4篇+：極致酒紅 */
@@ -26,7 +25,7 @@
 .baseline-header { display: flex; flex-direction: column; gap: 4px; }
 .baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* 八字大标题彻底加粗加黑 */
+/* 🌟 八字标题加黑加粗，在毛玻璃上凸显核心 🌟 */
 .baseline-title.bazi-title { 
     margin: 4px 0 0 0; font-size: 26px; 
     font-weight: 800; /* 加黑加粗 */
@@ -35,7 +34,7 @@
     line-height: 1.2; white-space: nowrap; 
 }
 
-/* 棕红色悬浮 "+" 按钮 */
+/* "+" 按钮强调色：棕红 */
 .floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
@@ -51,7 +50,7 @@
     background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
     border-radius: 16px; width: 150px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12); z-index: 1000;
     overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
-    transition: all 0. cubic-bezier(0.2, 0.8, 0.2, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
 }
 .theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);}
 .plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
@@ -86,8 +85,6 @@
     cursor: pointer; padding: 4px 16px; user-select: none;
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-/* 棕红箭头导航 */
 .month-nav-btn.back-arrow { color: var(--bazi-text-muted) !important; }
 .month-nav-btn.next-arrow { color: var(--bazi-accent-red) !important; }
 .month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
@@ -126,24 +123,24 @@
 .calendar-cell > * { z-index: 1; position: relative; }
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
-/* 字体配色与字重优化 */
 .cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--bazi-text-main) !important; transition: color 0.2s; }
 .cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-muted) !important; opacity: 0.9; transition: color 0.2s; }
 
 .calendar-cell.has-data .cal-date-num { font-weight: 800; }
 .calendar-cell:not(.empty):hover::before { transform: scale(1.1); filter: brightness(0.95); }
 
-/* 🌟 选中状态：强调色棕红框 🌟 */
+/* 🌟 选中状态：哑光棕红框 🌟 */
 .calendar-cell.active-selection::before { border: 2px solid var(--bazi-accent-red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-/* 只调整伪元素(背景)的哑光颜色 */
+/* 🌟 有笔记时的热力色色阶应用 🌟 */
 .calendar-cell.level-1::before { background-color: var(--cal-level-1) !important; }
 .calendar-cell.level-2::before { background-color: var(--cal-level-2) !important; }
 .calendar-cell.level-3::before { background-color: var(--cal-level-3) !important; }
 .calendar-cell.level-4::before { background-color: var(--cal-level-4) !important; }
 
-/* 达到级别 3 和 4 的深棕红色时，字体反白以保持高级清晰感 */
-.calendar-cell[class*="level-"] .cal-date-num, .calendar-cell[class*="level-"] .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
+/* 高频级反白显示以保持清晰 */
+.calendar-cell.level-3 .cal-date-num, .calendar-cell.level-3 .cal-lunar-text,
+.calendar-cell.level-4 .cal-date-num, .calendar-cell.level-4 .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
 
 
 /* 🌟 无框平铺式足迹列表 (极简哑光版) 🌟 */
@@ -175,7 +172,7 @@
 
 
 /* =========================================
-   🌟 悬浮防形变下拉菜单 (哑光版) 🌟
+   🌟 悬浮防形变子菜单 (Folder Suggester) 🌟
 ========================================= */
 .folder-suggest-wrapper {
     position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 10000;
@@ -195,54 +192,59 @@
 .suggest-item { padding: 14px 16px; font-size: 14px; font-weight: 500; color: var(--bazi-text-main); cursor: pointer; border-radius: 10px; transition: background 0.2s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
 .suggest-item:hover, .suggest-item:active { background: rgba(0, 0, 0, 0.05); color: var(--bazi-accent-red); }
 
-/* 背景大模糊 */
+/* =========================================
+   🌟 核心进化：真正的苹果毛玻璃弹窗 🌟
+========================================= */
+/* 利用容器选择器，让背后的页面也进行毛玻璃模糊和暗化 */
 .ios-glass-modal-container .modal-bg {
     backdrop-filter: blur(12px) saturate(150%) !important;
     -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
-    transition: all 0.4s ease;
+    transition: backdrop-filter 0.4s ease;
 }
 
-/* =========================================
-   🌟 核心进化：解决头重脚轻、看不清、丝滑弹窗 🌟
-========================================= */
-/* 🌟 核心：全链路弹性动画 (cubic-bezier Spring) 🌟 */
+/* 全链路弹性动画 */
 @keyframes silkyModalPopup {
-    0% { opacity: 0; transform: scale(0.95) translateY(15px); }
+    0% { opacity: 0; transform: scale(0.95) translateY(20px); }
     100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .modal.ios-glass-modal {
-    align-self: center !important; margin: auto !important; 
-    
-    /* 调用丝滑弹出动画 */
+    align-self: flex-start !important; margin-top: 15vh !important; /* 电脑端居中显示，限制高度 */
     animation: silkyModalPopup 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
     will-change: transform, opacity;
     
-    /* 🌟 核心：大幅提升不透明度 (0.95)，让输入内容极致清晰，彻底解决看不清 🌟 */
-    background: rgba(255, 255, 255, 0.95) !important;
+    /* 🌟 核心：大幅提升不透明度 (0.92)，让文字极致清晰，彻底解决看不清，全平台统一深邃棕红色 🌟 */
+    background: rgba(255, 255, 255, 0.92) !important;
     backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
     
-    /* 🌟 核心：完美的圆角适配 🌟 */
-    border-radius: 24px !important; 
-    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    /* 🌟 核心：均衡的圆角与边距适配，告别头重脚轻 🌟 */
+    border-radius: 20px !important; 
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important; 
     
-    /* 🌟 重新优化比例：均衡的内边距，告别头重脚轻 🌟 */
-    padding: 24px !important; 
-    display: flex !important; flex-direction: column !important; max-height: 85vh !important; 
+    padding: 28px 24px 24px 24px !important; 
+    display: flex !important; flex-direction: column !important; max-height: 80vh !important; 
 }
 .theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.92) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
-.ios-glass-modal .modal-content { overflow-y: auto !important; scrollbar-width: none; flex: 1 1 auto; position: relative; }
+.ios-glass-modal .modal-content { overflow: visible !important; scrollbar-width: none; flex: 1 1 auto; }
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
 
-/* 🌟 核心逻辑：弹窗本身不发生 Pop形变，整个主页随键盘上移 🌟 */
-/* JS 会动态管理 overflow 防止 Pop 垫片出现 */
+/* 🌟 解决卡顿 Bug 2：不要劫持打字输入框。在 CSS 里实现智能滚动垫片。 🌟 */
+/* 这个 spacer 隐藏在输入框下方，打字时不会Pop出来，但允许你在键盘挡住时向下滑动。 */
+.keyboard-dynamic-spacer {
+    height: 0;
+    transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ios-glass-modal[data-focused="path"] .keyboard-dynamic-spacer {
+    height: 200px; /* 只在聚焦归档路径时撑高 */
+}
 
-/* 🌟 重新优化比例：精致的小号标题，加黑加粗 🌟 */
+
+/* 🌟 重新优化比例：精致的小号标题，彻底加黑加粗 🌟 */
 .ios-glass-modal h3 { 
-    font-weight: 800 !important; font-size: 18px; text-align: center; 
+    font-weight: 800 !important; font-size: 20px; text-align: center; 
     margin-top: 0; margin-bottom: 20px; 
     color: var(--bazi-text-main); letter-spacing: -0.01em; 
 }
@@ -250,45 +252,42 @@
 .ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 4px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
 .ios-glass-modal .setting-item-name { 
-    font-weight: 500 !important; /* 内容标签不用加粗 */
+    font-weight: 600 !important; /* 内容标签不用加粗 */
     font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px; opacity: 0.9;
 }
 .ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; position: relative !important; }
 
-/* 🌟 重新优化比例：输入框精致瘦身，内容彻底加黑 🌟 */
+/* 🌟 重新优化比例：输入框瘦身，字体徹底加黑 🌟 */
 .ios-glass-modal input[type="text"] {
+    /* 更高级的深色内阴影底框 */
     border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.06) !important;
-    background: rgba(255, 255, 255, 0.6) !important; 
-    padding: 12px 16px !important; font-size: 15px !important; width: 100%;
-    /* 高级内阴影与白色发光层叠 */
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.5) !important; 
-    color: #111 !important; /* 内容输入徹底加黑，清晰可见 */
+    background: rgba(255, 255, 255, 0.4) !important; padding: 12px 14px !important; font-size: 15px !important; width: 100%;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02) !important; color: #111 !important; /* 文字彻底加黑 */
     font-weight: 500 !important; /* 内容输入不加粗 */
     transition: all 0.3s ease;
 }
-.theme-dark .ios-glass-modal input[type="text"] { background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.05) !important; color: #FFF !important; }
-.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; box-shadow: 0 0 0 2px rgba(138, 46, 46, 0.15) !important; background: rgba(255, 255, 255, 0.9) !important;}
-.theme-dark .ios-glass-modal input[type="text"]:focus { background: rgba(0,0,0,0.6) !important; }
+.theme-dark .ios-glass-modal input[type="text"] { background: rgba(0, 0, 0, 0.25) !important; border-color: rgba(255,255,255,0.05) !important;}
+.ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; box-shadow: 0 0 0 2px rgba(138, 46, 46, 0.15) !important; background: rgba(255, 255, 255, 0.7) !important;}
 
 /* 🌟 重新优化比例：棕红确认按钮瘦身 🌟 */
 .ios-glass-modal button.mod-cta {
-    background: var(--bazi-accent-red) !important; color: #FFFFFF !important;
-    border-radius: 12px !important; padding: 14px !important; font-size: 16px !important; 
+    background: var(--bazi-accent-red) !important; color: white !important;
+    border-radius: 12px !important; padding: 16px !important; font-size: 16px !important; 
     font-weight: 700 !important; width: 100%; margin-top: 16px; 
-    box-shadow: 0 6px 16px rgba(138, 46, 46, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(138, 46, 46, 0.25) !important;
     border: none !important; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); letter-spacing: 0.02em;
 }
 .ios-glass-modal button.mod-cta:active { transform: scale(0.96) !important; }
 
 @media (max-width: 480px) {
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
-    .baseline-title.bazi-title { font-size: 18px; letter-spacing: 0.04em; } /* 手机端八字缩小以适应 */
+    .baseline-title.bazi-title { font-size: 15px; letter-spacing: 0.04em; }
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
     
     /* 手机端完美圆角与均衡边距适配 */
-    .modal.ios-glass-modal { margin: auto !important; padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
-    .ios-glass-modal h3 { font-size: 17px !important; margin-bottom: 16px !important; }
+    .modal.ios-glass-modal { margin-top: 12vh !important; padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
+    .ios-glass-modal h3 { font-size: 18px !important; margin-bottom: 16px !important; }
 }
