@@ -24,9 +24,11 @@
 .baseline-header { display: flex; flex-direction: column; gap: 4px; }
 .baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
+/* 🌟 八字标题：同步桌面端的传统宋体/楷体 🌟 */
 .baseline-title.bazi-title { 
-    margin: 4px 0 0 0; font-size: 26px; 
-    font-weight: 800; color: #111111; letter-spacing: 0.05em; line-height: 1.2; white-space: nowrap; 
+    margin: 4px 0 0 0; font-size: 24px; 
+    font-weight: 600; color: #111111; letter-spacing: 0.08em; line-height: 1.2; white-space: nowrap; 
+    font-family: "STKaiti", "KaiTi", "Songti SC", "Noto Serif SC", "SimSun", serif;
 }
 .theme-dark .baseline-title.bazi-title { color: #FFFFFF; }
 
@@ -111,7 +113,9 @@
 .calendar-cell.level-4::before { background-color: var(--cal-level-4) !important; }
 .calendar-cell[class*="level-"] .cal-date-num, .calendar-cell[class*="level-"] .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
 
-/* --- 平铺足迹列表 --- */
+/* =========================================
+   🌟 核心微交互：手机端波浪入场与 SVG 图标 🌟
+========================================= */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease; opacity: 0; }
 .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
 .record-list-header { margin-bottom: 16px; padding-left: 8px; }
@@ -121,16 +125,45 @@
 .record-list-scroll { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
 .record-list-scroll::-webkit-scrollbar { display: none; }
 
-.record-item { background: transparent !important; border-radius: 12px; padding: 16px 12px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important; transition: transform 0.2s ease, background 0.2s ease; }
+/* 波浪动画 */
+@keyframes listWave {
+    0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.record-item { 
+    background: transparent !important; border-radius: 12px; padding: 16px 12px; 
+    display: flex; align-items: center; gap: 14px; cursor: pointer; 
+    border-bottom: 1px solid rgba(150, 150, 150, 0.12) !important; 
+    
+    /* 加入果冻阻尼与波浪入场 */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), background 0.3s ease !important;
+    opacity: 0; animation: listWave 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: left center;
+}
 .record-item:last-child { border-bottom: none !important; }
 .theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
-.record-item:hover { background: rgba(120, 120, 120, 0.08) !important; transform: translateX(4px); }
-.record-icon { font-size: 20px; color: var(--bazi-text-muted); }
+
+/* 手机端主要靠 :active (按压) 来触发反馈，但也保留 hover 兼容触控板 */
+.record-item:hover, .record-item:active { 
+    background: linear-gradient(90deg, rgba(138, 31, 31, 0.04) 0%, transparent 100%) !important; 
+    transform: translateX(6px) !important; 
+}
+
+/* 🌟 SVG 羽毛笔图标 🌟 */
+.record-icon { 
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bazi-text-muted); opacity: 0.5; 
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease, opacity 0.3s ease; 
+}
+.record-item:hover .record-icon, .record-item:active .record-icon { 
+    color: var(--bazi-accent-red); opacity: 1; transform: scale(1.15) rotate(-8deg); 
+}
 .record-title { font-size: 15px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
 
 /* =========================================
-   🌟 核心进化：真正的苹果毛玻璃弹窗 (彻底解决显示不全、按钮透明) 🌟
+   🌟 原有的手机端毛玻璃弹窗 (保持不变) 🌟
 ========================================= */
 .ios-glass-modal-container .modal-bg {
     backdrop-filter: blur(15px) saturate(150%) !important; -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
@@ -157,7 +190,6 @@
 }
 .theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
-/* 🌟 允许弹窗内部滚动 🌟 */
 .ios-glass-modal .modal-content { 
     overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; 
     scrollbar-width: none; flex: 1 1 auto; padding-right: 4px; padding-bottom: 12px;
@@ -170,7 +202,6 @@
 .ios-glass-modal .setting-item-name { font-weight: 600 !important; font-size: 13px; color: var(--text-muted); margin-left: 4px;}
 .ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; }
 
-/* 极致清晰的输入框 */
 .ios-glass-modal input[type="text"] {
     border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.1) !important; background: rgba(0, 0, 0, 0.04) !important; 
     padding: 14px 16px !important; font-size: 15px !important; width: 100%;
@@ -179,39 +210,19 @@
 .theme-dark .ios-glass-modal input[type="text"] { background: rgba(255, 255, 255, 0.08) !important; border-color: rgba(255,255,255,0.1) !important;}
 .ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; background: transparent !important;}
 
-
-/* =========================================
-   🌟 核心修复：按钮强制黑白高对比度 🌟
-========================================= */
-/* 浅色模式：纯黑按钮 + 纯白文字 */
+/* 强制黑白高对比度按钮 */
 .ios-glass-modal button.mod-cta,
 .ios-glass-modal button {
-    background-color: #111111 !important; 
-    color: #FFFFFF !important;
-    opacity: 1 !important;
-    border-radius: 12px !important; 
-    padding: 16px !important; 
-    font-size: 16px !important; 
-    font-weight: 700 !important; 
-    width: 100% !important; 
-    margin-top: 20px !important; 
-    border: none !important; 
-    text-shadow: none !important;
-    transition: transform 0.2s ease !important; 
+    background-color: #111111 !important; color: #FFFFFF !important; opacity: 1 !important;
+    border-radius: 12px !important; padding: 16px !important; font-size: 16px !important; 
+    font-weight: 700 !important; width: 100% !important; margin-top: 20px !important; 
+    border: none !important; text-shadow: none !important; transition: transform 0.2s ease !important; 
 }
-
-/* 深色模式：纯白按钮 + 纯黑文字 */
 .theme-dark .ios-glass-modal button.mod-cta,
-.theme-dark .ios-glass-modal button {
-    background-color: #FFFFFF !important; 
-    color: #111111 !important;
-}
+.theme-dark .ios-glass-modal button { background-color: #FFFFFF !important; color: #111111 !important; }
 .ios-glass-modal button:active { transform: scale(0.96) !important; opacity: 0.8 !important; }
 
-
-/* =========================================
-   🌟 文件夹下拉选择器 🌟
-========================================= */
+/* 文件夹下拉选择器 */
 .folder-suggest-wrapper {
     display: none; width: 100%; margin-top: 8px;
     background: rgba(0, 0, 0, 0.03); border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.05);
@@ -225,29 +236,16 @@
 .suggest-item:last-child { border-bottom: none; }
 .suggest-item:hover, .suggest-item:active { background: rgba(138, 31, 31, 0.1); color: var(--bazi-accent-red); }
 
-
-/* =========================================
-   🌟 手机端：缩小、上移、内部滑动防键盘遮挡 🌟
-========================================= */
 @media (max-width: 480px) {
     .dashboard-container { padding: 4vh 5vw; gap: 24px; }
     .baseline-title.bazi-title { font-size: 18px; }
     .dashboard-data-section { padding: 24px 16px; border-radius: 24px; }
     .calendar-cell { width: 40px; height: 40px; }
     
-    /* 核心修复：缩小总高度，强制置顶，给底部留出键盘空间 */
     .modal.ios-glass-modal { 
-        align-self: flex-start !important; /* 强制靠上 */
-        margin-top: 6vh !important;        /* 顶部只留极小间距 */
-        max-height: 52vh !important;       /* 压缩最大高度，只占屏幕上半截 */
-        width: 90vw !important; 
-        padding: 24px 20px !important; 
-        border-radius: 24px !important; 
+        align-self: flex-start !important; margin-top: 6vh !important; max-height: 52vh !important; 
+        width: 90vw !important; padding: 24px 20px !important; border-radius: 24px !important; 
     }
     
-    /* 允许弹窗在被压缩的情况下，内部丝滑滚动 */
-    .ios-glass-modal .modal-content {
-        overflow-y: auto !important;
-        padding-bottom: 16px !important;
-    }
+    .ios-glass-modal .modal-content { overflow-y: auto !important; padding-bottom: 16px !important; }
 }
