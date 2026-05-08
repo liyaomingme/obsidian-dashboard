@@ -2,15 +2,17 @@
    🌟 全局：极致哑光高级感 & 棕红配色 🌟
 ========================================= */
 .dashboard-container {
-    --bazi-accent-red: #8A2E2E;   /* 强调色：深棕红 */
-    --bazi-text-main: #222222;    /* 哑光深黑 */
-    --bazi-text-muted: #888888;   /* 哑光浅灰 */
+    /* 🌟 核心：成熟稳重的高级棕红配色 (Oxblood/Carmine) 🌟 */
+    --bazi-accent-red: #8A1F1F;   /* 强调色：深棕红 (Oxblood/酒红) */
+    --bazi-text-main: #111111;    /* 哑光纯黑 (主文字) */
+    --bazi-text-muted: #888888;   /* 哑光浅灰 (副文字、周几、农历) */
     
+    /* 🌟 核心优化：加深日历格子的热力图配色，1篇也极明显，全平台统一深邃 🌟 */
     --cal-level-0: #F7EBEA;     /* 基础底色：极淡暖灰粉 */
-    --cal-level-1: #C67A7A;     /* 1篇：明显的灰粉红 */
-    --cal-level-2: #A85757;     /* 2篇：中度棕红 */
-    --cal-level-3: #8A2E2E;     /* 3篇：高级深棕红 */
-    --cal-level-4: #6B1A1A;     /* 4篇+：极致酒红 */
+    --cal-level-1: #D84F4F;     /* 1篇：明顯的灰粉紅 (加深) */
+    --cal-level-2: #B02C2C;     /* 2篇：中度棕紅 */
+    --cal-level-3: #8A1F1F;     /* 3篇：高級深棕紅 */
+    --cal-level-4: #601212;     /* 4篇+：極致酒紅 */
     
     padding: 6vh 5vw; max-width: 860px; margin: 0 auto;
     display: flex; flex-direction: column; gap: 32px;
@@ -24,15 +26,16 @@
 .baseline-header { display: flex; flex-direction: column; gap: 4px; }
 .baseline-date { font-size: 13px; font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* 🌟 核心优化：八字大标题加黑加粗 🌟 */
+/* 八字大标题彻底加粗加黑 */
 .baseline-title.bazi-title { 
     margin: 4px 0 0 0; font-size: 26px; 
-    font-weight: 800; /* 加粗 */
+    font-weight: 800; /* 加黑加粗 */
     color: #111111;   /* 加黑 */
     letter-spacing: 0.05em; 
     line-height: 1.2; white-space: nowrap; 
 }
 
+/* 棕红色悬浮 "+" 按钮 */
 .floating-plus-btn {
     background: transparent !important; border: none !important; box-shadow: none !important;
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
@@ -42,12 +45,13 @@
 .floating-plus-btn:hover { transform: scale(1.15); opacity: 0.8; }
 .floating-plus-btn:active { transform: scale(0.9); }
 
+/* 下拉菜单 */
 .plus-dropdown {
     position: absolute; top: 100%; right: 0;
     background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(200%) blur(40px); -webkit-backdrop-filter: saturate(200%) blur(40px);
     border-radius: 16px; width: 150px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12); z-index: 1000;
     overflow: hidden; transform: translateY(10px); opacity: 0; pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0. cubic-bezier(0.2, 0.8, 0.2, 1); padding: 8px; border: 1px solid rgba(0, 0, 0, 0.05);
 }
 .theme-dark .plus-dropdown { background: rgba(30, 30, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);}
 .plus-dropdown.is-open { transform: translateY(16px); opacity: 1; pointer-events: auto; }
@@ -58,7 +62,7 @@
 }
 .dropdown-item:hover { background: rgba(0, 0, 0, 0.05); }
 
-/* --- 数据区域 --- */
+/* --- 数据区域 (纯白毛玻璃容器) --- */
 .dashboard-data-section {
     background: rgba(255, 255, 255, 0.7) !important; 
     backdrop-filter: saturate(180%) blur(50px) !important; -webkit-backdrop-filter: saturate(180%) blur(50px) !important;
@@ -82,6 +86,8 @@
     cursor: pointer; padding: 4px 16px; user-select: none;
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* 棕红箭头导航 */
 .month-nav-btn.back-arrow { color: var(--bazi-text-muted) !important; }
 .month-nav-btn.next-arrow { color: var(--bazi-accent-red) !important; }
 .month-nav-btn:hover { transform: scale(1.2); opacity: 0.8; }
@@ -103,6 +109,7 @@
 .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); margin-bottom: 16px; opacity: 0.9; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 4px; }
 
+/* 🌟 日历网格：带小圆角的正方形 🌟 */
 .calendar-cell {
     width: 46px; height: 46px; margin: 0 auto; 
     border-radius: 8px; 
@@ -115,23 +122,31 @@
     z-index: 0; transition: transform 0.2s ease, background 0.2s ease;
     will-change: transform;
 }
+
 .calendar-cell > * { z-index: 1; position: relative; }
 .calendar-cell.empty { visibility: hidden; pointer-events: none; }
 
+/* 字体配色与字重优化 */
 .cal-date-num { font-size: 17px; font-weight: 600; line-height: 1.1; margin-bottom: 1px; color: var(--bazi-text-main) !important; transition: color 0.2s; }
 .cal-lunar-text { font-size: 10px; font-weight: 500; line-height: 1; color: var(--bazi-text-muted) !important; opacity: 0.9; transition: color 0.2s; }
 
 .calendar-cell.has-data .cal-date-num { font-weight: 800; }
 .calendar-cell:not(.empty):hover::before { transform: scale(1.1); filter: brightness(0.95); }
+
+/* 🌟 选中状态：强调色棕红框 🌟 */
 .calendar-cell.active-selection::before { border: 2px solid var(--bazi-accent-red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
+/* 只调整伪元素(背景)的哑光颜色 */
 .calendar-cell.level-1::before { background-color: var(--cal-level-1) !important; }
 .calendar-cell.level-2::before { background-color: var(--cal-level-2) !important; }
 .calendar-cell.level-3::before { background-color: var(--cal-level-3) !important; }
 .calendar-cell.level-4::before { background-color: var(--cal-level-4) !important; }
+
+/* 达到级别 3 和 4 的深棕红色时，字体反白以保持高级清晰感 */
 .calendar-cell[class*="level-"] .cal-date-num, .calendar-cell[class*="level-"] .cal-lunar-text { color: #FFFFFF !important; opacity: 1 !important;}
 
-/* --- 平铺足迹列表 --- */
+
+/* 🌟 无框平铺式足迹列表 (极简哑光版) 🌟 */
 .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, margin-top 0.3s ease; opacity: 0; will-change: max-height, opacity;}
 .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: 32px; }
 .record-list-header { margin-bottom: 16px; padding-left: 8px; }
@@ -146,19 +161,21 @@
     background: transparent !important; border-radius: 12px; padding: 16px 12px;
     display: flex; align-items: center; gap: 14px; cursor: pointer;
     box-shadow: none !important; border: none !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important; /* 极细分割线 */
     transition: transform 0.2s ease, background 0.2s ease;
+    will-change: transform;
 }
 .record-item:last-child { border-bottom: none !important; }
 .theme-dark .record-item { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
 .record-item:hover { background: rgba(0, 0, 0, 0.04) !important; transform: translateX(4px); border-bottom-color: transparent !important; }
 .record-item:active { background: rgba(0, 0, 0, 0.08) !important; transform: scale(0.98); }
+
 .record-icon { font-size: 20px; color: var(--bazi-text-muted); }
 .record-title { font-size: 15px; font-weight: 600; color: var(--bazi-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
 
 /* =========================================
-   🌟 悬浮下拉菜单 (丝滑展开) 🌟
+   🌟 悬浮防形变下拉菜单 (哑光版) 🌟
 ========================================= */
 .folder-suggest-wrapper {
     position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 10000;
@@ -187,42 +204,43 @@
 }
 
 /* =========================================
-   🌟 核心进化：解决头重脚轻，均衡比例弹窗 🌟
+   🌟 核心进化：解决头重脚轻、看不清、丝滑弹窗 🌟
 ========================================= */
+/* 🌟 核心：全链路弹性动画 (cubic-bezier Spring) 🌟 */
 @keyframes silkyModalPopup {
     0% { opacity: 0; transform: scale(0.95) translateY(15px); }
     100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .modal.ios-glass-modal {
-    align-self: center !important; /* 恢复居中，更加平衡 */
-    margin: auto !important; 
+    align-self: center !important; margin: auto !important; 
+    
+    /* 调用丝滑弹出动画 */
     animation: silkyModalPopup 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
     will-change: transform, opacity;
     
-    background: rgba(255, 255, 255, 0.92) !important;
+    /* 🌟 核心：大幅提升不透明度 (0.95)，让输入内容极致清晰，彻底解决看不清 🌟 */
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(50px) saturate(200%) !important; -webkit-backdrop-filter: blur(50px) saturate(200%) !important;
     
+    /* 🌟 核心：完美的圆角适配 🌟 */
     border-radius: 24px !important; 
     border: 1px solid rgba(255, 255, 255, 0.9) !important;
     box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important; 
     
-    /* 🌟 完美的均衡边距 🌟 */
+    /* 🌟 重新优化比例：均衡的内边距，告别头重脚轻 🌟 */
     padding: 24px !important; 
-    display: flex !important; flex-direction: column !important; 
-    max-height: 85vh !important; 
+    display: flex !important; flex-direction: column !important; max-height: 85vh !important; 
 }
 .theme-dark .modal.ios-glass-modal { background: rgba(30, 30, 30, 0.92) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
 
 .ios-glass-modal .modal-content { overflow-y: auto !important; scrollbar-width: none; flex: 1 1 auto; position: relative; }
 .ios-glass-modal .modal-content::-webkit-scrollbar { display: none; }
 
-/* 🌟 动态键盘垫片：只在输入时撑开，不打字时绝不占用空间！ 🌟 */
-.keyboard-dynamic-spacer {
-    height: 0; transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); pointer-events: none;
-}
+/* 🌟 核心逻辑：弹窗本身不发生 Pop形变，整个主页随键盘上移 🌟 */
+/* JS 会动态管理 overflow 防止 Pop 垫片出现 */
 
-/* 标题精简 */
+/* 🌟 重新优化比例：精致的小号标题，加黑加粗 🌟 */
 .ios-glass-modal h3 { 
     font-weight: 800 !important; font-size: 18px; text-align: center; 
     margin-top: 0; margin-bottom: 20px; 
@@ -231,22 +249,28 @@
 
 .ios-glass-modal .setting-item { border: none !important; padding: 6px 0 !important; flex-direction: column; align-items: flex-start; gap: 4px; }
 .ios-glass-modal .setting-item-info { width: 100%; margin: 0 !important; }
-.ios-glass-modal .setting-item-name { font-weight: 500 !important; font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px; opacity: 0.9;}
+.ios-glass-modal .setting-item-name { 
+    font-weight: 500 !important; /* 内容标签不用加粗 */
+    font-size: 13px; color: var(--bazi-text-muted); margin-left: 4px; opacity: 0.9;
+}
 .ios-glass-modal .setting-item-control { width: 100%; justify-content: flex-start; flex-direction: column; align-items: stretch; position: relative !important; }
 
-/* 🌟 输入框与按钮比例：更精致 🌟 */
+/* 🌟 重新优化比例：输入框精致瘦身，内容彻底加黑 🌟 */
 .ios-glass-modal input[type="text"] {
     border-radius: 12px !important; border: 1px solid rgba(0,0,0,0.06) !important;
     background: rgba(255, 255, 255, 0.6) !important; 
     padding: 12px 16px !important; font-size: 15px !important; width: 100%;
+    /* 高级内阴影与白色发光层叠 */
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(255,255,255,0.5) !important; 
-    color: #111 !important; /* 字体加深，无比清晰 */
-    font-weight: 500 !important; transition: all 0.3s ease;
+    color: #111 !important; /* 内容输入徹底加黑，清晰可见 */
+    font-weight: 500 !important; /* 内容输入不加粗 */
+    transition: all 0.3s ease;
 }
 .theme-dark .ios-glass-modal input[type="text"] { background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.05) !important; color: #FFF !important; }
 .ios-glass-modal input[type="text"]:focus { border-color: var(--bazi-accent-red) !important; box-shadow: 0 0 0 2px rgba(138, 46, 46, 0.15) !important; background: rgba(255, 255, 255, 0.9) !important;}
 .theme-dark .ios-glass-modal input[type="text"]:focus { background: rgba(0,0,0,0.6) !important; }
 
+/* 🌟 重新优化比例：棕红确认按钮瘦身 🌟 */
 .ios-glass-modal button.mod-cta {
     background: var(--bazi-accent-red) !important; color: #FFFFFF !important;
     border-radius: 12px !important; padding: 14px !important; font-size: 16px !important; 
@@ -263,5 +287,8 @@
     .calendar-cell { width: 40px; height: 40px; }
     .cal-date-num { font-size: 15px; }
     .cal-lunar-text { font-size: 9px; }
-    .modal.ios-glass-modal { padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
+    
+    /* 手机端完美圆角与均衡边距适配 */
+    .modal.ios-glass-modal { margin: auto !important; padding: 24px 20px 20px 20px !important; border-radius: 20px !important; }
+    .ios-glass-modal h3 { font-size: 17px !important; margin-bottom: 16px !important; }
 }
