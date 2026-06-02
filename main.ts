@@ -94,6 +94,7 @@ class DashboardView extends ItemView {
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
         
+        // 🌟 手机端专享排版：八字与角标单位分离，完美支持极宽字号差 🌟
         const baziEl = header.createEl('h1', { cls: 'baseline-title bazi-title' });
         baziEl.innerHTML = `${lunarNow.getYearInGanZhi()}<span class="bazi-unit">年</span><span class="bazi-sep">·</span>${lunarNow.getMonthInGanZhi()}<span class="bazi-unit">月</span><span class="bazi-sep">·</span>${lunarNow.getDayInGanZhi()}<span class="bazi-unit">日</span><span class="bazi-sep">·</span>${lunarNow.getTimeInGanZhi()}<span class="bazi-unit">时</span>`;
 
@@ -131,18 +132,78 @@ class DashboardView extends ItemView {
         });
     }
 
+    // =========================================
+    // 🌟 核心引擎同步：全能日期嗅探器 (解决多设备同步丢失日期问题) 🌟
+    // =========================================
     buildFileDataMap() {
         this.fileDataMap = {};
-        const files = this.app.vault.getMarkdownFiles();
-        files.forEach(file => {
+        this.app.vault.getMarkdownFiles().forEach(file => {
             const cache = this.app.metadataCache.getFileCache(file);
-            const dateStr = cache?.frontmatter?.date || moment(file.stat.ctime).format('YYYY-MM-DD');
-            const formatKey = moment(dateStr).format('YYYY-MM-DD');
+            const formatKey = this.extractDateFromFile(file, cache);
             if (!this.fileDataMap[formatKey]) this.fileDataMap[formatKey] = [];
             this.fileDataMap[formatKey].push(file);
         });
-        for (const key in this.fileDataMap) { this.fileDataMap[key].sort((a, b) => b.stat.ctime - a.stat.ctime); }
+        
+        for (const key in this.fileDataMap) { 
+            this.fileDataMap[key].sort((a, b) => b.stat.ctime - a.stat.ctime); 
+        }
     }
+
+    extractDateFromFile(file: TFile, cache: any): string {
+        let dateStr: string | null = null;
+        let yearContext = moment(file.stat.ctime).year(); 
+        
+        const pathYearMatch = file.path.match(/(20\d{2})/);
+        if (pathYearMatch) yearContext = parseInt(pathYearMatch[1]);
+
+        if (cache?.frontmatter?.date) {
+            dateStr = String(cache.frontmatter.date).trim();
+            const parsed = this.parseLenientDate(dateStr, yearContext);
+            if (parsed) return parsed;
+        }
+
+        dateStr = file.basename.trim();
+        const parsedFilename = this.parseLenientDate(dateStr, yearContext);
+        if (parsedFilename) return parsedFilename;
+
+        return moment(file.stat.ctime).format('YYYY-MM-DD');
+    }
+
+    parseLenientDate(s: string, defaultYear: number): string | null {
+        s = s.trim();
+
+        let m = moment(s, ["YYYY-MM-DD", "YYYY/MM/DD", "YYYY.MM.DD", "YYYY-MM-DDTHH:mm"], true);
+        if (m.isValid()) return m.format('YYYY-MM-DD');
+
+        let mmddMatch = s.match(/^(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(?:[^\d]|$)/);
+        if (mmddMatch) {
+            let mth = parseInt(mmddMatch[1]);
+            let d = parseInt(mmddMatch[2]);
+            return moment(`${defaultYear}-${mth}-${d}`, "YYYY-M-D").format('YYYY-MM-DD');
+        }
+
+        let complexMatch = s.match(/(?:^|[^\d])((?:20)?\d{2})[-./年_]?([0-1]?\d)[-./月_]?([0-3]?\d)日?(?:[^\d]|$)/);
+        if (complexMatch) {
+            let y = parseInt(complexMatch[1]);
+            let mth = parseInt(complexMatch[2]);
+            let d = parseInt(complexMatch[3]);
+            if (y > 0 && y < 100) y += 2000; 
+            if (mth >= 1 && mth <= 12 && d >= 1 && d <= 31) {
+                return moment(`${y}-${mth}-${d}`, "YYYY-M-D").format('YYYY-MM-DD');
+            }
+        }
+        
+        let lenientMatch = s.match(/(?:^|[^\d])(2\d)[-./年_]?([1-9]|1[0-2])[-./月_]?([1-9]|[12]\d|3[01])日?(?:[^\d]|$)/);
+        if (lenientMatch) {
+            let y = parseInt(lenientMatch[1]) + 2000;
+            let mth = parseInt(lenientMatch[2]);
+            let d = parseInt(lenientMatch[3]);
+            return moment(`${y}-${mth}-${d}`, "YYYY-M-D").format('YYYY-MM-DD');
+        }
+
+        return null;
+    }
+    // =========================================
 
     renderCalendar(direction: 'left' | 'right' | 'none' = 'none') {
         this.boardArea.empty();
@@ -277,7 +338,6 @@ class QuickNoteModal extends Modal {
     onOpen() {
         const { contentEl, modalEl, containerEl } = this;
         
-        // 🌟 退回原生的生命周期：在 onOpen 时赋予基础样式类 🌟
         containerEl.addClass('ios-glass-modal-container');
         modalEl.addClass('ios-glass-modal');
         
