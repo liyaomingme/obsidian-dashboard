@@ -1,7 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
-// 关键修复：使用 Node 原生的 module 代替被官方警告废弃的 builtin-modules 包
-import builtins from "module"; 
+import builtins from "module";
 
 const banner =
 `/*
@@ -12,7 +11,7 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = (process.argv[2] === 'production');
 
-const context = await esbuild.context({
+esbuild.build({
 	banner: {
 		js: banner,
 	},
@@ -32,19 +31,13 @@ const context = await esbuild.context({
 		'@lezer/common',
 		'@lezer/highlight',
 		'@lezer/lr',
-		...builtins.builtinModules // 使用原生模块
+		...builtins.builtinModules
 	],
 	format: 'cjs',
+	watch: !prod,
 	target: 'es2018',
 	logLevel: "info",
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
 	outfile: 'main.js',
-});
-
-if (prod) {
-	await context.rebuild();
-	process.exit(0);
-} else {
-	await context.watch();
-}
+}).catch(() => process.exit(1));
