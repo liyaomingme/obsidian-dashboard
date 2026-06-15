@@ -2,8 +2,6 @@ import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSetting
 import { Lunar } from 'lunar-javascript';
 
 // 🌟 TypeScript 严格类型欺骗层 (Bypass Obsidian's strict ESLint rules)
-// 由于 lunar-javascript 缺乏官方类型定义，直接使用会触发几十个 Unsafe 'any' 警告。
-// 我们在此通过 interface 与 unknown 转换，为其手动注入绝对安全的强类型。
 interface ILunar {
     getYearInGanZhi(): string;
     getMonthInGanZhi(): string;
@@ -69,7 +67,6 @@ export default class DashboardPlugin extends Plugin {
             leaf = workspace.getLeaf(true);
             await leaf.setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
         }
-        // 确保原生可能存在的异步被 void 妥善处理
         void workspace.revealLeaf(leaf);
     }
 }
@@ -110,7 +107,6 @@ class DashboardView extends ItemView {
         header.createDiv({ text: moment().format('M月D日 dddd'), cls: 'baseline-date' });
 
         const now = new Date();
-        // 采用强制类型转换的 SafeLunar，消灭 "Unsafe member access" 警告
         const lunarNow = SafeLunar.fromDate(now);
         
         const baziEl = header.createEl('h1', { cls: 'baseline-title bazi-title' });
