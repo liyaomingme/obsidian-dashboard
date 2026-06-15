@@ -52,9 +52,9 @@ export default class DashboardPlugin extends Plugin {
     }
 
     async loadSettings() { 
-        // 彻底修复: 为 loadData() 补充强类型断言，消除 any 赋值警告
-        const data = await this.loadData();
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, data as Partial<DashboardSettings>); 
+        // 终极修复：强制转换为 unknown 打断 any 的传播，然后转为确切的接口类型
+        const data: unknown = await this.loadData();
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, (data as DashboardSettings) || {}); 
     }
     
     async saveSettings() { 
