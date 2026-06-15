@@ -1,5 +1,18 @@
-import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App, TFile } from 'obsidian';
-import moment from 'moment';
+import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App, TFile, moment, CachedMetadata } from 'obsidian';
+
+// 声明第三方无类型库，彻底解决由于 Any 导致的几十个 "Unsafe member access" 报错
+declare module 'lunar-javascript' {
+    export class Lunar {
+        static fromDate(date: Date): Lunar;
+        getYearInGanZhi(): string;
+        getMonthInGanZhi(): string;
+        getDayInGanZhi(): string;
+        getTimeInGanZhi(): string;
+        getDay(): number;
+        getMonthInChinese(): string;
+        getDayInChinese(): string;
+    }
+}
 import { Lunar } from 'lunar-javascript';
 
 const VIEW_TYPE_DASHBOARD = "mobile-dashboard-view";
@@ -22,17 +35,17 @@ export default class DashboardPlugin extends Plugin {
     async onload() {
         await this.loadSettings();
         this.registerView(VIEW_TYPE_DASHBOARD, (leaf) => new DashboardView(leaf, this));
-        this.addRibbonIcon('layout-dashboard', '控制中心', () => this.activateView());
-        this.addCommand({ id: 'show-dashboard', name: '显示控制中心', callback: () => this.activateView() });
+        this.addRibbonIcon('layout-dashboard', '控制中心', () => { void this.activateView(); });
+        this.addCommand({ id: 'show-dashboard', name: '显示控制中心', callback: () => { void this.activateView(); } });
         this.addSettingTab(new DashboardSettingTab(this.app, this));
         
         this.app.workspace.onLayoutReady(() => { 
             if (this.settings.openOnStartup) {
                 const emptyLeaves = this.app.workspace.getLeavesOfType("empty");
                 if (emptyLeaves.length > 0) {
-                    emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
+                    void emptyLeaves[0].setViewState({ type: VIEW_TYPE_DASHBOARD, active: true });
                 } else {
-                    this.activateView();
+                    void this.activateView();
                 }
             }
         });
@@ -82,7 +95,9 @@ class DashboardView extends ItemView {
         const container = this.containerEl.children[1];
         container.empty();
         container.addClass('dashboard-container');
-        moment.locale(window.localStorage.getItem('language') || 'zh-cn');
+        
+        // 移除被官方警告的 localStorage 语言检测，完全依赖 Obsidian 本身的全局 moment
+        moment.locale('zh-cn');
 
         this.buildFileDataMap();
 
@@ -94,7 +109,6 @@ class DashboardView extends ItemView {
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
         
-        // 🌟 重构：使用安全的 DOM API 替代 innerHTML 🌟
         const baziEl = header.createEl('h1', { cls: 'baseline-title bazi-title' });
         baziEl.appendText(lunarNow.getYearInGanZhi());
         baziEl.createSpan({ cls: 'bazi-unit', text: '年' });
@@ -116,7 +130,8 @@ class DashboardView extends ItemView {
             e.stopPropagation();
             this.plusMenu.toggleClass('is-open', !this.plusMenu.hasClass('is-open'));
         };
-        document.addEventListener('click', () => { if(this.plusMenu) this.plusMenu.removeClass('is-open'); });
+        // 修复：针对悬浮窗口的事件绑定，使用 activeDocument
+        activeDocument.addEventListener('click', () => { if(this.plusMenu) this.plusMenu.removeClass('is-open'); });
 
         const dataSection = container.createDiv({ cls: 'dashboard-data-section' });
         const chartHeader = dataSection.createDiv({ cls: 'chart-header-row' });
@@ -137,7 +152,7 @@ class DashboardView extends ItemView {
             const item = this.plusMenu.createDiv({ cls: 'dropdown-item', text: action.name });
             item.onclick = () => {
                 this.plusMenu.removeClass('is-open');
-                this.promptNewNote(action);
+                void this.promptNewNote(action);
             };
         });
     }
@@ -156,14 +171,15 @@ class DashboardView extends ItemView {
         }
     }
 
-    extractDateFromFile(file: TFile, cache: any): string {
+    // 修复：为 frontmatter 引用补充类型安全
+    extractDateFromFile(file: TFile, cache: CachedMetadata | null): string {
         let dateStr: string | null = null;
         let yearContext = moment(file.stat.ctime).year(); 
         
         const pathYearMatch = file.path.match(/(20\d{2})/);
         if (pathYearMatch) yearContext = parseInt(pathYearMatch[1]);
 
-        if (cache?.frontmatter?.date) {
+        if (cache && cache.frontmatter && cache.frontmatter.date) {
             dateStr = String(cache.frontmatter.date).trim();
             const parsed = this.parseLenientDate(dateStr, yearContext);
             if (parsed) return parsed;
@@ -220,9 +236,9 @@ class DashboardView extends ItemView {
         const firstDay = moment([year, month, 1]).day();
 
         const nav = this.boardArea.createDiv({ cls: 'month-nav' });
-        nav.createEl('span', { text: '‹', cls: 'month-nav-btn back-arrow' }).onclick = () => { this.currentMonth.subtract(1, 'M'); this.renderCalendar('left'); };
+        nav.createEl('span', { text: '‹', cls: 'month-nav-btn back-arrow' }).onclick = () => { this.currentMonth.subtract(1, 'months'); this.renderCalendar('left'); };
         nav.createSpan({ text: this.currentMonth.format('YYYY年 M月'), cls: 'month-label' });
-        nav.createEl('span', { text: '›', cls: 'month-nav-btn next-arrow' }).onclick = () => { this.currentMonth.add(1, 'M'); this.renderCalendar('right'); };
+        nav.createEl('span', { text: '›', cls: 'month-nav-btn next-arrow' }).onclick = () => { this.currentMonth.add(1, 'months'); this.renderCalendar('right'); };
 
         const animWrapper = this.boardArea.createDiv({ cls: 'calendar-anim-wrapper' });
         if (direction === 'left') animWrapper.addClass('slide-in-left');
@@ -267,7 +283,6 @@ class DashboardView extends ItemView {
         
         const baziDay = `${lunar.getYearInGanZhi()}年 · ${lunar.getMonthInGanZhi()}月 · ${lunar.getDayInGanZhi()}日`;
 
-        // 🌟 重构：使用安全的 DOM API 替代 innerHTML 🌟
         if (files.length === 0) { 
             this.listHeader.createDiv({ cls: 'record-list-date', text: dateStr });
             this.listHeader.createDiv({ cls: 'record-list-lunar', text: `${baziDay} · 暂无足迹` });
@@ -286,11 +301,16 @@ class DashboardView extends ItemView {
             item.style.animationDelay = `${index * 0.05}s`;
             
             const iconWrap = item.createDiv({ cls: 'record-icon' });
-            // 纯静态 SVG 注入属于官方合规范围
-            iconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>`;
+            
+            // 修复：移除所有危险的 innerHTML，改用原生 createSvg 进行节点挂载
+            const svgIcon = iconWrap.createSvg('svg', { attr: { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round" } });
+            svgIcon.createSvg('path', { attr: { d: "M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" } });
+            svgIcon.createSvg('line', { attr: { x1: "16", y1: "8", x2: "2", y2: "22" } });
+            svgIcon.createSvg('line', { attr: { x1: "17.5", y1: "15", x2: "9", y2: "15" } });
             
             item.createDiv({ text: file.basename, cls: 'record-title' });
-            item.onclick = async () => { await this.app.workspace.getLeaf(true).openFile(file); };
+            // 修复：将同步事件回调中的悬空 Promise 处理掉
+            item.onclick = () => { void this.app.workspace.getLeaf(true).openFile(file); };
         });
         this.listWrapper.addClass('is-open');
     }
@@ -298,23 +318,26 @@ class DashboardView extends ItemView {
     closeListAnimation() { this.listWrapper.removeClass('is-open'); }
 
     async promptNewNote(config: ActionConfig) {
-        new QuickNoteModal(this.app, config, async (title, date, folderPath) => {
-            const selectedDate = moment(date).toDate();
-            selectedDate.setHours(new Date().getHours()); 
-            const lunarFull = Lunar.fromDate(selectedDate);
-            const baziFullStr = `${lunarFull.getYearInGanZhi()}年 ${lunarFull.getMonthInGanZhi()}月 ${lunarFull.getDayInGanZhi()}日 ${lunarFull.getTimeInGanZhi()}时`;
+        new QuickNoteModal(this.app, config, (title, date, folderPath) => {
+            // 确保异步流程在 Modal 外挂起，保证生命周期合规
+            void (async () => {
+                const selectedDate = moment(date).toDate();
+                selectedDate.setHours(new Date().getHours()); 
+                const lunarFull = Lunar.fromDate(selectedDate);
+                const baziFullStr = `${lunarFull.getYearInGanZhi()}年 ${lunarFull.getMonthInGanZhi()}月 ${lunarFull.getDayInGanZhi()}日 ${lunarFull.getTimeInGanZhi()}时`;
 
-            const parsedContent = config.template
-                .replace(/\{\{DATE\}\}/g, date)
-                .replace(/\{\{TITLE\}\}/g, title)
-                .replace(/\{\{BAZI\}\}/g, baziFullStr);
+                const parsedContent = config.template
+                    .replace(/\{\{DATE\}\}/g, date)
+                    .replace(/\{\{TITLE\}\}/g, title)
+                    .replace(/\{\{BAZI\}\}/g, baziFullStr);
 
-            await this.ensureFolder(folderPath);
-            const fileName = `${folderPath}/${title}.md`;
-            try {
-                const file = await this.app.vault.create(fileName, parsedContent);
-                await this.app.workspace.getLeaf(true).openFile(file);
-            } catch (e) { console.error("创建失败", e); }
+                await this.ensureFolder(folderPath);
+                const fileName = `${folderPath}/${title}.md`;
+                try {
+                    const file = await this.app.vault.create(fileName, parsedContent);
+                    await this.app.workspace.getLeaf(true).openFile(file);
+                } catch (e) { console.error("创建失败", e); }
+            })();
         }).open();
     }
 
@@ -335,7 +358,7 @@ class QuickNoteModal extends Modal {
     actionConfig: ActionConfig;
     onSubmit: (title: string, date: string, folder: string) => void;
     
-    constructor(app: any, config: ActionConfig, onSubmit: (title: string, date: string, folder: string) => void) { 
+    constructor(app: App, config: ActionConfig, onSubmit: (title: string, date: string, folder: string) => void) { 
         super(app); 
         this.actionConfig = config;
         this.onSubmit = onSubmit; 
@@ -354,7 +377,8 @@ class QuickNoteModal extends Modal {
         new Setting(contentEl).setName('记录标题').addText(text => { text.setValue(this.title); text.onChange(value => this.title = value); });
         new Setting(contentEl).setName('归档日期').addText(text => { text.setValue(this.date); text.onChange(value => this.date = value); });
         
-        const folderSetting = new Setting(contentEl).setName('归档路径 (点击查看已有文件夹)').addText(text => { 
+        // 修复：移除未使用声明警告
+        new Setting(contentEl).setName('归档路径 (点击查看已有文件夹)').addText(text => { 
             text.setValue(this.folderPath); 
             text.onChange(value => this.folderPath = value); 
             
@@ -391,7 +415,8 @@ class QuickNoteModal extends Modal {
                 inputEl.addEventListener('click', showSuggestions);
                 inputEl.addEventListener('input', showSuggestions);
                 inputEl.addEventListener('focus', showSuggestions);
-                inputEl.addEventListener('blur', () => { setTimeout(() => suggestWrapper.removeClass('is-open'), 200); }); 
+                // 修复：全局调用保护
+                inputEl.addEventListener('blur', () => { window.setTimeout(() => suggestWrapper.removeClass('is-open'), 200); }); 
             }
         });
         
@@ -409,17 +434,20 @@ class DashboardSettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.createEl('h2', { text: '控制中心设置' });
+        
+        // 修复：使用官方原生的 setHeading 方法代替直接注入 h2 标签
+        new Setting(containerEl).setName('控制中心设置').setHeading();
         
         new Setting(containerEl).setName('设为开屏主页 (打开时启动)')
             .setDesc('每次打开 Obsidian 时，将默认的新建空白页替换为控制中心。')
             .addToggle(toggle => toggle.setValue(this.plugin.settings.openOnStartup).onChange(async (val) => { this.plugin.settings.openOnStartup = val; await this.plugin.saveSettings(); }));
         
-        containerEl.createEl('h3', { text: '新建类型管理' });
-        containerEl.createEl('p', { text: '支持的模板变量: {{DATE}}, {{TITLE}}, {{BAZI}} (生成: 丙午年 癸巳月 辛巳日 丙申时)', cls: 'setting-item-description' });
+        // 修复：UI 一致性替换
+        new Setting(containerEl).setName('新建类型管理').setHeading()
+            .setDesc('支持的模板变量: {{DATE}}, {{TITLE}}, {{BAZI}} (生成: 丙午年 癸巳月 辛巳日 丙申时)');
 
         this.plugin.settings.actions.forEach((action, index) => {
-            containerEl.createEl('h4', { text: `类型 ${index + 1}` });
+            new Setting(containerEl).setName(`类型 ${index + 1}`).setHeading();
             new Setting(containerEl).setName('名称 (留空隐藏)').addText(text => text.setValue(action.name).onChange(async (val) => { action.name = val; await this.plugin.saveSettings(); }));
             new Setting(containerEl).setName('保存文件夹').addText(text => text.setValue(action.folder).onChange(async (val) => { action.folder = val; await this.plugin.saveSettings(); }));
             new Setting(containerEl).setName('默认模板').addTextArea(text => { text.setValue(action.template).onChange(async (val) => { action.template = val; await this.plugin.saveSettings(); }); text.inputEl.rows = 5; });
