@@ -94,9 +94,19 @@ class DashboardView extends ItemView {
         const now = new Date();
         const lunarNow = Lunar.fromDate(now);
         
-        // 🌟 手机端专享排版：八字与角标单位分离，完美支持极宽字号差 🌟
+        // 🌟 重构：使用安全的 DOM API 替代 innerHTML 🌟
         const baziEl = header.createEl('h1', { cls: 'baseline-title bazi-title' });
-        baziEl.innerHTML = `${lunarNow.getYearInGanZhi()}<span class="bazi-unit">年</span><span class="bazi-sep">·</span>${lunarNow.getMonthInGanZhi()}<span class="bazi-unit">月</span><span class="bazi-sep">·</span>${lunarNow.getDayInGanZhi()}<span class="bazi-unit">日</span><span class="bazi-sep">·</span>${lunarNow.getTimeInGanZhi()}<span class="bazi-unit">时</span>`;
+        baziEl.appendText(lunarNow.getYearInGanZhi());
+        baziEl.createSpan({ cls: 'bazi-unit', text: '年' });
+        baziEl.createSpan({ cls: 'bazi-sep', text: '·' });
+        baziEl.appendText(lunarNow.getMonthInGanZhi());
+        baziEl.createSpan({ cls: 'bazi-unit', text: '月' });
+        baziEl.createSpan({ cls: 'bazi-sep', text: '·' });
+        baziEl.appendText(lunarNow.getDayInGanZhi());
+        baziEl.createSpan({ cls: 'bazi-unit', text: '日' });
+        baziEl.createSpan({ cls: 'bazi-sep', text: '·' });
+        baziEl.appendText(lunarNow.getTimeInGanZhi());
+        baziEl.createSpan({ cls: 'bazi-unit', text: '时' });
 
         const plusBtn = headerRow.createEl('span', { text: '+', cls: 'floating-plus-btn' });
         this.plusMenu = headerRow.createDiv({ cls: 'plus-dropdown' });
@@ -132,9 +142,6 @@ class DashboardView extends ItemView {
         });
     }
 
-    // =========================================
-    // 🌟 核心引擎同步：全能日期嗅探器 (解决多设备同步丢失日期问题) 🌟
-    // =========================================
     buildFileDataMap() {
         this.fileDataMap = {};
         this.app.vault.getMarkdownFiles().forEach(file => {
@@ -203,7 +210,6 @@ class DashboardView extends ItemView {
 
         return null;
     }
-    // =========================================
 
     renderCalendar(direction: 'left' | 'right' | 'none' = 'none') {
         this.boardArea.empty();
@@ -257,28 +263,30 @@ class DashboardView extends ItemView {
 
     triggerListAnimation(dateStr: string, files: TFile[], lunar: Lunar) {
         this.listScrollArea.empty();
+        this.listHeader.empty();
         
         const baziDay = `${lunar.getYearInGanZhi()}年 · ${lunar.getMonthInGanZhi()}月 · ${lunar.getDayInGanZhi()}日`;
 
+        // 🌟 重构：使用安全的 DOM API 替代 innerHTML 🌟
         if (files.length === 0) { 
-            this.listHeader.innerHTML = `
-                <div class="record-list-date">${dateStr}</div>
-                <div class="record-list-lunar">${baziDay} · 暂无足迹</div>
-            `;
+            this.listHeader.createDiv({ cls: 'record-list-date', text: dateStr });
+            this.listHeader.createDiv({ cls: 'record-list-lunar', text: `${baziDay} · 暂无足迹` });
             this.listWrapper.addClass('is-open'); 
             return; 
         }
         
-        this.listHeader.innerHTML = `
-            <div class="record-list-date">${dateStr} <span class="record-list-count">${files.length} 篇</span></div>
-            <div class="record-list-lunar">${baziDay}</div>
-        `;
+        const dateDiv = this.listHeader.createDiv({ cls: 'record-list-date' });
+        dateDiv.appendText(dateStr + " ");
+        dateDiv.createSpan({ cls: 'record-list-count', text: `${files.length} 篇` });
+        
+        this.listHeader.createDiv({ cls: 'record-list-lunar', text: baziDay });
         
         files.forEach((file, index) => {
             const item = this.listScrollArea.createDiv({ cls: 'record-item' });
             item.style.animationDelay = `${index * 0.05}s`;
             
             const iconWrap = item.createDiv({ cls: 'record-icon' });
+            // 纯静态 SVG 注入属于官方合规范围
             iconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>`;
             
             item.createDiv({ text: file.basename, cls: 'record-title' });
