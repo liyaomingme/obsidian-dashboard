@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from 'builtin-modules';
+// 关键修复：使用 Node 原生的 module 代替被官方警告废弃的 builtin-modules 包
+import builtins from "module"; 
 
 const banner =
 `/*
@@ -11,32 +12,39 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = (process.argv[2] === 'production');
 
-esbuild.build({
-    banner: {
-        js: banner,
-    },
-    entryPoints: ['main.ts'],
-    bundle: true,
-    external: [
-        'obsidian',
-        'electron',
-        '@codemirror/autocomplete',
-        '@codemirror/collab',
-        '@codemirror/commands',
-        '@codemirror/language',
-        '@codemirror/lint',
-        '@codemirror/search',
-        '@codemirror/state',
-        '@codemirror/view',
-        '@lezer/common',
-        '@lezer/highlight',
-        '@lezer/lr',
-        ...builtins],
-    format: 'cjs',
-    watch: !prod,
-    target: 'es2018',
-    logLevel: "info",
-    sourcemap: prod ? false : 'inline',
-    treeShaking: true,
-    outfile: 'main.js',
-}).catch(() => process.exit(1));
+const context = await esbuild.context({
+	banner: {
+		js: banner,
+	},
+	entryPoints: ['main.ts'],
+	bundle: true,
+	external: [
+		'obsidian',
+		'electron',
+		'@codemirror/autocomplete',
+		'@codemirror/collab',
+		'@codemirror/commands',
+		'@codemirror/language',
+		'@codemirror/lint',
+		'@codemirror/search',
+		'@codemirror/state',
+		'@codemirror/view',
+		'@lezer/common',
+		'@lezer/highlight',
+		'@lezer/lr',
+		...builtins.builtinModules // 使用原生模块
+	],
+	format: 'cjs',
+	target: 'es2018',
+	logLevel: "info",
+	sourcemap: prod ? false : 'inline',
+	treeShaking: true,
+	outfile: 'main.js',
+});
+
+if (prod) {
+	await context.rebuild();
+	process.exit(0);
+} else {
+	await context.watch();
+}
