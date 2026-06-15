@@ -1,7 +1,6 @@
 import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App, TFile, moment, CachedMetadata } from 'obsidian';
 import { Lunar } from 'lunar-javascript';
 
-// 🌟 TypeScript 严格类型欺骗层 (Bypass Obsidian's strict ESLint rules)
 interface ILunar {
     getYearInGanZhi(): string;
     getMonthInGanZhi(): string;
@@ -52,7 +51,12 @@ export default class DashboardPlugin extends Plugin {
         });
     }
 
-    async loadSettings() { this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData()); }
+    async loadSettings() { 
+        // 彻底修复: 为 loadData() 补充强类型断言，消除 any 赋值警告
+        const data = await this.loadData();
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, data as Partial<DashboardSettings>); 
+    }
+    
     async saveSettings() { 
         await this.saveData(this.settings); 
         this.app.workspace.getLeavesOfType(VIEW_TYPE_DASHBOARD).forEach(leaf => {
