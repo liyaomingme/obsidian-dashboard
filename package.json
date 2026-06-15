@@ -1,6 +1,6 @@
 {
   "name": "mobile-dashboard",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "A mobile-first dashboard for quick capture and note statistics with charts.",
   "main": "main.js",
   "scripts": {
