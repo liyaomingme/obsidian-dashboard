@@ -14,9 +14,11 @@
     --cal-level-3: #8A1F1F;
     --cal-level-4: #601212;
     
-    padding: clamp(20px, 5vh, 40px) clamp(16px, 5vw, 32px); 
+    padding: clamp(16px, 4vh, 32px) clamp(16px, 5vw, 32px); 
     max-width: 860px; margin: 0 auto;
-    display: flex; flex-direction: column; gap: clamp(20px, 4vh, 32px);
+    display: flex; flex-direction: column; 
+    /* 优化1：缩小顶部八字与下方数据面板的间距，提升视觉重心 */
+    gap: clamp(12px, 2vh, 20px);
     height: 100%; overflow-y: auto; background: transparent;
     
     font-family: "Songti SC", "STSongti-SC-Regular", "STSong", "Noto Serif SC", "SimSun", serif;
@@ -30,11 +32,11 @@
 /* --- 顶栏排版 --- */
 .workspace-leaf-content .dashboard-header-row { 
     display: flex; justify-content: space-between; align-items: center; 
-    margin-bottom: 4px; padding: 0; position: relative; 
+    margin-bottom: 0px; padding: 0; position: relative; 
     gap: 12px; 
     flex-wrap: nowrap;
 }
-.workspace-leaf-content .baseline-header { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.workspace-leaf-content .baseline-header { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
 .workspace-leaf-content .baseline-date { font-size: clamp(11px, 3.5vw, 13px); font-weight: 700; color: var(--bazi-text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
 /* 八字主轴 */
@@ -70,14 +72,16 @@
 .workspace-leaf-content .dropdown-item:hover { background: rgba(138, 31, 31, 0.08); color: var(--bazi-accent-red); }
 
 /* --- 数据区域 --- */
-.workspace-leaf-content .dashboard-data-section { background: rgba(255, 255, 255, 0.7); backdrop-filter: saturate(180%) blur(50px); -webkit-backdrop-filter: saturate(180%) blur(50px); border-radius: clamp(20px, 5vw, 28px); padding: clamp(20px, 5vw, 32px) clamp(14px, 4vw, 20px); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+/* 优化2：减小内边距，让日历整体更紧凑、位置更高 */
+.workspace-leaf-content .dashboard-data-section { background: rgba(255, 255, 255, 0.7); backdrop-filter: saturate(180%) blur(50px); -webkit-backdrop-filter: saturate(180%) blur(50px); border-radius: clamp(20px, 5vw, 28px); padding: clamp(16px, 4vw, 24px) clamp(14px, 4vw, 20px); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; align-items: center; overflow: hidden; }
 .theme-dark .workspace-leaf-content .dashboard-data-section { background: rgba(30, 30, 30, 0.5); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4); border-color: rgba(255, 255, 255, 0.1);}
-.workspace-leaf-content .chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: clamp(16px, 4vw, 28px); padding-left: 4px;}
+.workspace-leaf-content .chart-header-row { width: 100%; display: flex; justify-content: flex-start; align-items: center; margin-bottom: clamp(12px, 3vw, 20px); padding-left: 4px;}
 .workspace-leaf-content .chart-title { font-size: clamp(18px, 5vw, 20px); font-weight: 800; color: var(--bazi-text-main); margin: 0; letter-spacing: 0.05em; font-family: "Songti SC", "STSongti-SC-Regular", "STSong", "Noto Serif SC", "SimSun", serif; }
 
 /* --- 日历排版 --- */
 .workspace-leaf-content .heatmap-calendar-wrapper { width: 100%; max-width: 380px; margin: 0 auto; position: relative; }
-.workspace-leaf-content .month-nav { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 6vw, 32px); margin-bottom: 24px; }
+/* 优化3：缩减日历导航条下方的空白 */
+.workspace-leaf-content .month-nav { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 6vw, 32px); margin-bottom: 16px; }
 .workspace-leaf-content .month-nav-btn { display: inline-flex; align-items: center; justify-content: center; font-size: clamp(24px, 6vw, 28px); font-weight: 300; cursor: pointer; padding: 4px 12px; user-select: none; transition: transform 0.2s; }
 .workspace-leaf-content .month-nav-btn.back-arrow { color: var(--bazi-text-muted); }
 .workspace-leaf-content .month-nav-btn.next-arrow { color: var(--bazi-accent-red); }
@@ -111,13 +115,23 @@
 .workspace-leaf-content .calendar-cell[class*="level-"] .cal-date-num, .workspace-leaf-content .calendar-cell[class*="level-"] .cal-lunar-text { color: #FFFFFF; opacity: 1;}
 
 /* --- 足迹列表 --- */
+/* 优化4：放大 Wrapper 的 max-height，防止内部滚动区域被强制截断 */
 .workspace-leaf-content .record-list-wrapper { width: 100%; max-width: 420px; margin: 0 auto; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease; opacity: 0; }
-.workspace-leaf-content .record-list-wrapper.is-open { max-height: 400px; opacity: 1; margin-top: clamp(20px, 5vw, 32px); }
+.workspace-leaf-content .record-list-wrapper.is-open { max-height: 60vh; opacity: 1; margin-top: clamp(16px, 4vw, 24px); }
 .workspace-leaf-content .record-list-header { margin-bottom: 16px; padding-left: 8px; }
 .workspace-leaf-content .record-list-date { font-size: clamp(18px, 5.5vw, 20px); font-weight: 800; color: var(--bazi-text-main); display: flex; align-items: baseline; gap: 10px; letter-spacing: 0.05em; font-family: "Songti SC", "STSongti-SC-Regular", "STSong", "Noto Serif SC", "SimSun", serif; }
 .workspace-leaf-content .record-list-count { font-size: 14px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.8; }
 .workspace-leaf-content .record-list-lunar { font-size: 13px; font-weight: 600; color: var(--bazi-text-muted); opacity: 0.9; margin-top: 6px; }
-.workspace-leaf-content .record-list-scroll { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0; padding: 0 4px; }
+
+/* 优化5：彻底解决移动端滑动拦截与卡顿问题 */
+.workspace-leaf-content .record-list-scroll { 
+    max-height: 35vh; /* 使用 vh 适配不同长短的手机屏幕 */
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch; /* 开启 iOS 硬件加速流畅滚动 */
+    overscroll-behavior-y: contain; /* 阻止滑动穿透，防止触发系统级刷新或关闭 */
+    touch-action: pan-y; /* 强制声明此区域接受上下滑动，防止被 Obsidian 拦截 */
+    display: flex; flex-direction: column; gap: 0; padding: 0 4px; 
+}
 .workspace-leaf-content .record-list-scroll::-webkit-scrollbar { display: none; }
 
 @keyframes listWave { 0% { opacity: 0; transform: translateY(12px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
