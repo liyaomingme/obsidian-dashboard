@@ -144,7 +144,12 @@ class DashboardView extends ItemView {
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
-        // 注意：这里彻底移除了无用的手势拦截代码，改用纯原生滚动
+        // === 保留阻止滑动拦截事件，配合 Flexbox 完美实现局部滑动 ===
+        const stopScrollPropagation = (e: Event) => e.stopPropagation();
+        this.listScrollArea.addEventListener('touchstart', stopScrollPropagation, { passive: true });
+        this.listScrollArea.addEventListener('touchmove', stopScrollPropagation, { passive: true });
+        this.listScrollArea.addEventListener('touchend', stopScrollPropagation, { passive: true });
+        this.listScrollArea.addEventListener('wheel', stopScrollPropagation, { passive: true });
 
         this.renderCalendar('none');
     }
@@ -387,7 +392,7 @@ class QuickNoteModal extends Modal {
             if(settingControl) {
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 
-                // 核心优化：只在弹窗打开时缓存一次全局文件夹结构，极大减少卡顿！
+                // 核心优化：只在弹窗打开时缓存一次，彻底解决打字卡顿！
                 const allFoldersCache = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
 
                 const showSuggestions = () => {
