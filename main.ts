@@ -52,7 +52,6 @@ export default class DashboardPlugin extends Plugin {
     }
 
     async loadSettings() { 
-        // 终极修复：强制转换为 unknown 打断 any 的传播，然后转为确切的接口类型
         const data: unknown = await this.loadData();
         this.settings = Object.assign({}, DEFAULT_SETTINGS, (data as DashboardSettings) || {}); 
     }
@@ -144,6 +143,13 @@ class DashboardView extends ItemView {
         this.listWrapper = dataSection.createDiv({ cls: 'record-list-wrapper' });
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
+
+        // === 终极修复：阻止 Obsidian 移动端全局手势拦截内部滚动 ===
+        const stopScrollPropagation = (e: Event) => e.stopPropagation();
+        this.listScrollArea.addEventListener('touchstart', stopScrollPropagation, { passive: true });
+        this.listScrollArea.addEventListener('touchmove', stopScrollPropagation, { passive: true });
+        this.listScrollArea.addEventListener('touchend', stopScrollPropagation, { passive: true });
+        this.listScrollArea.addEventListener('wheel', stopScrollPropagation, { passive: true });
 
         this.renderCalendar('none');
     }
