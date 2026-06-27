@@ -144,12 +144,7 @@ class DashboardView extends ItemView {
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
-        // === 终极修复：阻止 Obsidian 移动端全局手势拦截内部滚动 ===
-        const stopScrollPropagation = (e: Event) => e.stopPropagation();
-        this.listScrollArea.addEventListener('touchstart', stopScrollPropagation, { passive: true });
-        this.listScrollArea.addEventListener('touchmove', stopScrollPropagation, { passive: true });
-        this.listScrollArea.addEventListener('touchend', stopScrollPropagation, { passive: true });
-        this.listScrollArea.addEventListener('wheel', stopScrollPropagation, { passive: true });
+        // 注意：这里彻底移除了无用的手势拦截代码，改用纯原生滚动
 
         this.renderCalendar('none');
     }
@@ -392,12 +387,13 @@ class QuickNoteModal extends Modal {
             if(settingControl) {
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 
-                const allFolders = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
+                // 核心优化：只在弹窗打开时缓存一次全局文件夹结构，极大减少卡顿！
+                const allFoldersCache = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
 
                 const showSuggestions = () => {
                     suggestWrapper.empty();
                     const query = inputEl.value.toLowerCase();
-                    const matches = allFolders.filter(f => f.path.toLowerCase().includes(query)).slice(0, 30);
+                    const matches = allFoldersCache.filter(f => f.path.toLowerCase().includes(query)).slice(0, 30);
 
                     if (matches.length > 0) {
                         suggestWrapper.addClass('is-open');
