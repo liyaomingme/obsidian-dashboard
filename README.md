@@ -9,11 +9,11 @@
 
 <br>
 
-<img width="1080" height="2340" alt="细节4" src="https://github.com/user-attachments/assets/08bae382-b97e-46ec-b607-42aab231c6a5" />
-
+<img src="https://github.com/user-attachments/assets/08bae382-b97e-46ec-b607-42aab231c6a5" width="300" alt="岁时案台 主界面">
 
 </div>
 
+---
 ---
 
 ## 🇨🇳 简体中文
@@ -28,13 +28,10 @@
 ### 📸 视觉预览 (Gallery)
 
 <div align="center">
-
-<img width="1080" height="2340" alt="细节4" src="https://github.com/user-attachments/assets/8f3fb2dc-a8d1-40ef-a99a-2868ce2fb2ef" />
-<img width="1080" height="2340" alt="细节3" src="https://github.com/user-attachments/assets/bcb22080-1b84-449c-9977-982542611d4a" />
-<img width="1080" height="2340" alt="细节2" src="https://github.com/user-attachments/assets/1a05241f-1e16-48c0-a7b8-1d0fb43bda0a" />
-<img width="1080" height="2340" alt="细节1" src="https://github.com/user-attachments/assets/1a25edc5-9d80-4a9a-80b8-13686206eb5b" />
-
-
+  <img src="https://github.com/user-attachments/assets/8f3fb2dc-a8d1-40ef-a99a-2868ce2fb2ef" width="23%" alt="细节4">
+  <img src="https://github.com/user-attachments/assets/bcb22080-1b84-449c-9977-982542611d4a" width="23%" alt="细节3">
+  <img src="https://github.com/user-attachments/assets/1a05241f-1e16-48c0-a7b8-1d0fb43bda0a" width="23%" alt="细节2">
+  <img src="https://github.com/user-attachments/assets/1a25edc5-9d80-4a9a-80b8-13686206eb5b" width="23%" alt="细节1">
 </div>
 
 ### 💡 核心特性 (Features)
