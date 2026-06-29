@@ -106,3 +106,5 @@ We brought traditional letterpress aesthetics to Obsidian.
 ### 🚀 如何使用
 1. **设为开屏主页**：进入插件设置，开启“打开时启动”选项，即可在每次打开手机版 Obsidian 时直接看到控制中心。
 2. **自定义记录动作**：在设置中配置你的快捷捕获模板，支持动态变量：`{{DATE}}`（标准日期）、`{{TITLE}}`（标题）以及极其优雅的 `{{BAZI}}`（生成如：丙午年 癸巳月 辛巳日 丙申时）。
+
+<img width="864" height="1821" alt="岁时案台手机" src="https://github.com/user-attachments/assets/31ecce90-726d-4cad-9de0-eeb8ff3da1ac" />
