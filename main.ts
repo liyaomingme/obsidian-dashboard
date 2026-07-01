@@ -1,6 +1,5 @@
 import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App, TFile, moment, CachedMetadata } from 'obsidian';
-// ✨ 核心修改1：引入 Solar 与 HolidayUtil 用于计算节气、节日与法定休假
-import { Lunar, Solar, HolidayUtil } from 'lunar-javascript';
+import { Lunar } from 'lunar-javascript';
 
 interface ILunar {
     getYearInGanZhi(): string;
@@ -10,37 +9,19 @@ interface ILunar {
     getDay(): number;
     getMonthInChinese(): string;
     getDayInChinese(): string;
-    getJieQi(): string;
-    getFestivals(): string[];
 }
-interface ISolar {
-    getFestivals(): string[];
+interface ILunarFactory {
+    fromDate(date: Date): ILunar;
 }
-interface IHoliday {
-    isWork(): boolean;
-}
-interface IHolidayUtil {
-    getHoliday(year: number, month: number, day: number): IHoliday | null;
-}
-interface ILunarFactory { fromDate(date: Date): ILunar; }
-interface ISolarFactory { fromDate(date: Date): ISolar; }
-
 const SafeLunar = Lunar as unknown as ILunarFactory;
-const SafeSolar = Solar as unknown as ISolarFactory;
-const SafeHolidayUtil = HolidayUtil as unknown as IHolidayUtil;
 
 const VIEW_TYPE_DASHBOARD = "mobile-dashboard-view";
 
 interface ActionConfig { name: string; folder: string; template: string; }
-interface DashboardSettings { 
-    openOnStartup: boolean; 
-    showAdvancedCalendar: boolean; // ✨ 新增：高级历法显示开关
-    actions: ActionConfig[]; 
-}
+interface DashboardSettings { openOnStartup: boolean; actions: ActionConfig[]; }
 
 const DEFAULT_SETTINGS: DashboardSettings = {
     openOnStartup: false,
-    showAdvancedCalendar: false, // 默认关闭，保持极简
     actions: [
         { name: '新建日记', folder: '日记/{{YYYY}}/{{MM}}', template: "---\ntype: diary\ndate: {{DATE}}\nbazi: {{BAZI}}\n---\n\n" },
         { name: '沉淀知识', folder: '知识库/{{YYYY}}', template: "---\ntype: knowledge\ndate: {{DATE}}\nbazi: {{BAZI}}\n---\n\n" },
@@ -163,6 +144,7 @@ class DashboardView extends ItemView {
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
+        // === 保留阻止滑动拦截事件，配合 Flexbox 完美实现局部滑动 ===
         const stopScrollPropagation = (e: Event) => e.stopPropagation();
         this.listScrollArea.addEventListener('touchstart', stopScrollPropagation, { passive: true });
         this.listScrollArea.addEventListener('touchmove', stopScrollPropagation, { passive: true });
@@ -285,46 +267,10 @@ class DashboardView extends ItemView {
             
             const d = new Date(year, month, day);
             const lunar = SafeLunar.fromDate(d);
-            const solar = SafeSolar.fromDate(d);
-            const holidayObj = SafeHolidayUtil.getHoliday(year, month + 1, day); // month is 0-indexed in JS Date
+            const lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
             
-            let lunarDayStr = lunar.getDay() === 1 ? lunar.getMonthInChinese() + '月' : lunar.getDayInChinese();
-            let isHighlight = false;
-            let badgeType = '';
-
-            // ✨ 核心修改2：如果开启了高级历法，则计算节气、节日和休/班
-            if (this.plugin.settings.showAdvancedCalendar) {
-                if (lunar.getDay() === 1 || lunar.getDay() === 15) {
-                    isHighlight = true;
-                }
-
-                const solarFestivals = solar.getFestivals();
-                const jieqi = lunar.getJieQi();
-                const lunarFestivals = lunar.getFestivals();
-
-                // 优先级：农历节日 > 二十四节气 > 公历节日
-                if (solarFestivals.length > 0) { lunarDayStr = solarFestivals[0]; isHighlight = true; }
-                if (jieqi) { lunarDayStr = jieqi; isHighlight = true; }
-                if (lunarFestivals.length > 0) { lunarDayStr = lunarFestivals[0]; isHighlight = true; }
-
-                // 防止节日名字过长溢出格子
-                if (lunarDayStr.length > 4) lunarDayStr = lunarDayStr.substring(0, 4); 
-
-                // 判断是否是国家法定节假日或调休
-                if (holidayObj) {
-                    badgeType = holidayObj.isWork() ? 'work' : 'holiday';
-                }
-            }
-            
-            // 绘制角标
-            if (badgeType) {
-                cell.createSpan({ cls: `cal-badge ${badgeType}`, text: badgeType === 'holiday' ? '休' : '班' });
-            }
-
             cell.createDiv({ text: day.toString(), cls: 'cal-date-num' });
-            
-            const lunarTextEl = cell.createDiv({ text: lunarDayStr, cls: 'cal-lunar-text' });
-            if (isHighlight) lunarTextEl.addClass('highlight');
+            cell.createDiv({ text: lunarDayStr, cls: 'cal-lunar-text' });
 
             if (count > 0) {
                 cell.addClass('has-data');
@@ -446,6 +392,7 @@ class QuickNoteModal extends Modal {
             if(settingControl) {
                 const suggestWrapper = settingControl.createDiv({ cls: 'folder-suggest-wrapper' });
                 
+                // 核心优化：只在弹窗打开时缓存一次，彻底解决打字卡顿！
                 const allFoldersCache = this.app.vault.getAllLoadedFiles().filter(f => f instanceof TFolder && f.path !== '/') as TFolder[];
 
                 const showSuggestions = () => {
@@ -498,18 +445,6 @@ class DashboardSettingTab extends PluginSettingTab {
             .setDesc('每次打开 Obsidian 时，将默认的新建空白页替换为控制中心。')
             .addToggle(toggle => toggle.setValue(this.plugin.settings.openOnStartup).onChange(async (val) => { this.plugin.settings.openOnStartup = val; await this.plugin.saveSettings(); }));
         
-        // ✨ 核心修改3：新增 高级历法显示 设置开关
-        new Setting(containerEl).setName('高级历法显示')
-            .setDesc('开启后，日历将显示二十四节气、传统节日，高亮初一/十五，并自动标注国家法定节假日(休)与调休工作日(班)。')
-            .addToggle(toggle => toggle.setValue(this.plugin.settings.showAdvancedCalendar).onChange(async (val) => { 
-                this.plugin.settings.showAdvancedCalendar = val; 
-                await this.plugin.saveSettings(); 
-                // 切换后立即刷新试图
-                this.plugin.app.workspace.getLeavesOfType(VIEW_TYPE_DASHBOARD).forEach(leaf => {
-                    if (leaf.view instanceof DashboardView) leaf.view.renderCalendar('none');
-                });
-            }));
-
         new Setting(containerEl).setName('新建类型管理').setHeading()
             .setDesc('支持的模板变量: {{DATE}}, {{TITLE}}, {{BAZI}} (生成: 丙午年 癸巳月 辛巳日 丙申时)');
 
