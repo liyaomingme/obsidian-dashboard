@@ -1,7 +1,7 @@
 {
   "id": "mobile-dashboard",
   "name": "Mobile Dashboard",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "minAppVersion": "1.10.1",
   "description": "A mobile-first dashboard for quick capture and note statistics with charts.",
   "author": "Li Yaoming",
