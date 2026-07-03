@@ -1,10 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { Plugin, WorkspaceLeaf, ItemView, TFolder, Modal, Setting, PluginSettingTab, App, TFile, moment, CachedMetadata } from 'obsidian';
 import { Lunar } from 'lunar-javascript';
 
@@ -151,6 +144,7 @@ class DashboardView extends ItemView {
         this.listHeader = this.listWrapper.createDiv({ cls: 'record-list-header' });
         this.listScrollArea = this.listWrapper.createDiv({ cls: 'record-list-scroll' });
 
+        // === 保留阻止滑动拦截事件，配合 Flexbox 完美实现局部滑动 ===
         const stopScrollPropagation = (e: Event) => e.stopPropagation();
         this.listScrollArea.addEventListener('touchstart', stopScrollPropagation, { passive: true });
         this.listScrollArea.addEventListener('touchmove', stopScrollPropagation, { passive: true });
