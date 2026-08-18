@@ -89,24 +89,6 @@ Welcome to the **Mobile Dashboard**! This plugin completely transforms your empt
 
 <div align="center">
 
-### ☕ 赞赏与支持 (Sponsor)
-
-*“把冷冰冰的代码，织成你的知识宇宙。”*
-
-作为一名独立开发者，我试图抹平“技术”与“审美”的边界。如果“岁时案台”为你的日常记录带来了视觉上的愉悦，或者提升了你的知识管理效率，欢迎请开发者喝杯咖啡！
-
-你的认可是我持续打磨产品细节、对抗掉头发的最大动力。❤️
-
-<div align="center">
-
-<img src="https://github.com/user-attachments/assets/bf88c060-67b0-4fbd-8a7d-c0e1d850ee3d" width="260" alt="二合一赞赏码">
-
-*( 支持使用 微信 / 支付宝 扫码 )*
-
-**✨ 感谢你的支持与陪伴！✨**
-
-</div>
-
 ---
 
 ### 💬 交流与反馈
