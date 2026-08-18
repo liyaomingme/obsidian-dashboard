@@ -83,7 +83,6 @@ Welcome to the **Mobile Dashboard**! This plugin completely transforms your empt
 
 *(For manual installation, download the latest release files and place them in your `.obsidian/plugins/mobile-dashboard` folder.)*
 
----
 
 <br>
 
